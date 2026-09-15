@@ -29,7 +29,7 @@ describe("ResultGrid", () => {
   it("filters loaded rows without issuing another query", async () => {
     const user = userEvent.setup()
     render(<TooltipProvider><ResultGrid result={result} /></TooltipProvider>)
-    await user.type(screen.getByPlaceholderText("Filter results"), "Grace")
+    await user.type(screen.getByRole("textbox", { name: "Filter results" }), "Grace")
     expect(screen.getByText("Grace")).toBeInTheDocument()
     expect(screen.queryByText("Ada")).not.toBeInTheDocument()
   })

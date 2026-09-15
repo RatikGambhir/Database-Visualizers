@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
-import { Play, RefreshCw, Table2 } from "lucide-react"
 import { toast } from "sonner"
+import { Play, RefreshCw, Table2 } from "@/components/ui/animated-icons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { runQuery } from "@/lib/database-api"
 import type { QueryResult, TableSchema } from "@/lib/types"
 import { quoteIdentifier } from "@/lib/utils"
@@ -34,11 +36,12 @@ export function DataBrowser({ connectionId, table, onOpenQuery }: { connectionId
     return () => { current = false }
   }, [connectionId, table])
 
-  if (!table) return <div className="grid h-full place-items-center"><div className="text-center"><Table2 className="mx-auto mb-3 size-6 text-muted-foreground"/><p className="text-sm font-medium">Choose a table to browse</p><p className="mt-1 text-xs text-muted-foreground">Select any table from the schema explorer.</p></div></div>
-  return <div className="flex h-full min-h-0 flex-col">
-    <div className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
-      <div className="flex items-center gap-2 text-xs"><span className="text-muted-foreground">{table.schema}</span><span className="text-muted-foreground/40">/</span><span className="font-semibold">{table.name}</span><Badge variant={table.kind === "view" ? "secondary" : "outline"}>{table.kind.toUpperCase()}</Badge></div>
-      <div className="ml-auto flex items-center gap-1"><Button size="sm" variant="outline" disabled={loading} onClick={() => void loadRows()}><RefreshCw className={loading ? "animate-spin" : ""}/>Refresh</Button><Button size="sm" onClick={onOpenQuery}><Play className="fill-current"/>Open in query</Button></div>
+  if (!table) return <Empty className="h-full"><EmptyHeader><EmptyMedia><Table2 className="size-4"/></EmptyMedia><EmptyTitle>Choose a table to browse</EmptyTitle><EmptyDescription>Select any table from the schema explorer.</EmptyDescription></EmptyHeader></Empty>
+  return <div className="flex h-full min-h-0 flex-col bg-background">
+    <div className="flex h-14 shrink-0 items-center gap-3 border-b border-border/80 bg-background px-4">
+      <span className="grid size-8 place-items-center rounded-lg border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.05)]"><Table2 className="size-3.5 text-primary"/></span>
+      <div className="min-w-0"><div className="flex items-center gap-2"><span className="truncate text-xs font-semibold tracking-[-0.01em]">{table.name}</span><Badge variant={table.kind === "view" ? "secondary" : "outline"}>{table.kind.toUpperCase()}</Badge></div><p className="mt-0.5 text-[9px] text-muted-foreground">{table.schema} · up to 500 rows</p></div>
+      <ButtonGroup className="ml-auto"><Button size="sm" variant="outline" disabled={loading} onClick={() => void loadRows()}><RefreshCw className={loading ? "animate-spin" : ""}/>{loading ? "Refreshing…" : "Refresh"}</Button><Button size="sm" onClick={onOpenQuery}><Play className="fill-current"/>Open in Query</Button></ButtonGroup>
     </div>
     <div className="min-h-0 flex-1"><ResultGrid result={result} loading={loading}/></div>
   </div>

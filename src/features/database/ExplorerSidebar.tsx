@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react"
-import { ChevronDown, ChevronRight, Database, Eye, FileCode2, Plus, Search, Table2 } from "lucide-react"
+import { ChevronDown, ChevronRight, Database, Eye, FileCode2, Plus, Search, Table2 } from "@/components/ui/animated-icons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia } from "@/components/ui/empty"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -37,39 +39,39 @@ export function ExplorerSidebar({ connection, schema, selectedTable, onSelectTab
   })
 
   return (
-    <aside className="flex h-full min-h-0 w-[270px] shrink-0 flex-col border-r border-border bg-sidebar text-sidebar-foreground">
-      <div className="app-drag flex h-12 shrink-0 items-center gap-2.5 border-b border-border px-3">
+    <aside className="flex h-full min-h-0 w-[252px] shrink-0 flex-col border-r border-border/80 bg-sidebar text-sidebar-foreground">
+      <div className="app-drag flex h-14 shrink-0 items-center gap-2.5 border-b border-border/80 px-3">
         <div className="no-drag logo-mark"><span /><span /><span /></div>
-        <div className="min-w-0 flex-1"><div className="truncate text-[13px] font-semibold tracking-tight">Tuple</div><div className="text-[9px] font-medium uppercase tracking-[0.13em] text-muted-foreground">Database workbench</div></div>
+        <div className="min-w-0 flex-1"><div className="truncate text-[13px] font-semibold tracking-[-0.015em]">Tuple</div><div className="text-[8px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Database workbench</div></div>
         <Tooltip><TooltipTrigger asChild><Button className="no-drag" variant="ghost" size="icon-sm" aria-label="Add connection" onClick={onAddConnection}><Plus /></Button></TooltipTrigger><TooltipContent>Add connection</TooltipContent></Tooltip>
       </div>
 
-      <div className="px-3 pb-2 pt-3">
-        <div className="mb-2 flex items-center gap-2 px-1"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-40"/><span className="relative inline-flex size-2 rounded-full bg-emerald-400"/></span><span className="min-w-0 flex-1 truncate text-xs font-medium">{connection.name}</span><Badge variant={connection.readOnly ? "outline" : "warning"}>{connection.readOnly ? "READ" : "WRITE"}</Badge></div>
-        <div className="relative"><Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"/><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filter tables…" className="h-8 bg-background/60 pl-8 text-xs" /></div>
+      <div className="space-y-2 px-3 pb-3 pt-3">
+        <Card className="flex items-center gap-2 rounded-lg px-2.5 py-2"><span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-30"/><span className="relative inline-flex size-2 rounded-full bg-emerald-400"/></span><span className="min-w-0 flex-1 truncate text-[11px] font-semibold">{connection.name}</span><Badge variant={connection.readOnly ? "outline" : "warning"}>{connection.readOnly ? "READ" : "WRITE"}</Badge></Card>
+        <InputGroup className="h-8"><InputGroupAddon><Search /></InputGroupAddon><InputGroupInput value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filter tables…" aria-label="Filter schema objects" autoComplete="off" className="pl-1 text-xs" /></InputGroup>
       </div>
 
       <ScrollArea className="min-h-0 flex-1 px-2">
         <div className="pb-4 pt-1">
-          <div className="flex items-center justify-between px-2 py-1.5"><span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Schemas</span><span className="font-mono text-[10px] text-muted-foreground">{grouped.length}</span></div>
+          <div className="flex items-center justify-between px-2 pb-2 pt-1"><span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Schemas</span><Badge variant="secondary">{grouped.length}</Badge></div>
           {grouped.map(([schemaName, tables]) => {
             const isOpen = expanded.has(schemaName)
             return <div key={schemaName} className="mb-0.5">
-              <Button variant="ghost" size="sm" className="h-7 w-full justify-start gap-1.5 px-2 font-normal text-muted-foreground hover:text-foreground" onClick={() => toggleSchema(schemaName)}>{isOpen ? <ChevronDown className="size-3"/> : <ChevronRight className="size-3"/>}<Database className="size-3.5"/><span className="truncate text-xs">{schemaName}</span><span className="ml-auto font-mono text-[10px] opacity-60">{tables.length}</span></Button>
+              <Button variant="ghost" size="sm" className="h-8 w-full justify-start gap-1.5 px-2 font-normal text-muted-foreground hover:text-foreground" onClick={() => toggleSchema(schemaName)}>{isOpen ? <ChevronDown className="size-3"/> : <ChevronRight className="size-3"/>}<Database className="size-3.5"/><span className="truncate text-xs font-medium">{schemaName}</span><span className="ml-auto text-[9px] tabular-nums opacity-60">{tables.length}</span></Button>
               {isOpen ? <div className="relative ml-[15px] border-l border-border/70 pl-1.5">
                 {tables.map((table) => {
                   const id = `${table.schema}.${table.name}`
-                  return <Button key={id} variant="ghost" size="sm" className={cn("relative h-7 w-full justify-start gap-2 px-2 font-normal text-muted-foreground", selectedTable === id && "bg-accent text-accent-foreground")} onClick={() => onSelectTable(table)}>{table.kind === "view" ? <Eye className="size-3.5 text-sky-400"/> : <Table2 className="size-3.5 text-muted-foreground"/>}<span className="truncate text-xs">{table.name}</span>{table.rowCount != null ? <span className="ml-auto font-mono text-[9px] opacity-55">{compactCount(table.rowCount)}</span> : null}</Button>
+                  return <Button key={id} variant="ghost" size="sm" className={cn("relative h-8 w-full justify-start gap-2 px-2 font-normal text-muted-foreground", selectedTable === id && "bg-accent text-accent-foreground before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-primary")} onClick={() => onSelectTable(table)}>{table.kind === "view" ? <Eye className="size-3.5 text-relationship"/> : <Table2 className={cn("size-3.5", selectedTable === id ? "text-primary" : "text-muted-foreground")}/>}<span className="truncate text-xs">{table.name}</span>{table.rowCount != null ? <span className="ml-auto text-[9px] tabular-nums opacity-55">{compactCount(table.rowCount)}</span> : null}</Button>
                 })}
               </div> : null}
             </div>
           })}
-          {grouped.length === 0 ? <div className="mx-2 mt-6 rounded-lg border border-dashed border-border px-3 py-6 text-center"><FileCode2 className="mx-auto mb-2 size-5 text-muted-foreground"/><p className="text-xs text-muted-foreground">No matching tables</p></div> : null}
+          {grouped.length === 0 ? <Empty className="mx-2 mt-6 rounded-lg border border-dashed border-border py-6"><EmptyHeader><EmptyMedia variant="plain"><FileCode2 className="size-5"/></EmptyMedia><EmptyDescription>No matching tables</EmptyDescription></EmptyHeader></Empty> : null}
         </div>
       </ScrollArea>
 
       <Separator />
-      <div className="grid gap-1 p-3 text-[10px] text-muted-foreground"><div className="flex justify-between"><span>{schema.tables.length} objects</span><span>{schema.tables.reduce((total, table) => total + table.columns.length, 0)} columns</span></div><div className="truncate font-mono opacity-70">{connection.detail}</div></div>
+      <div className="grid gap-1.5 p-3 text-[9px] text-muted-foreground"><div className="flex justify-between tabular-nums"><span>{schema.tables.length} objects</span><span>{schema.tables.reduce((total, table) => total + table.columns.length, 0)} columns</span></div><div className="truncate opacity-65">{connection.detail}</div></div>
     </aside>
   )
 }

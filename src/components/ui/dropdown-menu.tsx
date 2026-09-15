@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { Check, ChevronRight } from "lucide-react"
+import { Check, ChevronRight } from "@/components/ui/animated-icons"
 import { cn } from "@/lib/utils"
 
 const DropdownMenu = DropdownMenuPrimitive.Root
@@ -9,7 +9,7 @@ const DropdownMenuGroup = DropdownMenuPrimitive.Group
 const DropdownMenuSub = DropdownMenuPrimitive.Sub
 
 function DropdownMenuContent({ className, sideOffset = 6, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
-  return <DropdownMenuPrimitive.Portal><DropdownMenuPrimitive.Content sideOffset={sideOffset} className={cn("z-50 min-w-44 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-xl", className)} {...props} /></DropdownMenuPrimitive.Portal>
+  return <DropdownMenuPrimitive.Portal><DropdownMenuPrimitive.Content sideOffset={sideOffset} className={cn("z-50 min-w-44 overflow-hidden rounded-xl border border-border/80 bg-popover p-1 text-popover-foreground shadow-[0_0_0_1px_rgb(0_0_0/0.025),0_8px_24px_-8px_rgb(0_0_0/0.22),0_18px_48px_-18px_rgb(0_0_0/0.18)]", className)} {...props} /></DropdownMenuPrimitive.Portal>
 }
 function DropdownMenuItem({ className, inset, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & { inset?: boolean }) {
   return <DropdownMenuPrimitive.Item className={cn("relative flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50", inset && "pl-8", className)} {...props} />

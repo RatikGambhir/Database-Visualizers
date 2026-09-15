@@ -6,6 +6,6 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) { r
 function TableBody({ className, ...props }: React.ComponentProps<"tbody">) { return <tbody className={cn("[&_tr:last-child]:border-0", className)} {...props} /> }
 function TableRow({ className, ...props }: React.ComponentProps<"tr">) { return <tr className={cn("border-b border-border/65 transition-colors hover:bg-muted/35 data-[state=selected]:bg-muted", className)} {...props} /> }
 function TableHead({ className, ...props }: React.ComponentProps<"th">) { return <th className={cn("h-9 px-3 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground", className)} {...props} /> }
-function TableCell({ className, ...props }: React.ComponentProps<"td">) { return <td className={cn("h-9 max-w-72 truncate px-3 align-middle font-mono text-xs", className)} {...props} /> }
+function TableCell({ className, ...props }: React.ComponentProps<"td">) { return <td className={cn("h-9 max-w-72 truncate px-3 align-middle text-xs tabular-nums", className)} {...props} /> }
 
 export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell }

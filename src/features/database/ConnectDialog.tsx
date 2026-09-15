@@ -1,15 +1,16 @@
-import { useMemo, useState } from "react"
-import { Database, FileCode2, FileStack, LoaderCircle, Server, ShieldCheck } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
+import { FileCode2, FileStack, Globe2, HardDrive, Server, ShieldCheck } from "@/components/ui/animated-icons"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { chooseDatabaseFile, chooseSqlFile, connectDatabase, importSqlFile } from "@/lib/database-api"
-import type { ConnectionInput, DatabaseKind, DatabaseSchema, ConnectionProfile } from "@/lib/types"
-import { cn } from "@/lib/utils"
+import type { ConnectionInput, DatabaseSchema, ConnectionProfile } from "@/lib/types"
 
 type ConnectResult = { connection: ConnectionProfile; schema: DatabaseSchema }
 
@@ -19,25 +20,26 @@ interface ConnectDialogProps {
   onConnected: (result: ConnectResult) => void
 }
 
-const options: Array<{ kind: Exclude<DatabaseKind, "sample" | "sql-file">; label: string; detail: string; icon: typeof Database }> = [
-  { kind: "sqlite", label: "SQLite", detail: "Open a local .db file", icon: FileStack },
-  { kind: "postgres", label: "PostgreSQL", detail: "Local, container, or hosted", icon: Database },
-  { kind: "mysql", label: "MySQL", detail: "MySQL or MariaDB URL", icon: Server },
-]
+const options = [
+  { source: "sqlite", label: "SQLite", detail: "Open a database file", icon: FileStack },
+  { source: "server", label: "Other database", detail: "Connect with a server URL", icon: Server },
+] as const
 
-const placeholders = {
-  sqlite: "Choose a local database file",
-  postgres: "postgresql://user:password@localhost:5432/database",
-  mysql: "mysql://user:password@localhost:3306/database",
-}
+const serverLocations = [
+  { value: "local", label: "Local", detail: "Running on this machine", icon: HardDrive },
+  { value: "remote", label: "Remote", detail: "Hosted on another server", icon: Globe2 },
+] as const
+
+type ConnectionSource = typeof options[number]["source"]
+type ServerLocation = typeof serverLocations[number]["value"]
 
 export function ConnectDialog({ open, onOpenChange, onConnected }: ConnectDialogProps) {
-  const [kind, setKind] = useState<"sqlite" | "postgres" | "mysql">("sqlite")
+  const [source, setSource] = useState<ConnectionSource>("sqlite")
+  const [serverLocation, setServerLocation] = useState<ServerLocation>("local")
   const [name, setName] = useState("")
   const [location, setLocation] = useState("")
   const [readOnly, setReadOnly] = useState(true)
   const [pending, setPending] = useState(false)
-  const selected = useMemo(() => options.find((option) => option.kind === kind)!, [kind])
 
   const chooseFile = async () => {
     const path = await chooseDatabaseFile()
@@ -51,9 +53,14 @@ export function ConnectDialog({ open, onOpenChange, onConnected }: ConnectDialog
 
   const submit = async () => {
     if (!name.trim() || !location.trim()) return
+    const kind = source === "sqlite" ? "sqlite" : inferServerKind(location)
+    if (!kind) {
+      toast.error("Use a PostgreSQL or MySQL connection URL, beginning with postgresql://, postgres://, or mysql://.")
+      return
+    }
     setPending(true)
     try {
-      const config: ConnectionInput = { name: name.trim(), kind, readOnly, ...(kind === "sqlite" ? { path: location.trim() } : { url: location.trim() }) }
+      const config: ConnectionInput = { name: name.trim(), kind, readOnly, ...(source === "sqlite" ? { path: location.trim() } : { url: location.trim() }) }
       const result = await connectDatabase(config)
       onConnected(result)
       toast.success(`Connected to ${result.connection.name}`)
@@ -95,46 +102,60 @@ export function ConnectDialog({ open, onOpenChange, onConnected }: ConnectDialog
         </DialogHeader>
 
         <div className="grid gap-5 p-6">
-          <Tabs value={kind} onValueChange={(value) => { setKind(value as typeof kind); setLocation("") }}>
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-muted/55 p-1">
-              {options.map((option) => <TabsTrigger key={option.kind} value={option.kind} className="h-14 flex-col items-start gap-0.5 px-3 text-left"><span className="flex w-full items-center gap-2 text-sm"><option.icon className="size-3.5" />{option.label}</span><span className="w-full font-normal text-muted-foreground">{option.detail}</span></TabsTrigger>)}
+          <Tabs value={source} onValueChange={(value) => { setSource(value as ConnectionSource); setLocation("") }}>
+            <TabsList className="grid h-auto w-full grid-cols-2 gap-1 bg-muted/55 p-1">
+              {options.map((option) => <TabsTrigger key={option.source} value={option.source} className="h-14 flex-col items-start gap-0.5 px-3 text-left"><span className="flex w-full items-center gap-2 text-sm"><option.icon className="size-3.5" />{option.label}</span><span className="w-full font-normal text-muted-foreground">{option.detail}</span></TabsTrigger>)}
             </TabsList>
           </Tabs>
 
+          {source === "server" ? <div className="grid gap-2">
+            <FieldLabel>Server location</FieldLabel>
+            <ButtonGroup className="grid w-full grid-cols-2" aria-label="Server location">
+              {serverLocations.map((option) => <Button key={option.value} type="button" variant={serverLocation === option.value ? "secondary" : "outline"} aria-pressed={serverLocation === option.value} onClick={() => { setServerLocation(option.value); setLocation("") }} className="h-auto justify-start gap-3 p-3 text-left"><span className="grid size-8 shrink-0 place-items-center rounded-md border border-border bg-background"><option.icon className={serverLocation === option.value ? "text-primary" : "text-muted-foreground"}/></span><span><span className="block text-xs font-semibold">{option.label}</span><span className="mt-0.5 block text-[10px] font-normal text-muted-foreground">{option.detail}</span></span></Button>)}
+            </ButtonGroup>
+          </div> : null}
+
           <div className="grid grid-cols-[1fr_180px] gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="connection-name">Connection name</Label>
-              <Input id="connection-name" value={name} onChange={(event) => setName(event.target.value)} placeholder={selected.label + " workspace"} autoFocus />
-            </div>
-            <div className="grid gap-2">
-              <Label>Mode</Label>
-              <div className="flex h-9 rounded-md border border-input bg-background p-0.5">
-                <Button type="button" variant={readOnly ? "secondary" : "ghost"} size="sm" className="h-7 flex-1" onClick={() => setReadOnly(true)}>Read only</Button>
-                <Button type="button" variant={!readOnly ? "secondary" : "ghost"} size="sm" className="h-7 flex-1" onClick={() => setReadOnly(false)}>Editable</Button>
-              </div>
-            </div>
+            <Field>
+              <FieldLabel htmlFor="connection-name">Connection name</FieldLabel>
+              <Input id="connection-name" value={name} onChange={(event) => setName(event.target.value)} placeholder={source === "sqlite" ? "Local workspace…" : `${serverLocation === "local" ? "Local" : "Remote"} database…`} autoFocus />
+            </Field>
+            <Field>
+              <FieldLabel>Mode</FieldLabel>
+              <ButtonGroup className="w-full" aria-label="Connection mode">
+                <Button type="button" variant={readOnly ? "secondary" : "outline"} size="sm" className="flex-1" aria-pressed={readOnly} onClick={() => setReadOnly(true)}>Read only</Button>
+                <Button type="button" variant={!readOnly ? "secondary" : "outline"} size="sm" className="flex-1" aria-pressed={!readOnly} onClick={() => setReadOnly(false)}>Editable</Button>
+              </ButtonGroup>
+            </Field>
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="connection-location">{kind === "sqlite" ? "Database file" : "Connection URL"}</Label>
+          <Field>
+            <FieldLabel htmlFor="connection-location">{source === "sqlite" ? "Database file" : "Connection URL"}</FieldLabel>
             <div className="flex gap-2">
-              <Input id="connection-location" type={kind === "sqlite" ? "text" : "password"} value={location} onChange={(event) => setLocation(event.target.value)} placeholder={placeholders[kind]} onKeyDown={(event) => { if (event.key === "Enter") void submit() }} />
-              {kind === "sqlite" ? <Button type="button" variant="outline" onClick={() => void chooseFile()}>Browse…</Button> : null}
+              <Input id="connection-location" type={source === "sqlite" ? "text" : "password"} value={location} onChange={(event) => setLocation(event.target.value)} placeholder={source === "sqlite" ? "Choose a local database file…" : serverLocation === "local" ? "postgresql://user:password@localhost:5432/database" : "postgresql://user:password@db.example.com:5432/database"} spellCheck={false} autoCapitalize="none" autoComplete="off" onKeyDown={(event) => { if (event.key === "Enter") void submit() }} />
+              {source === "sqlite" ? <Button type="button" variant="outline" onClick={() => void chooseFile()}>Browse…</Button> : null}
             </div>
-            <p className="text-[11px] leading-relaxed text-muted-foreground">{kind === "sqlite" ? "The file is opened directly by the native process. WAL and foreign keys are supported." : "Supports SSL parameters provided by your database URL. Passwords are never saved to localStorage."}</p>
-          </div>
+            <FieldDescription>{source === "sqlite" ? "The native process opens the file directly. WAL and foreign keys are supported." : <>The database driver is inferred from the URL. PostgreSQL, MySQL, and compatible servers are supported; credentials stay out of browser storage.</>}</FieldDescription>
+          </Field>
 
-          <button type="button" onClick={() => void importSql()} className={cn("group flex items-center gap-3 rounded-lg border border-dashed border-border bg-muted/20 p-3 text-left transition hover:border-primary/50 hover:bg-primary/5", pending && "pointer-events-none opacity-50")}>
+          <Button type="button" variant="outline" disabled={pending} onClick={() => void importSql()} className="group h-auto justify-start gap-3 border-dashed bg-muted/20 p-3 text-left hover:border-primary/50 hover:bg-primary/5">
             <span className="grid size-9 place-items-center rounded-md border border-border bg-background"><FileCode2 className="size-4 text-muted-foreground" /></span>
-            <span className="grid gap-0.5"><span className="text-sm font-medium">Import a SQL schema file</span><span className="text-xs text-muted-foreground">Parse DDL without needing a running database</span></span>
-          </button>
+            <span className="grid gap-0.5"><span className="text-sm font-medium">Import a SQL schema file</span><span className="text-xs font-normal text-muted-foreground">Parse DDL without needing a running database</span></span>
+          </Button>
         </div>
 
         <DialogFooter className="border-t border-border bg-muted/20 px-6 py-4">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => void submit()} disabled={pending || !name.trim() || !location.trim()}>{pending ? <LoaderCircle className="animate-spin" /> : null}Connect</Button>
+          <Button onClick={() => void submit()} disabled={pending || !name.trim() || !location.trim()}>{pending ? <Spinner className="text-current" /> : null}Connect</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
+}
+
+function inferServerKind(url: string): "postgres" | "mysql" | null {
+  const scheme = url.trim().match(/^([a-z][a-z\d+.-]*):\/\//i)?.[1]?.toLowerCase()
+  if (scheme === "postgres" || scheme === "postgresql") return "postgres"
+  if (scheme === "mysql") return "mysql"
+  return null
 }
