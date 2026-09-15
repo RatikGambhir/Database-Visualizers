@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  --font-sans: 'Inter Variable', sans-serif;
+  --font-heading: var(--font-sans);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--secondary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--secondary);
+  --color-accent-foreground: var(--foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+}
+:root {
+  color-scheme: dark;
+  --background: #090909;
+  --foreground: #eeedef;
+  --card: #1b1714;
+  --primary: #f6f4f2;
+  --primary-foreground: #141210;
+  --secondary: #30251e;
+  --muted-foreground: #b2a5a0;
+  --destructive: #f29287;
+  --border: #292929;
+  --input: #ffffff24;
+  --ring: #cf9d6d;
+  --headline-end: #aaa9b2;
+  --ember: #aa6632;
+  --horizon-edge: #bf9463;
+  --download-white: #fff;
+  --download-glow: #ffffff40;
+}
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { @apply font-sans; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; @apply bg-background text-foreground; }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
+  ::selection { background: #a5683c80; color: var(--foreground); }
+}
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: max(760px, calc(100svh - 8px));
+  margin: 4px 6px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  background: var(--background);
+}
+.hero-content { position: relative; z-index: 2; padding: clamp(224px, 33svh, 360px) 24px clamp(120px, 18svh, 176px); text-align: center; }
+h1 {
+  margin: 0 auto;
+  max-width: 1200px;
+  font-size: clamp(52px, 5vw, 96px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  background: linear-gradient(110deg, var(--foreground) 5%, var(--headline-end) 96%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+}
+h1 span { display: block; }
+.hero-description { margin: 48px auto 0; max-width: 720px; color: var(--muted-foreground); font-size: 20px; font-weight: 500; line-height: 28px; text-wrap: pretty; }
+.download-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 40px auto 0;
+}
+.download-button {
+  min-height: 52px;
+  padding: 0 24px;
+  border: 1px solid var(--download-white);
+  border-radius: 10px;
+  background: var(--download-white);
+  color: var(--primary-foreground);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 0 20px var(--download-glow), 0 0 56px #ffffff14;
+  transition: transform 150ms, opacity 150ms;
+}
+.download-button:hover { background: var(--download-white); transform: translateY(-2px); }
+.download-button:active { transform: scale(.98); }
+.download-button:disabled { opacity: 1; }
+.download-button:focus-visible { outline: 2px solid var(--download-white); outline-offset: 5px; }
+/* CSS geometry keeps the reference's horizon crisp at every screen size. */
+.atmosphere { position: absolute; z-index: -2; inset: 0; background: radial-gradient(ellipse 46% 65% at 50% 94%, #ba773bd9 0%, #a46030a6 24%, #79472270 47%, #4a2b172e 70%, transparent 94%); }
+.horizon {
+  position: absolute;
+  z-index: -1;
+  top: 78.8%;
+  left: 50%;
+  width: 166%;
+  height: 207%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border-top: 4px solid color-mix(in srgb, var(--horizon-edge) 74%, transparent);
+  background: radial-gradient(ellipse 45% 11% at 50% 0%, #8d6a4de0, #513720 40%, #211812 74%, var(--background) 100%);
+  box-shadow: 0 -4px 18px #d59b5659, 0 -16px 54px #c4843c38;
+}
+@media (min-width: 1800px) { .hero-content { padding-top: 316px; } }
+@media (max-width: 767px) {
+  .hero { min-height: max(720px, calc(100svh - 8px)); border-radius: 20px; }
+  .hero-content { padding: 224px 24px 140px; }
+  h1 { font-size: clamp(38px, 7.4vw, 56px); line-height: 1.16; letter-spacing: -.035em; }
+  .hero-description { margin-top: 32px; max-width: 440px; font-size: 16px; line-height: 25px; }
+  .desktop-break { display: none; }
+  .download-actions { flex-direction: column; gap: 12px; max-width: 360px; margin-top: 32px; }
+  .download-button { width: 100%; padding-inline: 16px; }
+  .atmosphere { background: radial-gradient(ellipse 85% 57% at 50% 93%, #aa6632c9, #79472270 46%, transparent 95%); }
+  .horizon { width: 240%; height: 100%; top: 85%; }
+}
+@media (max-width: 420px) {
+  .hero-content { padding-inline: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .download-button:hover, .download-button:active { transform: none; }
+}
