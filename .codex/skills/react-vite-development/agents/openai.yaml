@@ -1,0 +1,4 @@
+interface:
+  display_name: "React + Vite Development"
+  short_description: "Build and verify the Tuple React/Vite frontend"
+  default_prompt: "Use the project React/Vite architecture to implement and verify this frontend change."

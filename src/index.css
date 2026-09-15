@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --background: oklch(0.982 0.002 275);
+  --foreground: oklch(0.205 0.008 275);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.205 0.008 275);
+  --popover: oklch(0.995 0.002 275);
+  --popover-foreground: oklch(0.205 0.008 275);
+  --primary: oklch(0.56 0.18 277);
+  --primary-foreground: oklch(0.985 0.005 275);
+  --secondary: oklch(0.945 0.004 275);
+  --secondary-foreground: oklch(0.28 0.01 275);
+  --muted: oklch(0.955 0.004 275);
+  --muted-foreground: oklch(0.5 0.012 275);
+  --accent: oklch(0.93 0.018 277);
+  --accent-foreground: oklch(0.31 0.08 277);
+  --destructive: oklch(0.61 0.22 27);
+  --border: oklch(0.89 0.006 275);
+  --input: oklch(0.86 0.008 275);
+  --ring: oklch(0.56 0.18 277);
+  --sidebar: oklch(0.96 0.004 275);
+  --sidebar-foreground: oklch(0.26 0.01 275);
+  --canvas: oklch(0.972 0.003 275);
+  --canvas-dot: oklch(0.77 0.008 275);
+  --edge: oklch(0.57 0.035 277);
+  --editor: oklch(0.99 0.002 275);
+  --radius: 7px;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.145 0.008 275);
+  --foreground: oklch(0.925 0.006 275);
+  --card: oklch(0.185 0.009 275);
+  --card-foreground: oklch(0.925 0.006 275);
+  --popover: oklch(0.175 0.009 275);
+  --popover-foreground: oklch(0.925 0.006 275);
+  --primary: oklch(0.68 0.16 277);
+  --primary-foreground: oklch(0.985 0.005 275);
+  --secondary: oklch(0.235 0.01 275);
+  --secondary-foreground: oklch(0.94 0.005 275);
+  --muted: oklch(0.225 0.009 275);
+  --muted-foreground: oklch(0.66 0.012 275);
+  --accent: oklch(0.26 0.035 277);
+  --accent-foreground: oklch(0.94 0.01 275);
+  --destructive: oklch(0.64 0.21 25);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.72 0.17 55);
+  --sidebar: oklch(0.165 0.008 275);
+  --sidebar-foreground: oklch(0.91 0.006 275);
+  --canvas: oklch(0.125 0.007 275);
+  --canvas-dot: oklch(0.34 0.01 275);
+  --edge: oklch(0.58 0.06 277);
+  --editor: oklch(0.13 0.007 275);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-canvas: var(--canvas);
+  --color-editor: var(--editor);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* { border-color: var(--border); box-sizing: border-box; }
+html, body, #root { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+body { background: var(--background); color: var(--foreground); font-family: var(--font-sans); font-synthesis: none; text-rendering: geometricPrecision; }
+button, input, textarea { font: inherit; }
+button { cursor: default; }
+::selection { background: color-mix(in oklab, var(--primary) 35%, transparent); }
+
+.app-drag { -webkit-app-region: drag; }
+.no-drag { -webkit-app-region: no-drag; }
+.logo-mark { position: relative; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 6px; background: var(--primary); box-shadow: inset 0 0 0 1px oklch(1 0 0 / 13%); }
+.logo-mark span { position: absolute; width: 11px; height: 4px; border: 1.5px solid var(--primary-foreground); border-radius: 50%; }
+.logo-mark span:nth-child(1) { top: 5px; }
+.logo-mark span:nth-child(2) { top: 8px; }
+.logo-mark span:nth-child(3) { top: 11px; }
+kbd { font-family: var(--font-mono); }
+
+.editor-shell { display: grid; grid-template-columns: 42px minmax(0, 1fr); overflow: hidden; }
+.editor-gutter { display: flex; flex-direction: column; align-items: flex-end; overflow: hidden; border-right: 1px solid var(--border); padding: 12px 10px 12px 0; color: var(--muted-foreground); font: 10px/24px var(--font-mono); user-select: none; opacity: .55; }
+.query-loader { width: 22px; height: 22px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 999px; animation: spin .75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.react-flow__node { cursor: default; }
+.react-flow__pane { cursor: grab; }
+.react-flow__pane.dragging { cursor: grabbing; }
+.react-flow__edge-path { transition: stroke .15s ease, stroke-width .15s ease; }
+.react-flow__edge:hover .react-flow__edge-path { stroke: var(--primary) !important; stroke-width: 2px !important; }
+.react-flow__minimap-mask { fill: color-mix(in oklab, var(--background) 76%, transparent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

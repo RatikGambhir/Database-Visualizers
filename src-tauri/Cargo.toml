@@ -1,0 +1,33 @@
+[package]
+name = "tuple"
+version = "0.1.0"
+description = "A native relational database explorer and visualizer"
+authors = ["Ratik Gambhir"]
+edition = "2021"
+
+[lib]
+name = "tuple_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+base64 = "0.22"
+chrono = { version = "0.4", features = ["serde"] }
+futures-util = "0.3"
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "sqlite", "postgres", "mysql", "chrono", "uuid", "json", "bigdecimal"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tokio = { version = "1", features = ["sync", "macros", "rt-multi-thread"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
