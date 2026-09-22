@@ -1,6 +1,6 @@
-# Database Visualizer
+# Database Visualizer download site
 
-Astro + React + Tailwind CSS v4 + official shadcn/ui primitives. Recreates the supplied landing-page reference with locally served fonts and a CSS horizon.
+This is the landing page for distributing macOS database visualizer applications. It is built with Astro, React, Tailwind CSS v4, and shadcn/ui primitives. The site will provide downloads for published application binaries; the database workspace itself lives in the desktop apps.
 
 ## Run
 
@@ -23,11 +23,11 @@ npm run preview
 
 ## Source
 
-- `src/pages/index.astro`: page, reference copy, metadata.
+- `src/pages/index.astro`: landing page and metadata.
 - `src/styles/global.css`: tokens, responsive layout, atmosphere.
 - `src/components/download-buttons.tsx`: glowing shadcn download buttons.
 - `src/components/ui/`: official shadcn primitives.
 
-The macOS download buttons are intentionally disabled until official release URLs are available. No signup backend or database workspace is connected.
+The macOS download buttons are currently disabled until official release URLs are available. No installer binaries, signup backend, or database workspace are included in this site yet.
 
 Setup follows the official [Astro guide](https://docs.astro.build/en/install-and-setup/) and [shadcn Astro guide](https://ui.shadcn.com/docs/installation/astro).
