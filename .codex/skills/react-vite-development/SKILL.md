@@ -1,9 +1,9 @@
 ---
 name: react-vite-development
-description: Build, refactor, debug, test, or review the Tuple React/Vite frontend. Use for workspace routes, database UI features, shadcn components, Tauri command clients, Tailwind styling, accessibility, performance, and frontend verification. Do not use as the primary guide for Rust code under src-tauri.
+description: Build, refactor, debug, test, or review the Tablescape React/Vite frontend. Use for workspace routes, database UI features, shadcn components, Tauri command clients, Tailwind styling, accessibility, performance, and frontend verification. Do not use as the primary guide for Rust code under src-tauri.
 ---
 
-# Tuple React + Vite development
+# Tablescape React + Vite development
 
 Work within the existing desktop-first React architecture. Before editing, inspect `package.json`, `vite.config.ts`, the TypeScript and lint configs, the relevant feature code, and `git status`. Preserve unrelated work.
 
