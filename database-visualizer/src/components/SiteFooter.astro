@@ -1,0 +1,36 @@
+---
+import Logo from './Logo.astro';
+import { apps } from '@/data/apps';
+---
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <Logo />
+      <p>Local-first desktop apps for macOS, built with Tauri and Rust. They connect to your databases directly from your Mac.</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        {apps.map((app) => <li><a href={`#${app.id}`}>{app.name}</a></li>)}
+        <li><a href="#sources">Sources</a></li>
+        <li><a href="#download">Download</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--line); }
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-block: var(--space-7) var(--space-8);
+  }
+  .site-footer__brand { display: grid; gap: var(--space-3); max-width: 26rem; }
+  .site-footer__brand p { margin: 0; color: var(--fg-subtle); font-size: var(--text-sm); line-height: 1.55; }
+  ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: 0; padding: 0; list-style: none; }
+  a { color: var(--fg-muted); font-size: var(--text-sm); text-decoration: none; transition: color var(--dur-fast) var(--ease-out); }
+  a:hover { color: var(--fg); }
+</style>

@@ -1,0 +1,125 @@
+---
+// The same commerce data as a HelixDB graph, drawn the way Helix Visualizer shows it:
+// per-label colour, neighbourhood focus on one node, and the inspector for that node.
+type Label = 'Customer' | 'Order' | 'Product';
+const radius: Record<Label, number> = { Customer: 10, Order: 7, Product: 8 };
+
+const nodes: Record<string, { label: Label; text: string; x: number; y: number }> = {
+  alan: { label: 'Customer', text: 'Alan', x: 300, y: 86 },
+  ada: { label: 'Customer', text: 'Ada', x: 230, y: 270 },
+  grace: { label: 'Customer', text: 'Grace', x: 150, y: 440 },
+  o1042: { label: 'Order', text: '#1042', x: 440, y: 120 },
+  o1043: { label: 'Order', text: '#1043', x: 420, y: 300 },
+  o1047: { label: 'Order', text: '#1047', x: 300, y: 410 },
+  o1051: { label: 'Order', text: '#1051', x: 370, y: 480 },
+  mug: { label: 'Product', text: 'Mug', x: 650, y: 70 },
+  lamp: { label: 'Product', text: 'Desk lamp', x: 610, y: 200 },
+  notebook: { label: 'Product', text: 'Notebook', x: 620, y: 360 },
+  pens: { label: 'Product', text: 'Pen set', x: 580, y: 470 },
+};
+
+const edges: [from: string, to: string, type: 'PLACED' | 'CONTAINS'][] = [
+  ['alan', 'o1042', 'PLACED'], ['ada', 'o1043', 'PLACED'], ['grace', 'o1047', 'PLACED'], ['grace', 'o1051', 'PLACED'],
+  ['o1042', 'mug', 'CONTAINS'], ['o1042', 'lamp', 'CONTAINS'], ['o1043', 'lamp', 'CONTAINS'], ['o1043', 'notebook', 'CONTAINS'],
+  ['o1047', 'notebook', 'CONTAINS'], ['o1051', 'pens', 'CONTAINS'], ['o1051', 'notebook', 'CONTAINS'],
+];
+
+const focus = 'o1043';
+const isLit = (from: string, to: string) => from === focus || to === focus;
+const neighbours = new Set(edges.filter(([a, b]) => isLit(a, b)).flatMap(([a, b]) => [a, b]));
+
+// Stop each edge short of both nodes so the arrowhead lands on the target's rim.
+const segment = (from: string, to: string) => {
+  const a = nodes[from], b = nodes[to];
+  const len = Math.hypot(b.x - a.x, b.y - a.y);
+  const ux = (b.x - a.x) / len, uy = (b.y - a.y) / len;
+  const start = radius[a.label] + 3, end = radius[b.label] + 4;
+  return { x1: a.x + ux * start, y1: a.y + uy * start, x2: b.x - ux * end, y2: b.y - uy * end, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+};
+const legend: Label[] = ['Customer', 'Order', 'Product'];
+---
+<svg class="graph" viewBox="0 0 784 510" role="img" aria-label="Graph of customers, orders and products. Order #1043 is focused: placed by Ada, containing a desk lamp and a notebook.">
+  <defs>
+    <marker id="arrow-dim" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0.5 7 4 0 7.5Z" fill="var(--line-strong)" />
+    </marker>
+    <marker id="arrow-lit" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0.5 7 4 0 7.5Z" fill="var(--steel)" />
+    </marker>
+  </defs>
+
+  {edges.map(([from, to]) => {
+    const s = segment(from, to);
+    const lit = isLit(from, to);
+    return <line class:list={['g-edge', { 'is-lit': lit }]} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} marker-end={`url(#arrow-${lit ? 'lit' : 'dim'})`} />;
+  })}
+
+  {edges.filter(([a, b]) => isLit(a, b)).map(([from, to, type]) => {
+    const s = segment(from, to);
+    return <text class="g-edge-label" x={s.mx} y={s.my - 6} text-anchor="middle">{type}</text>;
+  })}
+
+  {Object.entries(nodes).map(([id, n], i) => (
+    <g class:list={['g-node', `is-${n.label.toLowerCase()}`, { 'is-dim': !neighbours.has(id), 'is-focus': id === focus }]} style={`--i:${i}`}>
+      {id === focus && <circle class="g-ring" cx={n.x} cy={n.y} r={radius[n.label] + 6} />}
+      <circle cx={n.x} cy={n.y} r={radius[n.label]} />
+      <text x={n.x + radius[n.label] + (id === focus ? 12 : 7)} y={n.y + 4}>{n.text}</text>
+    </g>
+  ))}
+
+  <g class="g-inspector">
+    <rect x="24" y="24" width="188" height="130" rx="6" />
+    <circle cx="42" cy="46" r="5" class="is-order-dot" />
+    <text class="g-insp-title" x="54" y="50">Order #1043</text>
+    <path d="M24 64h188" class="g-insp-rule" />
+    {[['status', 'shipped'], ['total', '84.00'], ['in / out', '1 / 2']].map(([k, v], r) => (
+      <>
+        <text class="g-insp-key" x="40" y={88 + r * 22}>{k}</text>
+        <text class="g-insp-val" x="196" y={88 + r * 22} text-anchor="end">{v}</text>
+      </>
+    ))}
+  </g>
+
+  <g class="g-legend">
+    {legend.map((label, i) => (
+      <g transform={`translate(${28 + i * 104} 492)`}>
+        <circle r="5" cy="-4" class={`is-${label.toLowerCase()}-dot`} />
+        <text x="12">{label}</text>
+      </g>
+    ))}
+  </g>
+</svg>
+
+<style>
+  .graph { display: block; width: 100%; height: auto; font-family: var(--font-code); }
+
+  .g-edge { stroke: var(--line-strong); stroke-width: 1.25; }
+  .g-edge.is-lit { stroke: var(--steel); stroke-width: 1.5; }
+  .g-edge-label {
+    fill: var(--steel);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    paint-order: stroke;
+    stroke: var(--canvas);
+    stroke-width: 5px;
+  }
+
+  .g-node text { fill: var(--fg-muted); font-size: 12px; }
+  .g-node.is-focus text { fill: var(--fg); font-weight: 500; }
+  .g-node.is-dim { opacity: 0.38; }
+  .is-customer circle, .is-customer-dot { fill: var(--amber); }
+  .is-order circle, .is-order-dot { fill: var(--steel); }
+  .is-product circle, .is-product-dot { fill: var(--sage); }
+  .g-node .g-ring { fill: none; stroke: var(--steel); stroke-width: 1.5; stroke-dasharray: 3 3; }
+
+  .g-inspector rect { fill: var(--surface); stroke: var(--line-strong); }
+  .g-insp-rule { stroke: var(--line-strong); }
+  .g-insp-title { fill: var(--fg); font-size: 12.5px; font-weight: 500; }
+  .g-insp-key { fill: var(--fg-subtle); font-size: 11px; }
+  .g-insp-val { fill: var(--fg-muted); font-size: 11.5px; }
+  .g-legend text { fill: var(--fg-subtle); font-size: 11px; }
+
+  @media (max-width: 639px) {
+    .g-inspector, .g-legend { display: none; }
+  }
+</style>

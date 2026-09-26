@@ -1,0 +1,72 @@
+---
+import { ShieldCheck, Table2, Waypoints } from 'lucide-react';
+import { DownloadButton } from './download-buttons';
+import type { DesktopApp } from '@/data/apps';
+
+interface Props { app: DesktopApp }
+const { app } = Astro.props;
+const Icon = app.id === 'tablescape' ? Table2 : Waypoints;
+---
+<article class="spec" id={app.id} aria-labelledby={`${app.id}-name`}>
+  <header class="spec-head">
+    <span class="spec-icon" aria-hidden="true"><Icon size={20} strokeWidth={1.75} /></span>
+    <p class="kicker">{app.kicker}</p>
+    <h3 id={`${app.id}-name`}>{app.name}</h3>
+    <p class="spec-summary">{app.summary}</p>
+    <p class="spec-sources"><span class="sr-only">Works with: </span>{app.sources.join(' · ')}</p>
+  </header>
+
+  <dl class="spec-list">
+    {app.features.map(({ term, detail }) => (
+      <div>
+        <dt>{term}</dt>
+        <dd>{detail.split('`').map((part, i) => (i % 2 ? <code>{part}</code> : part))}</dd>
+      </div>
+    ))}
+  </dl>
+
+  <footer class="spec-foot">
+    <p class="spec-note"><ShieldCheck size={16} strokeWidth={1.75} aria-hidden="true" />{app.note}</p>
+    <DownloadButton app={app} />
+  </footer>
+</article>
+
+<style>
+  .spec { display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
+
+  .spec-head { display: grid; gap: var(--space-3); align-content: start; }
+  .spec-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: var(--space-3);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    color: var(--amber);
+  }
+  h3 { margin: 0; font-size: var(--text-xl); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
+  .spec-summary { max-width: 34rem; margin: 0; color: var(--fg-muted); font-size: var(--text-lg); line-height: 1.5; text-wrap: pretty; }
+  .spec-sources { margin: var(--space-1) 0 0; color: var(--steel); font-family: var(--font-code); font-size: var(--text-xs); letter-spacing: 0.02em; }
+
+  .spec-list { margin: 0; border-top: 1px solid var(--line); }
+  .spec-list > div {
+    display: grid;
+    grid-template-columns: minmax(8rem, 10rem) 1fr;
+    gap: var(--space-2) var(--space-5);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+  dt { font-size: var(--text-sm); font-weight: 600; }
+  dd { margin: 0; color: var(--fg-muted); font-size: var(--text-sm); line-height: 1.55; }
+  dd code { color: var(--fg); font-family: var(--font-code); font-size: 0.92em; }
+
+  .spec-foot { display: grid; gap: var(--space-5); justify-items: start; margin-top: auto; }
+  .spec-note { display: flex; gap: var(--space-2); margin: 0; color: var(--fg-subtle); font-size: var(--text-sm); line-height: 1.5; }
+  .spec-note :global(svg) { flex: none; margin-top: 2px; color: var(--steel); }
+
+  @media (max-width: 479px) {
+    .spec-list > div { grid-template-columns: 1fr; }
+    .spec-foot { justify-items: stretch; }
+  }
+</style>

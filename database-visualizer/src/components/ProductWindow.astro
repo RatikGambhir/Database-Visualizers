@@ -1,0 +1,163 @@
+---
+import SchemaDiagram from './SchemaDiagram.astro';
+import GraphDiagram from './GraphDiagram.astro';
+
+const views = [
+  { id: 'tablescape', name: 'Tablescape', status: ['commerce.sqlite', '4 tables · 3 relationships'] },
+  { id: 'helix', name: 'Helix Visualizer', status: ['localhost:6969', '11 nodes · 11 edges'] },
+];
+---
+<figure class="product-window">
+  <div class="window">
+    <div class="window-bar">
+      <span class="window-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div class="window-tabs" role="tablist" aria-label="Preview app">
+        {views.map((v, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`view-tab-${v.id}`}
+            aria-controls={`view-panel-${v.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+          >{v.name}</button>
+        ))}
+      </div>
+    </div>
+    <div class="window-canvas">
+      {views.map((v, i) => (
+        <div
+          class="window-panel"
+          role="tabpanel"
+          id={`view-panel-${v.id}`}
+          aria-labelledby={`view-tab-${v.id}`}
+          data-active={i === 0 ? 'true' : 'false'}
+        >
+          <div class="window-scene">
+            {v.id === 'tablescape' ? <SchemaDiagram /> : <GraphDiagram />}
+          </div>
+          <p class="window-status"><span>{v.status[0]}</span><span>{v.status[1]}</span></p>
+        </div>
+      ))}
+    </div>
+  </div>
+  <figcaption>Same commerce data, two shapes: rows and joins in Tablescape, nodes and traversals in Helix&nbsp;Visualizer.</figcaption>
+</figure>
+
+<script>
+  // WAI-ARIA tabs: click or arrow keys switch the preview.
+  for (const list of document.querySelectorAll<HTMLElement>('.window-tabs')) {
+    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const select = (next: HTMLButtonElement) => {
+      for (const tab of tabs) {
+        const on = tab === next;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        document.getElementById(tab.getAttribute('aria-controls')!)!.dataset.active = String(on);
+      }
+    };
+    list.addEventListener('click', (e) => {
+      const tab = (e.target as Element).closest<HTMLButtonElement>('[role="tab"]');
+      if (tab) select(tab);
+    });
+    list.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(document.activeElement as HTMLButtonElement);
+      if (i < 0) return;
+      const target = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (target === undefined) return;
+      e.preventDefault();
+      const next = tabs[(target + tabs.length) % tabs.length];
+      next.focus();
+      select(next);
+    });
+  }
+</script>
+
+<style>
+  .product-window { margin: 0; min-width: 0; }
+  .window {
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-window);
+    background: var(--canvas);
+    box-shadow: var(--shadow-window);
+  }
+
+  .window-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .window-lights { position: absolute; left: var(--space-4); display: flex; gap: 7px; }
+  .window-lights i { width: 11px; height: 11px; border-radius: 50%; background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line-strong); }
+
+  .window-tabs {
+    display: inline-flex;
+    padding: 2px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--canvas);
+  }
+  [role='tab'] {
+    padding: 0.3125rem var(--space-3);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--fg-subtle);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    line-height: 1.4;
+    transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+  }
+  [role='tab']:hover { color: var(--fg); }
+  [role='tab'][aria-selected='true'] { background: var(--surface-2); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-strong); }
+  [role='tab']:focus-visible { outline-offset: 1px; }
+
+  /* Panels share one grid cell so switching crossfades without a layout jump. */
+  .window-canvas { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .window-panel {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1.2px);
+    background-size: 20px 20px;
+    background-position: 10px 10px;
+    transition: opacity var(--dur) var(--ease-out), visibility var(--dur);
+  }
+  .window-panel[data-active='false'] { visibility: hidden; opacity: 0; }
+  .window-scene { flex: 1; overflow: hidden; padding: var(--space-4) var(--space-3) 0; }
+
+  .window-status {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg-subtle);
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+  }
+
+  figcaption {
+    max-width: 34rem;
+    margin-top: var(--space-4);
+    color: var(--fg-subtle);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+
+  /* On phones the diagram keeps a legible scale and is cropped around its centre. */
+  @media (max-width: 639px) {
+    .window-lights { display: none; }
+    .window-scene { display: flex; justify-content: center; padding-inline: 0; }
+    .window-scene > :global(svg) { flex: none; width: 600px; }
+    .window-status span:first-child { display: none; }
+  }
+</style>

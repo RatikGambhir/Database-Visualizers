@@ -1,0 +1,90 @@
+---
+// A Tablescape-style ER diagram of the commerce sample schema.
+// Hovering a table lights its relationships; `orders` is selected by default.
+type Column = [name: string, type: string, key?: 'PK' | 'FK'];
+interface Table { name: string; x: number; y: number; w: number; columns: Column[] }
+
+const HEAD = 34;
+const ROW = 26;
+const rowBaseline = (i: number) => HEAD + 21 + i * ROW;
+const tableHeight = (t: Table) => HEAD + 12 + t.columns.length * ROW;
+
+const tables: Table[] = [
+  { name: 'customers', x: 28, y: 48, w: 204, columns: [['id', 'int', 'PK'], ['email', 'text'], ['name', 'text'], ['created_at', 'timestamp']] },
+  { name: 'orders', x: 292, y: 196, w: 204, columns: [['id', 'int', 'PK'], ['customer_id', 'int', 'FK'], ['status', 'text'], ['total', 'numeric'], ['placed_at', 'timestamp']] },
+  { name: 'order_items', x: 566, y: 28, w: 190, columns: [['id', 'int', 'PK'], ['order_id', 'int', 'FK'], ['product_id', 'int', 'FK'], ['quantity', 'int']] },
+  { name: 'products', x: 566, y: 330, w: 190, columns: [['id', 'int', 'PK'], ['sku', 'text'], ['name', 'text'], ['price', 'numeric']] },
+];
+
+// `one` marks the referenced primary key, `many` the foreign key (crow's foot).
+const edges = [
+  { joins: 'customers orders', d: 'M232 99 H254 Q262 99 262 107 V265 Q262 273 270 273 H292', one: [240, 99], many: [292, 273] },
+  { joins: 'orders order_items', d: 'M496 247 H514 Q522 247 522 239 V113 Q522 105 530 105 H566', one: [504, 247], many: [566, 105] },
+  { joins: 'products order_items', d: 'M566 381 H552 Q544 381 544 373 V139 Q544 131 552 131 H566', one: [558, 381], many: [566, 131] },
+];
+---
+<svg class="erd" viewBox="0 0 784 510" role="img" aria-label="Schema diagram: customers, orders, order_items and products, joined by three foreign keys.">
+  {edges.map(({ joins, d, one: [ox, oy], many: [mx, my] }, i) => (
+    <g class="edge" data-joins={joins} style={`--i:${i}`}>
+      <path class="edge-line" d={d} pathLength="1" />
+      <path class="edge-mark" d={`M${ox} ${oy - 5}V${oy + 5}M${mx - 10} ${my}L${mx} ${my - 6}M${mx - 10} ${my}L${mx} ${my + 6}`} />
+    </g>
+  ))}
+  {tables.map((t, i) => (
+    <g class="tbl" data-t={t.name} style={`--i:${i}`}>
+      <g transform={`translate(${t.x} ${t.y})`}>
+        <rect class="tbl-body" width={t.w} height={tableHeight(t)} rx="5" />
+        <path class="tbl-head" d={`M0 5a5 5 0 0 1 5-5h${t.w - 10}a5 5 0 0 1 5 5v${HEAD - 5}H0Z`} />
+        <path class="tbl-rule" d={`M0 ${HEAD}h${t.w}`} />
+        <text class="tbl-name" x="12" y="22">{t.name}</text>
+        {t.columns.map(([name, type, key], r) => (
+          <>
+            {key && <text class:list={['col-key', key === 'PK' ? 'is-pk' : 'is-fk']} x="12" y={rowBaseline(r)}>{key}</text>}
+            <text class="col-name" x="36" y={rowBaseline(r)}>{name}</text>
+            <text class="col-type" x={t.w - 12} y={rowBaseline(r)} text-anchor="end">{type}</text>
+          </>
+        ))}
+      </g>
+    </g>
+  ))}
+</svg>
+
+<style>
+  .erd { display: block; width: 100%; height: auto; font-family: var(--font-code); }
+
+  .tbl-body { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+  .tbl-head { fill: var(--surface-2); }
+  .tbl-rule { stroke: var(--line-strong); }
+  .tbl-name { fill: var(--fg); font-size: 13px; font-weight: 500; }
+  .col-name { fill: var(--fg-muted); font-size: 12px; }
+  .col-type { fill: var(--fg-subtle); font-size: 11px; }
+  .col-key { font-size: 9.5px; font-weight: 500; letter-spacing: 0.04em; }
+  .is-pk { fill: var(--amber); }
+  .is-fk { fill: var(--steel); }
+
+  .tbl { cursor: default; }
+  .tbl * { transition: fill var(--dur) var(--ease-out), stroke var(--dur) var(--ease-out); }
+
+  .edge-line, .edge-mark { fill: none; stroke: var(--steel-dim); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur) var(--ease-out); }
+
+  /* Selected table: `orders` until the pointer picks another one. */
+  .erd:not(:has(.tbl:hover)) .tbl[data-t='orders'] .tbl-body,
+  .erd .tbl:hover .tbl-body { stroke: var(--amber); }
+  .erd:not(:has(.tbl:hover)) .tbl[data-t='orders'] .tbl-name,
+  .erd .tbl:hover .tbl-name { fill: var(--amber); }
+
+  .erd:not(:has(.tbl:hover)) .edge[data-joins~='orders'] :is(.edge-line, .edge-mark),
+  .erd:has(.tbl[data-t='customers']:hover) .edge[data-joins~='customers'] :is(.edge-line, .edge-mark),
+  .erd:has(.tbl[data-t='orders']:hover) .edge[data-joins~='orders'] :is(.edge-line, .edge-mark),
+  .erd:has(.tbl[data-t='order_items']:hover) .edge[data-joins~='order_items'] :is(.edge-line, .edge-mark),
+  .erd:has(.tbl[data-t='products']:hover) .edge[data-joins~='products'] :is(.edge-line, .edge-mark) { stroke: var(--steel); }
+
+  /* Entrance: tables settle, then relationships draw between them. */
+  .tbl { animation: tbl-in var(--dur-slow) var(--ease-out) both; animation-delay: calc(400ms + var(--i) * 90ms); }
+  .edge-line { stroke-dasharray: 1; animation: edge-draw 900ms var(--ease-out) both; animation-delay: calc(850ms + var(--i) * 140ms); }
+  .edge-mark { animation: fade-in var(--dur) linear both; animation-delay: calc(1500ms + var(--i) * 140ms); }
+
+  @keyframes tbl-in { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes edge-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes fade-in { from { opacity: 0; } }
+</style>

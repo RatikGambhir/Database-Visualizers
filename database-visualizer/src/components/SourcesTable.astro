@@ -1,0 +1,108 @@
+---
+import { Check, Minus } from 'lucide-react';
+
+type Cell = boolean | string;
+interface Row { source: string; connect: string; visualize: Cell; inspect: Cell; query: Cell }
+
+const groups: { app: string; rows: Row[] }[] = [
+  {
+    app: 'Tablescape',
+    rows: [
+      { source: 'SQLite', connect: 'Local database file', visualize: true, inspect: true, query: true },
+      { source: 'PostgreSQL', connect: 'Connection URL', visualize: true, inspect: true, query: true },
+      { source: 'MySQL / MariaDB', connect: 'Connection URL', visualize: true, inspect: true, query: true },
+      { source: 'SQLite-compatible .sql', connect: 'Local .sql file', visualize: true, inspect: true, query: true },
+      { source: 'Other .sql dialects', connect: 'Local .sql file', visualize: true, inspect: false, query: false },
+    ],
+  },
+  {
+    app: 'Helix Visualizer',
+    rows: [
+      { source: 'HelixDB', connect: 'Local, network or HTTPS URL', visualize: true, inspect: true, query: 'Read-only' },
+    ],
+  },
+];
+const columns = ['Visualize', 'Inspect data', 'Query'] as const;
+---
+<div class="sources-scroll" role="region" aria-labelledby="sources-title" tabindex="0">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Source</th>
+        <th scope="col">Connect with</th>
+        {columns.map((c) => <th scope="col" class="is-center">{c}</th>)}
+      </tr>
+    </thead>
+    {groups.map(({ app, rows }) => (
+      <tbody>
+        <tr class="group-row"><th scope="colgroup" colspan="5"><span>{app}</span></th></tr>
+        {rows.map((row) => (
+          <tr>
+            <th scope="row">{row.source}</th>
+            <td class="is-code">{row.connect}</td>
+            {[row.visualize, row.inspect, row.query].map((cell) => (
+              <td class="is-center">
+                {typeof cell === 'string'
+                  ? <span class="cell-text">{cell}</span>
+                  : cell
+                    ? <><Check className="icon-yes" size={16} strokeWidth={2} aria-hidden="true" /><span class="sr-only">Yes</span></>
+                    : <><Minus className="icon-no" size={16} strokeWidth={2} aria-hidden="true" /><span class="sr-only">No</span></>}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    ))}
+  </table>
+</div>
+
+<style>
+  .sources-scroll {
+    /* Positioned so the visually hidden cell labels stay inside the scroller. */
+    position: relative;
+    overflow-x: auto;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+  .sources-scroll:focus-visible { outline-offset: 2px; }
+
+  table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: var(--text-sm); }
+  th, td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  tbody:last-child tr:last-child > * { border-bottom: 0; }
+
+  thead th {
+    background: var(--surface-2);
+    color: var(--fg-subtle);
+    font-family: var(--font-code);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  tbody th[scope='row'] { font-weight: 500; }
+  .group-row th {
+    padding-top: var(--space-5);
+    color: var(--amber);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  tbody tr:not(.group-row) { transition: background-color var(--dur-fast) var(--ease-out); }
+  tbody tr:not(.group-row):hover { background: oklch(1 0 0 / 2.5%); }
+
+  .is-code { color: var(--fg-muted); font-family: var(--font-code); font-size: var(--text-xs); white-space: normal; }
+  .is-center { width: 6.5rem; text-align: center; }
+  .is-center :global(svg) { display: inline-block; vertical-align: middle; }
+  .is-center :global(.icon-yes) { color: var(--steel); }
+  .is-center :global(.icon-no) { color: var(--fg-subtle); opacity: 0.6; }
+  .cell-text { color: var(--fg-muted); font-family: var(--font-code); font-size: var(--text-xs); }
+
+  /* Phones: keep rows on one line and pin the source name while the matrix scrolls. */
+  @media (max-width: 639px) {
+    .is-code { white-space: nowrap; }
+    th[scope='row'], thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--line); }
+    thead th:first-child { background: var(--surface-2); }
+    .group-row span { display: inline-block; position: sticky; left: var(--space-4); }
+  }
+</style>

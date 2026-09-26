@@ -1,0 +1,62 @@
+---
+import Logo from './Logo.astro';
+import { apps } from '@/data/apps';
+---
+<header class="site-header">
+  <div class="container site-header__inner">
+    <Logo />
+    <nav aria-label="Primary">
+      <ul>
+        {apps.map((app) => <li class="nav-secondary"><a href={`#${app.id}`}>{app.name}</a></li>)}
+        <li class="nav-secondary"><a href="#sources">Sources</a></li>
+        <li><a class="nav-cta" href="#download">Download</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header { border-bottom: 1px solid var(--line); }
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4rem;
+  }
+  ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a:not(.nav-cta) {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  a:not(.nav-cta):hover { color: var(--fg); }
+  .nav-cta {
+    display: block;
+    margin-left: var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+  }
+  .nav-cta:hover { border-color: var(--amber); background: var(--amber-soft); }
+
+  @media (max-width: 719px) {
+    .nav-secondary { display: none; }
+    .nav-cta { margin-left: 0; }
+  }
+</style>
