@@ -28,9 +28,9 @@ npm run preview
 - `src/styles/global.css`: design tokens (color, type, space, motion) and the shared download button styles.
 - `src/components/ProductWindow.astro`: hero preview with Tablescape (`SchemaDiagram.astro`) and Helix Visualizer (`GraphDiagram.astro`) views.
 - `src/components/AppSpec.astro`, `SourcesTable.astro`, `SiteHeader.astro`, `SiteFooter.astro`, `Logo.astro`: page sections.
-- `src/components/download-buttons.tsx`: shadcn-based download buttons, disabled until a release URL exists.
+- `src/components/download-buttons.tsx`: shadcn-based download buttons, enabled when a release URL exists.
 - `src/components/ui/`: official shadcn primitives.
 
-The macOS download buttons are currently disabled until official release URLs are available. No installer binaries, signup backend, or database workspace are included in this site yet.
+The Tablescape button links to the Apple Silicon DMG release. The Helix Visualizer button remains disabled until its release URL is available. No installer binaries, signup backend, or database workspace are included in this site.
 
 Setup follows the official [Astro guide](https://docs.astro.build/en/install-and-setup/) and [shadcn Astro guide](https://ui.shadcn.com/docs/installation/astro).

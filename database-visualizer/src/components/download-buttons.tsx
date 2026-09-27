@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { apps, type DesktopApp } from '@/data/apps';
 
 export function DownloadButton({ app }: { app: DesktopApp }) {
-  const { name, url } = app;
+  const { name, url, platform } = app;
   const Icon = url ? ArrowDownToLine : Clock;
 
   return (
@@ -16,7 +16,7 @@ export function DownloadButton({ app }: { app: DesktopApp }) {
       <Icon aria-hidden="true" />
       <span className="download-button__label">
         <span>{url ? `Download ${name}` : name}</span>
-        <span className="download-button__meta">{url ? 'macOS' : 'macOS · Coming soon'}</span>
+        <span className="download-button__meta">{url ? platform ?? 'macOS' : 'macOS · Coming soon'}</span>
       </span>
     </Button>
   );

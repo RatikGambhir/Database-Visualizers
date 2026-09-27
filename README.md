@@ -15,7 +15,7 @@ The site is also intended to distribute Helix Visualizer for macOS. Its source l
 
 ## Download status
 
-The landing page has macOS download buttons, but they are currently disabled until official release URLs are available. No macOS installer binaries are included in this repository yet.
+The landing page links to the Tablescape Apple Silicon DMG release. The Helix Visualizer download button remains disabled until its release URL is available. No macOS installer binaries are included in this repository.
 
 ## Run locally
 

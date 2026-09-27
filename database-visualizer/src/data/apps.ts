@@ -5,6 +5,7 @@ export interface DesktopApp {
   name: string;
   /** Official macOS release URL. Leave undefined until a build is published. */
   url?: string;
+  platform?: string;
   kicker: string;
   summary: string;
   sources: string[];
@@ -13,11 +14,12 @@ export interface DesktopApp {
   note: string;
 }
 
-// Add the official macOS release URLs when they are available.
 export const apps: DesktopApp[] = [
   {
     id: 'tablescape',
     name: 'Tablescape',
+    url: 'https://github.com/RatikGambhir/Database-Visualizers/releases/download/v0.0.1/Tablescape_0.1.0_aarch64.dmg',
+    platform: 'macOS · Apple Silicon',
     kicker: 'For relational databases',
     summary: 'A local-first workbench that turns tables and foreign keys into a diagram you can read, then lets you browse and query without switching tools.',
     sources: ['SQLite', 'PostgreSQL', 'MySQL / MariaDB', '.sql files'],
