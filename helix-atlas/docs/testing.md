@@ -11,7 +11,8 @@ cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 cargo clippy --locked --offline --all-targets --manifest-path src-tauri/Cargo.toml -- -D warnings
 ```
 
-Install dependencies with `npm ci` first. Rust's `--offline` flag requires the
+Use Node.js 22.13+ and install dependencies with `npm ci` first.
+Rust's `--offline` flag requires the
 locked crates to have been downloaded already; omit it on a fresh machine.
 Both test suites bind ephemeral ports on `127.0.0.1` for HTTP integration tests.
 They need permission to open loopback sockets and never contact a Cloud gateway.

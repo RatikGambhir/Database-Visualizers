@@ -1,3 +1,4 @@
+import { Compass } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -244,13 +245,5 @@ export function SplashScreen({ onComplete, minDuration = 2_000 }: Props) {
 }
 
 function SplashLogo() {
-  return (
-    <svg className="splash-logo" viewBox="0 0 64 64" role="img" aria-label="Helix Atlas">
-      <rect x="4" y="4" width="56" height="56" rx="10" fill="var(--accent)" />
-      <path d="M20 24 32 42 44 24M20 24h24" fill="none" stroke="var(--accent-ink)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity=".65" />
-      <circle cx="20" cy="24" r="5" fill="var(--accent-ink)" />
-      <circle cx="44" cy="24" r="5" fill="var(--accent-ink)" />
-      <circle cx="32" cy="42" r="5" fill="var(--accent-ink)" />
-    </svg>
-  );
+  return <Compass className="splash-logo" role="img" aria-label="Helix Atlas" strokeWidth={1.2} color="var(--accent)" />;
 }

@@ -1,3 +1,4 @@
+import { MousePointer2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { stringify, type QueryResult } from "../results";
@@ -20,10 +21,12 @@ export function Inspector({ detail, loading, error, onInspect, onFocusInGraph }:
   if (error) return <p className="panel-error">{error}</p>;
   if (!detail) {
     return (
-      <p className="hint-text">
-        Select a node or edge in the graph, click an id in the results, or run{" "}
-        <code>DESCRIBE NODE &lt;id&gt;</code>.
-      </p>
+      <div className="inspector-empty">
+        <div className="inspector-placeholder" aria-hidden="true"><MousePointer2 size={22} /><span /><span /><span /></div>
+        <h3>The details are in the connections.</h3>
+        <p className="hint-text">Select a node or edge in the graph, click an id in the results, or run <code>DESCRIBE NODE &lt;id&gt;</code>.</p>
+        <dl className="inspector-guide"><div><dt>Single click</dt><dd>Inspect properties</dd></div><div><dt>Double click</dt><dd>Explore neighbours</dd></div><div><dt>Drag &amp; scroll</dt><dd>Move around the graph</dd></div></dl>
+      </div>
     );
   }
 

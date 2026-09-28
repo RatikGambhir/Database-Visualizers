@@ -1,3 +1,4 @@
+import { Play, LoaderCircle } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,7 @@ export function QueryEditor({
     <section className="query-editor">
       <header>
         <div className="editor-heading">
-          <span className="eyebrow">01 / HELIXSQL</span>
+          <span className="eyebrow">WORKSPACE / HELIXSQL</span>
           <h2>Query editor</h2>
         </div>
         <div className="editor-actions">
@@ -95,7 +96,7 @@ export function QueryEditor({
                 : "Run queries in the Tauri desktop app"
             }
           >
-            <span aria-hidden="true">{running ? "·" : "▶"}</span>
+            {running ? <LoaderCircle className="spinning" aria-hidden="true" /> : <Play size={14} aria-hidden="true" />}
             {running ? "Running…" : "Run query"}
           </Button>
         </div>
@@ -127,6 +128,7 @@ export function QueryEditor({
         />
       </div>
 
+      <div className="editor-footnote"><span>HelixSQL</span><span>{lineCount} {lineCount === 1 ? "line" : "lines"} · Read only</span></div>
       {error && (
         <p className="editor-error" role="alert">
           <Button variant="link" onClick={jumpToError}>

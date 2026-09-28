@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
+import { Compass, LockKeyhole } from "lucide-react";
 import type { AppView } from "../app/types";
 import type { ConnectionUpdate, ConnectionView } from "../client";
 import { ConnectionDialog } from "./connection/ConnectionDialog";
@@ -59,14 +59,12 @@ export function ConnectionBar({
       <header className="app-header">
         <div className="title-bar" data-tauri-drag-region>
           <div className="title-brand">
-            <span className="brand-mark" aria-hidden="true">
-              <span />
-            </span>
+            <span className="brand-mark" aria-hidden="true"><Compass size={22} strokeWidth={1.5} /></span>
             <span className="brand-wordmark">
               Helix<span className="brand-wordmark-light"> Atlas</span>
             </span>
           </div>
-          <span className="title-context">GRAPH DATA WORKBENCH</span>
+          <span className="title-context">/ <span>{activeView === "graph" ? "Graph explorer" : activeView === "schema" ? "Schema catalog" : "Query workspace"}</span></span>
         </div>
 
         <div className="top-toolbar">
@@ -99,7 +97,7 @@ export function ConnectionBar({
             <span>{describeStatus(status, connection)}</span>
           </div>
 
-          <Separator orientation="vertical" className="toolbar-divider" />
+          <span className="read-only-label"><LockKeyhole size={12} /> Read only</span>
 
           <Button
             variant="ghost"

@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
-import { Network } from "lucide-react";
+import { Network, RefreshCw, TerminalSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Theme } from "../graph/palette";
 import type { GraphData } from "../results";
+import { GraphWelcome } from "../ui/GraphWelcome";
 import { InspectorPane } from "./InspectorPane";
 import type { Workspace } from "./useWorkspace";
 
@@ -55,12 +56,12 @@ export function GraphWorkspace({ workspace, theme }: Props) {
       <section className="graph-workspace">
         <header className="view-toolbar">
           <div>
-            <span className="eyebrow">03 / NETWORK</span>
-            <h1>Graph</h1>
+            <span className="eyebrow">WORKSPACE / EXPLORE</span>
+            <h1>Graph explorer</h1>
             <p>
               {graph
                 ? `${graph.nodes.length.toLocaleString()} nodes · ${graph.edges.length.toLocaleString()} edges`
-                : "Explore the current database as a network"}
+                : "A map of your nodes and relationships."}
             </p>
           </div>
           <div className="view-toolbar-actions">
@@ -70,11 +71,12 @@ export function GraphWorkspace({ workspace, theme }: Props) {
                 onClick={refreshCurrentGraph}
                 disabled={graphLoading}
               >
+                <RefreshCw size={14} className={graphLoading ? "spinning" : undefined} />
                 {graphLoading ? "Refreshing…" : "Refresh"}
               </Button>
             ) : null}
             <Button variant="outline" onClick={() => setView("query")}>
-              Edit graph query
+              <TerminalSquare size={14} /> Edit graph query
             </Button>
           </div>
         </header>
@@ -118,23 +120,7 @@ export function GraphWorkspace({ workspace, theme }: Props) {
               </Button>
             </div>
           ) : status.kind !== "connected" ? (
-            <div className="empty-state graph-empty">
-              <span className="empty-icon" aria-hidden="true">
-                <Network size={24} strokeWidth={1.5} />
-              </span>
-              <h2>Connect to explore your graph</h2>
-              <p>
-                Choose a local, remote, or cloud HelixDB instance. The current
-                graph will load automatically.
-              </p>
-              <Button
-                variant="default"
-                className="primary"
-                onClick={() => setConnectionOpenRequest((value) => value + 1)}
-              >
-                Connect Now
-              </Button>
-            </div>
+            <GraphWelcome onConnect={() => setConnectionOpenRequest((value) => value + 1)} />
           ) : (
             <div className="empty-state graph-empty">
               <span className="empty-icon" aria-hidden="true">

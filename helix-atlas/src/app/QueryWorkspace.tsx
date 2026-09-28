@@ -1,3 +1,5 @@
+import { ArrowUpRight, Plug } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Theme } from "../graph/palette";
 import { QueryEditor } from "../ui/QueryEditor";
@@ -32,6 +34,7 @@ type Props = {
     | "detailLoading"
     | "detailError"
     | "expandNode"
+    | "setConnectionOpenRequest"
   >;
 };
 
@@ -86,7 +89,7 @@ export function QueryWorkspace({ workspace, theme }: Props) {
           onValueChange={(value) => setOutputTab(value as OutputTab)}
         >
           <TabsList className="tabs">
-            <span className="output-label">02 / OUTPUT</span>
+            <span className="output-label">OUTPUT</span>
             <TabsTrigger value="results" className="tab">
               Results
             </TabsTrigger>
@@ -123,7 +126,7 @@ export function QueryWorkspace({ workspace, theme }: Props) {
                   onInspect={inspect}
                 />
               ) : (
-                <EmptyQueryState connected={status.kind === "connected"} />
+                <EmptyQueryState connected={status.kind === "connected"} onConnect={() => workspace.setConnectionOpenRequest((value) => value + 1)} />
               ))}
           </TabsContent>
 
@@ -159,11 +162,11 @@ export function QueryWorkspace({ workspace, theme }: Props) {
   );
 }
 
-function EmptyQueryState({ connected }: { connected: boolean }) {
+function EmptyQueryState({ connected, onConnect }: { connected: boolean; onConnect: () => void }) {
   return (
     <div className="empty-state">
       <span className="empty-icon" aria-hidden="true">
-        {connected ? "↗" : "◇"}
+        {connected ? <ArrowUpRight size={22} /> : <Plug size={22} />}
       </span>
       <span className="eyebrow">YOUR WORKSPACE</span>
       <h2>
@@ -176,6 +179,7 @@ function EmptyQueryState({ connected }: { connected: boolean }) {
           ? "Run the query above to reveal your data. Try a starting point from the left rail if you need one."
           : "Connect to a local or remote HelixDB instance, then explore its shape with a query."}
       </p>
+      {!connected && <Button onClick={onConnect}>Configure connection <ArrowUpRight size={14} /></Button>}
     </div>
   );
 }

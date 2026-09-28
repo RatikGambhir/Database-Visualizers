@@ -1,3 +1,4 @@
+import { CircleDot, GitFork, Zap, Search, ChevronsUpDown, RefreshCw, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -133,8 +134,8 @@ export function SchemaView({
       <div className="schema-content">
         <div className="schema-intro">
           <div>
-            <span className="eyebrow">02 / STRUCTURE</span>
-            <h2>Schema</h2>
+            <span className="eyebrow">WORKSPACE / STRUCTURE</span>
+            <h2>Schema catalog</h2>
             <p>Labels and properties observed in your graph.</p>
           </div>
           {schema ? <span className="schema-intro-count">{category === "nodes" ? schema.nodeLabels.length : category === "edges" ? schema.edgeLabels.length : 0}<small>{category} labels</small></span> : null}
@@ -281,23 +282,7 @@ function SchemaIcon({
   name: SchemaCategory | "search" | "expand" | "refresh" | "chevron";
   spinning?: boolean;
 }) {
-  const common = {
-    width: 20,
-    height: 20,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.9,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-    className: spinning ? "spinning" : undefined,
-  };
-  if (name === "nodes") return <svg {...common}><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>;
-  if (name === "edges") return <svg {...common}><circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="m7.8 11.1 8.4-4.2m-8.4 6 8.4 4.2"/></svg>;
-  if (name === "vectors") return <svg {...common}><path d="m13 2-7 12h6l-1 8 7-12h-6l1-8Z"/></svg>;
-  if (name === "search") return <svg {...common}><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4"/></svg>;
-  if (name === "expand") return <svg {...common}><path d="m8 3-4 4 4 4M4 7h7m5 6 4 4-4 4m4-4h-7"/></svg>;
-  if (name === "refresh") return <svg {...common}><path d="M20 6v5h-5M4 18v-5h5"/><path d="M18.2 10A7 7 0 0 0 6.1 6.1L4 8m2 6a7 7 0 0 0 11.9 3.9L20 16"/></svg>;
-  return <svg {...common}><path d="m9 6 6 6-6 6"/></svg>;
+  const icons = { nodes: CircleDot, edges: GitFork, vectors: Zap, search: Search, expand: ChevronsUpDown, refresh: RefreshCw, chevron: ChevronRight };
+  const Icon = icons[name];
+  return <Icon size={20} strokeWidth={1.6} aria-hidden="true" className={spinning ? "spinning" : undefined} />;
 }

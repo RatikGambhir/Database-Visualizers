@@ -38,7 +38,7 @@ batch, and there is no syntax for writes. Use a HelixDB SDK for those.
 
 ## Requirements
 
-- Node.js 22+ (the mock uses exact JSON integer parsing)
+- Node.js 22.13+ (required by the DOM test runtime and exact JSON integer parsing)
 - Rust 1.77+
 - A running HelixDB instance (`helix start dev` listens on `localhost:6969`),
   or the bundled mock server below.

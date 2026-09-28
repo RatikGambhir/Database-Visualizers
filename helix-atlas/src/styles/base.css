@@ -1,52 +1,64 @@
-/*
- * Both themes are selected rather than one being an inversion of the other.
- * The chart surface, ink and hairline values match graph/palette.ts, which the
- * canvas reads directly — canvas cannot resolve CSS custom properties.
- */
+/* Atlas design system: paper, graphite, copper. Surfaces follow information density. */
 :root {
-  --window: #1f1f1f;
-  --surface-0: #181818;
-  --surface-1: rgba(27, 27, 27, 0.98);
-  --surface-2: rgba(46, 46, 46, 0.9);
-  --surface-elevated: rgba(46, 46, 46, 0.98);
-  --toolbar: rgba(31, 31, 31, 0.94);
-  --ink: #efefef;
-  --ink-secondary: #b0b0b0;
-  --ink-muted: #858585;
-  --hairline: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.11);
-  --accent: #7db4ff;
-  --danger: #ff655c;
-  --good: #30d158;
-  --warning: #ffd60a;
-  --overlay: rgba(0, 0, 0, 0.48);
-
-  --radius: 8px;
-  --font: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-
   color-scheme: dark;
+  --window: #17191b;
+  --surface-0: #1d2022;
+  --surface-1: #222629;
+  --surface-2: #2c3134;
+  --surface-elevated: #303639;
+  --toolbar: #191c1e;
+  --ink: #f2eee5;
+  --ink-secondary: #bcbdb9;
+  --ink-muted: #9caaa9;
+  --hairline: rgba(226, 233, 230, .09);
+  --border: rgba(226, 233, 230, .18);
+  --accent: #e6ac77;
+  --danger: #ff817c;
+  --good: #75c69b;
+  --warning: #f6ca69;
+  --overlay: rgba(4, 9, 6, .7);
+  --radius: 5px;
+  --font: "Avenir Next", "Trebuchet MS", sans-serif;
+  --mono: "SFMono-Regular", Menlo, Consolas, monospace;
+  --control: #282d30;
+  --accent-ink: #2e2015;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 8px;
+  --display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --rail-width: 82px;
+  --header-height: 64px;
+  --status-height: 28px;
+  --motion-fast: 140ms;
+  --shadow-dialog: 0 24px 70px rgb(0 0 0 / .22);
 }
 
 :root[data-theme="light"] {
-  --window: #e9e9ea;
-  --surface-0: rgba(248, 248, 249, 0.96);
-  --surface-1: rgba(239, 239, 241, 0.96);
-  --surface-2: rgba(255, 255, 255, 0.78);
-  --surface-elevated: rgba(255, 255, 255, 0.98);
-  --toolbar: rgba(236, 236, 238, 0.91);
-  --ink: #1a1a1a;
-  --ink-secondary: #61656d;
-  --ink-muted: #858a92;
-  --hairline: rgba(0, 0, 0, 0.06);
-  --border: rgba(0, 0, 0, 0.1);
-  --accent: #2f76ee;
-  --danger: #e34a42;
-  --good: #25a84b;
-  --warning: #c27a00;
-  --overlay: rgba(0, 0, 0, 0.2);
-
   color-scheme: light;
+  --window: #eae8e1;
+  --surface-0: #faf9f5;
+  --surface-1: #f1f0e9;
+  --surface-2: #e9e8df;
+  --surface-elevated: #ffffff;
+  --toolbar: #faf9f5;
+  --ink: #292f30;
+  --ink-secondary: #545f60;
+  --ink-muted: #697272;
+  --hairline: rgba(39, 51, 51, .10);
+  --border: rgba(39, 51, 51, .19);
+  --accent: #955126;
+  --danger: #a9342e;
+  --good: #276e4c;
+  --warning: #8d5a08;
+  --overlay: rgba(15, 25, 17, .36);
+  --control: #f7f6f0;
+  --accent-ink: #ffffff;
 }
 
 * {

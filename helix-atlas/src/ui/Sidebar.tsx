@@ -167,6 +167,7 @@ function LabelList({
               variant="ghost"
               size="icon-sm"
               className="label-alt"
+              aria-label={`Open alternate query for ${entry.label}`}
               onClick={() => onUseQuery(entry[secondary])}
               title={entry[secondary]}
             >

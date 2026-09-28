@@ -35,21 +35,21 @@ export const MAX_COLOURED_LABELS = CATEGORICAL.light.length;
 /** Chart chrome, kept in sync with the CSS custom properties in styles.css. */
 export const CHROME: Readonly<Record<Theme, Record<string, string>>> = {
   light: {
-    surface: "#f5f7f1",
-    ink: "#1c2920",
-    secondaryInk: "#46594a",
-    muted: "#5e705f",
-    edge: "#bac9b9",
-    edgeStrong: "#46594a",
+    surface: "#faf9f5",
+    ink: "#292f30",
+    secondaryInk: "#545f60",
+    muted: "#697272",
+    edge: "#c2cac8",
+    edgeStrong: "#545f60",
     ring: "rgba(26,53,31,0.14)",
   },
   dark: {
-    surface: "#151a17",
-    ink: "#f0f4ed",
-    secondaryInk: "#adb9ad",
-    muted: "#829084",
-    edge: "#455247",
-    edgeStrong: "#adb9ad",
+    surface: "#1d2022",
+    ink: "#f2eee5",
+    secondaryInk: "#bcbdb9",
+    muted: "#9caaa9",
+    edge: "#526064",
+    edgeStrong: "#bcbdb9",
     ring: "rgba(223,244,217,0.13)",
   },
 };

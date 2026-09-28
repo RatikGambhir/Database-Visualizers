@@ -58,7 +58,7 @@ describe("application workflows", () => {
     fireEvent.click(screen.getByRole("button", { name: "Schema" }));
     expect(screen.getByText("Connect to inspect your schema")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Graph" }));
-    expect(screen.getByText("Connect to explore your graph")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Every connection tells a story." })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Connect Now" }));
     expect(screen.getByRole("dialog")).toBeTruthy();
     expect(
