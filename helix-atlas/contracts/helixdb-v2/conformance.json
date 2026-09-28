@@ -1,0 +1,3781 @@
+{
+  "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
+  "capturedOn": "2026-09-28",
+  "deployment": "isolated in-memory native server on loopback; no Cloud gateway or v1 upstream server coverage",
+  "highIds": "full u64 source syntax accepted; nonexistent IDs only. No actual high-ID entities seeded. Source pin demonstrates virtual projection clamp.",
+  "seedNodeIds": {
+    "alice": 0,
+    "bob": 1,
+    "carol": 2
+  },
+  "seedEdgeIds": {
+    "ab": 0,
+    "ab_parallel": 1,
+    "ac": 2,
+    "aa": 3
+  },
+  "fixtures": [
+    {
+      "name": "seed-isolated",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "alice",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Alice"
+                            }
+                          }
+                        ],
+                        [
+                          "age",
+                          {
+                            "value": {
+                              "i64": 31
+                            }
+                          }
+                        ],
+                        [
+                          "status",
+                          {
+                            "value": {
+                              "string": "active"
+                            }
+                          }
+                        ],
+                        [
+                          "score",
+                          {
+                            "value": {
+                              "i64": 2
+                            }
+                          }
+                        ],
+                        [
+                          "optional",
+                          {
+                            "value": "null"
+                          }
+                        ],
+                        [
+                          "id",
+                          {
+                            "value": {
+                              "string": "stored-id"
+                            }
+                          }
+                        ],
+                        [
+                          "label",
+                          {
+                            "value": {
+                              "string": "stored-label"
+                            }
+                          }
+                        ],
+                        [
+                          "source",
+                          {
+                            "value": {
+                              "string": "stored-source"
+                            }
+                          }
+                        ],
+                        [
+                          "target",
+                          {
+                            "value": {
+                              "string": "stored-target"
+                            }
+                          }
+                        ],
+                        [
+                          "large",
+                          {
+                            "value": {
+                              "i64": 9007199254740993
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "bob",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Bob"
+                            }
+                          }
+                        ],
+                        [
+                          "age",
+                          {
+                            "value": {
+                              "i64": 31
+                            }
+                          }
+                        ],
+                        [
+                          "status",
+                          {
+                            "value": {
+                              "string": "active"
+                            }
+                          }
+                        ],
+                        [
+                          "score",
+                          {
+                            "value": {
+                              "i64": 1
+                            }
+                          }
+                        ],
+                        [
+                          "optional",
+                          {
+                            "value": {
+                              "string": "present"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "carol",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Carol"
+                            }
+                          }
+                        ],
+                        [
+                          "age",
+                          {
+                            "value": {
+                              "i64": 28
+                            }
+                          }
+                        ],
+                        [
+                          "score",
+                          {
+                            "value": {
+                              "i64": 2
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "ab",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "var": "alice"
+                          }
+                        }
+                      },
+                      "label": "FOLLOWS",
+                      "to": {
+                        "var": "bob"
+                      },
+                      "properties": [
+                        [
+                          "weight",
+                          {
+                            "value": {
+                              "i64": 1
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "ab_parallel",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "var": "alice"
+                          }
+                        }
+                      },
+                      "label": "FOLLOWS",
+                      "to": {
+                        "var": "bob"
+                      },
+                      "properties": [
+                        [
+                          "weight",
+                          {
+                            "value": {
+                              "i64": 1
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "ac",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "var": "alice"
+                          }
+                        }
+                      },
+                      "label": "FOLLOWS",
+                      "to": {
+                        "var": "carol"
+                      },
+                      "properties": [
+                        [
+                          "weight",
+                          {
+                            "value": {
+                              "i64": 1
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "aa",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "var": "alice"
+                          }
+                        }
+                      },
+                      "label": "FOLLOWS",
+                      "to": {
+                        "var": "alice"
+                      },
+                      "properties": [
+                        [
+                          "weight",
+                          {
+                            "value": {
+                              "i64": 1
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "alice",
+              "bob",
+              "carol",
+              "ab",
+              "ab_parallel",
+              "ac",
+              "aa"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "aa": [
+          {
+            "$id": 3
+          }
+        ],
+        "ab": [
+          {
+            "$id": 0
+          }
+        ],
+        "ab_parallel": [
+          {
+            "$id": 1
+          }
+        ],
+        "ac": [
+          {
+            "$id": 2
+          }
+        ],
+        "alice": [
+          {
+            "$id": 0
+          }
+        ],
+        "bob": [
+          {
+            "$id": 1
+          }
+        ],
+        "carol": [
+          {
+            "$id": 2
+          }
+        ]
+      },
+      "responseText": "{\"aa\":[{\"$id\":3}],\"ab\":[{\"$id\":0}],\"ab_parallel\":[{\"$id\":1}],\"ac\":[{\"$id\":2}],\"alice\":[{\"$id\":0}],\"bob\":[{\"$id\":1}],\"carol\":[{\"$id\":2}]}"
+    },
+    {
+      "name": "count",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "node_count",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge_count",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "node_count",
+              "edge_count"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "edge_count": 4,
+        "node_count": 3
+      },
+      "responseText": "{\"edge_count\":4,\"node_count\":3}"
+    },
+    {
+      "name": "predicate-eq",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1
+        ],
+        "source": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[0,1],\"source\":[0,1]}"
+    },
+    {
+      "name": "predicate-neq",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "neq": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "neq": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          2
+        ],
+        "source": [
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[2],\"source\":[2]}"
+    },
+    {
+      "name": "predicate-gt",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "gt": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 28
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "gt": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 28
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1
+        ],
+        "source": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[0,1],\"source\":[0,1]}"
+    },
+    {
+      "name": "predicate-gte",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "gte": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "gte": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1
+        ],
+        "source": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[0,1],\"source\":[0,1]}"
+    },
+    {
+      "name": "predicate-lt",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "lt": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "lt": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          2
+        ],
+        "source": [
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[2],\"source\":[2]}"
+    },
+    {
+      "name": "predicate-lte",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "lte": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 28
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "lte": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 28
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          2
+        ],
+        "source": [
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[2],\"source\":[2]}"
+    },
+    {
+      "name": "predicate-between",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "between": {
+                              "value": {
+                                "property": "age"
+                              },
+                              "min": {
+                                "constant": {
+                                  "i64": 28
+                                }
+                              },
+                              "max": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "between": {
+                              "value": {
+                                "property": "age"
+                              },
+                              "min": {
+                                "constant": {
+                                  "i64": 28
+                                }
+                              },
+                              "max": {
+                                "constant": {
+                                  "i64": 31
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1,
+          2
+        ],
+        "source": [
+          0,
+          1,
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[0,1,2],\"source\":[0,1,2]}"
+    },
+    {
+      "name": "predicate-has_key",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "has_key": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "has_key": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1
+        ],
+        "source": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[0,1],\"source\":[0,1]}"
+    },
+    {
+      "name": "predicate-is_null",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "is_null": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "is_null": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          2
+        ],
+        "source": [
+          0,
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[0,2],\"source\":[0,2]}"
+    },
+    {
+      "name": "predicate-is_not_null",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "is_not_null": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "is_not_null": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          1
+        ],
+        "source": [
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[1],\"source\":[1]}"
+    },
+    {
+      "name": "predicate-starts_with",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "starts_with": {
+                              "value": {
+                                "property": "name"
+                              },
+                              "prefix": {
+                                "constant": {
+                                  "string": "Al"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "starts_with": {
+                              "value": {
+                                "property": "name"
+                              },
+                              "prefix": {
+                                "constant": {
+                                  "string": "Al"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0
+        ],
+        "source": [
+          0
+        ]
+      },
+      "responseText": "{\"filter\":[0],\"source\":[0]}"
+    },
+    {
+      "name": "predicate-ends_with",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "ends_with": {
+                              "value": {
+                                "property": "name"
+                              },
+                              "suffix": {
+                                "constant": {
+                                  "string": "ob"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "ends_with": {
+                              "value": {
+                                "property": "name"
+                              },
+                              "suffix": {
+                                "constant": {
+                                  "string": "ob"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          1
+        ],
+        "source": [
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[1],\"source\":[1]}"
+    },
+    {
+      "name": "predicate-contains",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "contains": {
+                              "value": {
+                                "property": "name"
+                              },
+                              "substring": {
+                                "constant": {
+                                  "string": "aro"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "contains": {
+                              "value": {
+                                "property": "name"
+                              },
+                              "substring": {
+                                "constant": {
+                                  "string": "aro"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          2
+        ],
+        "source": [
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[2],\"source\":[2]}"
+    },
+    {
+      "name": "predicate-is_in",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "is_in": {
+                              "value": {
+                                "property": "age"
+                              },
+                              "values": {
+                                "constant": {
+                                  "array": [
+                                    {
+                                      "i64": 28
+                                    },
+                                    {
+                                      "i64": 31
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "is_in": {
+                              "value": {
+                                "property": "age"
+                              },
+                              "values": {
+                                "constant": {
+                                  "array": [
+                                    {
+                                      "i64": 28
+                                    },
+                                    {
+                                      "i64": 31
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1,
+          2
+        ],
+        "source": [
+          0,
+          1,
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[0,1,2],\"source\":[0,1,2]}"
+    },
+    {
+      "name": "predicate-and",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "and": {
+                              "predicates": [
+                                {
+                                  "gte": {
+                                    "left": {
+                                      "property": "age"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "i64": 30
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "status"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "string": "active"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "and": {
+                              "predicates": [
+                                {
+                                  "gte": {
+                                    "left": {
+                                      "property": "age"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "i64": 30
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "status"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "string": "active"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          1
+        ],
+        "source": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"filter\":[0,1],\"source\":[0,1]}"
+    },
+    {
+      "name": "predicate-or",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "or": {
+                              "predicates": [
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "name"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "string": "Alice"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "name"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "string": "Carol"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "or": {
+                              "predicates": [
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "name"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "string": "Alice"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "name"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "string": "Carol"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          2
+        ],
+        "source": [
+          0,
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[0,2],\"source\":[0,2]}"
+    },
+    {
+      "name": "predicate-not",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "not": {
+                              "predicate": {
+                                "eq": {
+                                  "left": {
+                                    "property": "name"
+                                  },
+                                  "right": {
+                                    "constant": {
+                                      "string": "Alice"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "not": {
+                              "predicate": {
+                                "eq": {
+                                  "left": {
+                                    "property": "name"
+                                  },
+                                  "right": {
+                                    "constant": {
+                                      "string": "Alice"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          1,
+          2
+        ],
+        "source": [
+          1,
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[1,2],\"source\":[1,2]}"
+    },
+    {
+      "name": "predicate-eq_null",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "optional"
+                              },
+                              "right": {
+                                "constant": "null"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "optional"
+                              },
+                              "right": {
+                                "constant": "null"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0,
+          2
+        ],
+        "source": [
+          0,
+          2
+        ]
+      },
+      "responseText": "{\"filter\":[0,2],\"source\":[0,2]}"
+    },
+    {
+      "name": "predicate-id",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$id"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 0
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filter",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$id"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 0
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "source",
+              "filter"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "filter": [
+          0
+        ],
+        "source": [
+          0
+        ]
+      },
+      "responseText": "{\"filter\":[0],\"source\":[0]}"
+    },
+    {
+      "name": "edge-endpoint-paths",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "edge",
+                  "root": {
+                    "project": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      },
+                      "projections": [
+                        {
+                          "property": {
+                            "source": "$id",
+                            "alias": "$id"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "$label",
+                            "alias": "$label"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "$from",
+                            "alias": "$from"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "$to",
+                            "alias": "$to"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "$from.$id",
+                            "alias": "$from.$id"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "$to.name",
+                            "alias": "$to.name"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "filtered",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "edges_where": {
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$to.name"
+                              },
+                              "right": {
+                                "constant": {
+                                  "string": "Bob"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "edge",
+              "filtered"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "edge": [
+          {
+            "$from": 0,
+            "$from.$id": 0,
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "$to": 1,
+            "$to.name": "Bob"
+          },
+          {
+            "$from": 0,
+            "$from.$id": 0,
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "$to": 1,
+            "$to.name": "Bob"
+          },
+          {
+            "$from": 0,
+            "$from.$id": 0,
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "$to": 2,
+            "$to.name": "Carol"
+          },
+          {
+            "$from": 0,
+            "$from.$id": 0,
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "$to": 0,
+            "$to.name": "Alice"
+          }
+        ],
+        "filtered": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"edge\":[{\"$from\":0,\"$from.$id\":0,\"$id\":0,\"$label\":\"FOLLOWS\",\"$to\":1,\"$to.name\":\"Bob\"},{\"$from\":0,\"$from.$id\":0,\"$id\":1,\"$label\":\"FOLLOWS\",\"$to\":1,\"$to.name\":\"Bob\"},{\"$from\":0,\"$from.$id\":0,\"$id\":2,\"$label\":\"FOLLOWS\",\"$to\":2,\"$to.name\":\"Carol\"},{\"$from\":0,\"$from.$id\":0,\"$id\":3,\"$label\":\"FOLLOWS\",\"$to\":0,\"$to.name\":\"Alice\"}],\"filtered\":[0,1]}"
+    },
+    {
+      "name": "traversal-out",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0,
+          1,
+          2
+        ]
+      },
+      "responseText": "{\"rows\":[0,1,2]}"
+    },
+    {
+      "name": "traversal-in",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0
+        ]
+      },
+      "responseText": "{\"rows\":[0]}"
+    },
+    {
+      "name": "traversal-both",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "both": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0,
+          1,
+          2
+        ]
+      },
+      "responseText": "{\"rows\":[0,1,2]}"
+    },
+    {
+      "name": "traversal-out_e",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_e": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "responseText": "{\"rows\":[0,1,2,3]}"
+    },
+    {
+      "name": "traversal-in_e",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_e": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          3
+        ]
+      },
+      "responseText": "{\"rows\":[3]}"
+    },
+    {
+      "name": "traversal-both_e",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "responseText": "{\"rows\":[0,1,2,3]}"
+    },
+    {
+      "name": "traversal-out_n",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "edges": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          1
+        ]
+      },
+      "responseText": "{\"rows\":[1]}"
+    },
+    {
+      "name": "traversal-in_n",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "edges": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0
+        ]
+      },
+      "responseText": "{\"rows\":[0]}"
+    },
+    {
+      "name": "traversal-other_n",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "other_n": {
+                          "input": {
+                            "edges": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "rows": [
+          0,
+          1
+        ]
+      },
+      "responseText": "{\"rows\":[0,1]}"
+    },
+    {
+      "name": "order-and-pagination",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "ordered",
+                  "root": {
+                    "project": {
+                      "input": {
+                        "order_by_multiple": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "orderings": [
+                            [
+                              "score",
+                              "asc"
+                            ],
+                            [
+                              "age",
+                              "desc"
+                            ],
+                            [
+                              "name",
+                              "desc"
+                            ]
+                          ]
+                        }
+                      },
+                      "projections": [
+                        {
+                          "property": {
+                            "source": "$id",
+                            "alias": "$id"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "name",
+                            "alias": "name"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "score",
+                            "alias": "score"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "age",
+                            "alias": "age"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "paged",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "limit": {
+                          "input": {
+                            "skip": {
+                              "input": {
+                                "order_by_multiple": {
+                                  "input": {
+                                    "nodes": {
+                                      "reference": "all"
+                                    }
+                                  },
+                                  "orderings": [
+                                    [
+                                      "score",
+                                      "asc"
+                                    ],
+                                    [
+                                      "age",
+                                      "desc"
+                                    ],
+                                    [
+                                      "name",
+                                      "desc"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "count": {
+                                "literal": 1
+                              }
+                            }
+                          },
+                          "count": {
+                            "literal": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "groups",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      },
+                      "property": "status"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "ordered",
+              "paged",
+              "groups"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "groups": [
+          {
+            "count": 1,
+            "status": null
+          },
+          {
+            "count": 2,
+            "status": "active"
+          }
+        ],
+        "ordered": [
+          {
+            "$id": 1,
+            "age": 31,
+            "name": "Bob",
+            "score": 1
+          },
+          {
+            "$id": 0,
+            "age": 31,
+            "name": "Alice",
+            "score": 2
+          },
+          {
+            "$id": 2,
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ],
+        "paged": [
+          0
+        ]
+      },
+      "responseText": "{\"groups\":[{\"count\":1,\"status\":null},{\"count\":2,\"status\":\"active\"}],\"ordered\":[{\"$id\":1,\"age\":31,\"name\":\"Bob\",\"score\":1},{\"$id\":0,\"age\":31,\"name\":\"Alice\",\"score\":2},{\"$id\":2,\"age\":28,\"name\":\"Carol\",\"score\":2}],\"paged\":[0]}"
+    },
+    {
+      "name": "materialized-association",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "selected",
+                  "root": {
+                    "order_by_multiple": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      },
+                      "orderings": [
+                        [
+                          "age",
+                          "desc"
+                        ],
+                        [
+                          "name",
+                          "desc"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "duplicates",
+                  "root": {
+                    "inject": {
+                      "input": {
+                        "inject": {
+                          "variable": "selected"
+                        }
+                      },
+                      "variable": "selected"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "duplicates"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "properties",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "duplicates"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "duplicates"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "dedup",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "inject": {
+                              "variable": "duplicates"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "selected_edges",
+                  "root": {
+                    "order_by": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      },
+                      "property": "$id",
+                      "order": "desc"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "selected_edges"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge_properties",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "selected_edges"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "sources",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "selected_edges"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "targets",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "selected_edges"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "selected",
+              "duplicates",
+              "ids",
+              "properties",
+              "labels",
+              "dedup",
+              "selected_edges",
+              "edge_ids",
+              "edge_properties",
+              "sources",
+              "targets"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "dedup": [
+          1,
+          0,
+          2
+        ],
+        "duplicates": [
+          {
+            "$id": 1
+          },
+          {
+            "$id": 0
+          },
+          {
+            "$id": 2
+          },
+          {
+            "$id": 1
+          },
+          {
+            "$id": 0
+          },
+          {
+            "$id": 2
+          }
+        ],
+        "edge_ids": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "edge_properties": [
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ],
+        "ids": [
+          1,
+          0,
+          2,
+          1,
+          0,
+          2
+        ],
+        "labels": [
+          "User",
+          "User",
+          "User",
+          "User",
+          "User",
+          "User"
+        ],
+        "properties": [
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ],
+        "selected": [
+          {
+            "$id": 1
+          },
+          {
+            "$id": 0
+          },
+          {
+            "$id": 2
+          }
+        ],
+        "selected_edges": [
+          {
+            "$id": 3
+          },
+          {
+            "$id": 2
+          },
+          {
+            "$id": 1
+          },
+          {
+            "$id": 0
+          }
+        ],
+        "sources": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "targets": [
+          0,
+          2,
+          1,
+          1
+        ]
+      },
+      "responseText": "{\"dedup\":[1,0,2],\"duplicates\":[{\"$id\":1},{\"$id\":0},{\"$id\":2},{\"$id\":1},{\"$id\":0},{\"$id\":2}],\"edge_ids\":[3,2,1,0],\"edge_properties\":[{\"$id\":3,\"$label\":\"FOLLOWS\",\"weight\":1},{\"$id\":2,\"$label\":\"FOLLOWS\",\"weight\":1},{\"$id\":1,\"$label\":\"FOLLOWS\",\"weight\":1},{\"$id\":0,\"$label\":\"FOLLOWS\",\"weight\":1}],\"ids\":[1,0,2,1,0,2],\"labels\":[\"User\",\"User\",\"User\",\"User\",\"User\",\"User\"],\"properties\":[{\"$id\":1,\"$label\":\"User\",\"age\":31,\"name\":\"Bob\",\"optional\":\"present\",\"score\":1,\"status\":\"active\"},{\"$id\":0,\"$label\":\"User\",\"age\":31,\"id\":\"stored-id\",\"label\":\"stored-label\",\"large\":9007199254740993,\"name\":\"Alice\",\"optional\":null,\"score\":2,\"source\":\"stored-source\",\"status\":\"active\",\"target\":\"stored-target\"},{\"$id\":2,\"$label\":\"User\",\"age\":28,\"name\":\"Carol\",\"score\":2},{\"$id\":1,\"$label\":\"User\",\"age\":31,\"name\":\"Bob\",\"optional\":\"present\",\"score\":1,\"status\":\"active\"},{\"$id\":0,\"$label\":\"User\",\"age\":31,\"id\":\"stored-id\",\"label\":\"stored-label\",\"large\":9007199254740993,\"name\":\"Alice\",\"optional\":null,\"score\":2,\"source\":\"stored-source\",\"status\":\"active\",\"target\":\"stored-target\"},{\"$id\":2,\"$label\":\"User\",\"age\":28,\"name\":\"Carol\",\"score\":2}],\"selected\":[{\"$id\":1},{\"$id\":0},{\"$id\":2}],\"selected_edges\":[{\"$id\":3},{\"$id\":2},{\"$id\":1},{\"$id\":0}],\"sources\":[0,0,0,0],\"targets\":[0,2,1,1]}"
+    },
+    {
+      "name": "empty-and-u64-source-acceptance",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "missing_one",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          18446744073709551615
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "missing_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "ids": [
+                              9223372036854775808
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "missing_many",
+                  "root": {
+                    "nodes_where": {
+                      "predicate": {
+                        "eq": {
+                          "left": {
+                            "property": "$label"
+                          },
+                          "right": {
+                            "constant": {
+                              "string": "Missing"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "bounded_empty",
+                  "root": {
+                    "limit": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$label"
+                              },
+                              "right": {
+                                "constant": {
+                                  "string": "Missing"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "count": {
+                        "literal": 1
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "zero",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes_where": {
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$label"
+                              },
+                              "right": {
+                                "constant": {
+                                  "string": "Missing"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "missing_one",
+              "missing_ids",
+              "missing_many",
+              "bounded_empty",
+              "zero"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "bounded_empty": null,
+        "missing_ids": null,
+        "missing_many": [],
+        "missing_one": null,
+        "zero": 0
+      },
+      "responseText": "{\"bounded_empty\":null,\"missing_ids\":null,\"missing_many\":[],\"missing_one\":null,\"zero\":0}"
+    },
+    {
+      "name": "read-requires-writer",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "count",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "count"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "count": 3
+      },
+      "responseText": "{\"count\":3}"
+    },
+    {
+      "name": "read-rejects-await-durable",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "count",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "count"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "X-Helix-Await-Durable": "true"
+      },
+      "status": 400,
+      "response": {
+        "error": "invalid_request_option",
+        "msg": "x-helix-await-durable is only valid for write requests"
+      },
+      "responseText": "{\"error\":\"invalid_request_option\",\"msg\":\"x-helix-await-durable is only valid for write requests\"}"
+    },
+    {
+      "name": "mismatched-envelope",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "write": {
+            "entries": [],
+            "returns": []
+          }
+        }
+      },
+      "headers": {},
+      "status": 400,
+      "response": {
+        "error": "invalid_query_json",
+        "msg": "invalid query JSON: request_type must match the query batch variant"
+      },
+      "responseText": "{\"error\":\"invalid_query_json\",\"msg\":\"invalid query JSON: request_type must match the query batch variant\"}"
+    },
+    {
+      "name": "flat-v2-rejection",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "queries": [],
+          "returns": []
+        }
+      },
+      "headers": {},
+      "status": 400,
+      "response": {
+        "error": "invalid_query_json",
+        "msg": "invalid query JSON: unknown variant `queries`, expected `read` or `write` at line 1 column 41\n\n\t\"queries\":[],\"re\n\t........^.......\n"
+      },
+      "responseText": "{\"error\":\"invalid_query_json\",\"msg\":\"invalid query JSON: unknown variant `queries`, expected `read` or `write` at line 1 column 41\\n\\n\\t\\\"queries\\\":[],\\\"re\\n\\t........^.......\\n\"}"
+    },
+    {
+      "name": "schema-labels-and-bounded-fields",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "node_labels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge_labels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "fields",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "limit": {
+                          "input": {
+                            "nodes_where": {
+                              "predicate": {
+                                "eq": {
+                                  "left": {
+                                    "property": "$label"
+                                  },
+                                  "right": {
+                                    "constant": {
+                                      "string": "User"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "count": {
+                            "literal": 2
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "node_labels",
+              "edge_labels",
+              "fields"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "edge_labels": [
+          {
+            "$label": "FOLLOWS",
+            "count": 4
+          }
+        ],
+        "fields": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ],
+        "node_labels": [
+          {
+            "$label": "User",
+            "count": 3
+          }
+        ]
+      },
+      "responseText": "{\"edge_labels\":[{\"$label\":\"FOLLOWS\",\"count\":4}],\"fields\":[{\"$id\":0,\"$label\":\"User\",\"age\":31,\"id\":\"stored-id\",\"label\":\"stored-label\",\"large\":9007199254740993,\"name\":\"Alice\",\"optional\":null,\"score\":2,\"source\":\"stored-source\",\"status\":\"active\",\"target\":\"stored-target\"},{\"$id\":1,\"$label\":\"User\",\"age\":31,\"name\":\"Bob\",\"optional\":\"present\",\"score\":1,\"status\":\"active\"}],\"node_labels\":[{\"$label\":\"User\",\"count\":3}]}"
+    },
+    {
+      "name": "describe-node-directed-details",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "node",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "properties",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "node"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "degree",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "inject": {
+                              "variable": "node"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "neighbors",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "limit": {
+                          "input": {
+                            "both": {
+                              "input": {
+                                "inject": {
+                                  "variable": "node"
+                                }
+                              }
+                            }
+                          },
+                          "count": {
+                            "literal": 10
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "incident",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "limit": {
+                          "input": {
+                            "both_e": {
+                              "input": {
+                                "inject": {
+                                  "variable": "node"
+                                }
+                              }
+                            }
+                          },
+                          "count": {
+                            "literal": 10
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "node",
+              "properties",
+              "degree",
+              "neighbors",
+              "incident"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "degree": 4,
+        "incident": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "neighbors": [
+          0,
+          1,
+          2
+        ],
+        "node": [
+          {
+            "$id": 0
+          }
+        ],
+        "properties": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ]
+      },
+      "responseText": "{\"degree\":4,\"incident\":[0,1,2,3],\"neighbors\":[0,1,2],\"node\":[{\"$id\":0}],\"properties\":[{\"$id\":0,\"$label\":\"User\",\"age\":31,\"id\":\"stored-id\",\"label\":\"stored-label\",\"large\":9007199254740993,\"name\":\"Alice\",\"optional\":null,\"score\":2,\"source\":\"stored-source\",\"status\":\"active\",\"target\":\"stored-target\"}]}"
+    },
+    {
+      "name": "quoted-property-alias-projections",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "properties",
+                  "root": {
+                    "project": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      },
+                      "projections": [
+                        {
+                          "property": {
+                            "source": "id",
+                            "alias": "stored_id"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "label",
+                            "alias": "stored_label"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "source",
+                            "alias": "stored_source"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "target",
+                            "alias": "stored_target"
+                          }
+                        },
+                        {
+                          "property": {
+                            "source": "$id",
+                            "alias": "id"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "properties"
+            ]
+          }
+        }
+      },
+      "headers": {},
+      "status": 200,
+      "response": {
+        "properties": [
+          {
+            "id": 0,
+            "stored_id": "stored-id",
+            "stored_label": "stored-label",
+            "stored_source": "stored-source",
+            "stored_target": "stored-target"
+          },
+          {
+            "id": 1
+          },
+          {
+            "id": 2
+          }
+        ]
+      },
+      "responseText": "{\"properties\":[{\"id\":0,\"stored_id\":\"stored-id\",\"stored_label\":\"stored-label\",\"stored_source\":\"stored-source\",\"stored_target\":\"stored-target\"},{\"id\":1},{\"id\":2}]}"
+    }
+  ]
+}

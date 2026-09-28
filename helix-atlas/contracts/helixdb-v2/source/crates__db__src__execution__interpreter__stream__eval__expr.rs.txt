@@ -1,0 +1,21 @@
+// crates/db/src/execution/interpreter/stream/eval/expr.rs:30-49 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+30:             }
+31:             Expr::Id => row
+32:                 .current
+33:                 .as_ref()
+34:                 .map(|element| DbPropertyValue::I64(element.id().try_into().unwrap_or(i64::MAX)))
+35:                 .ok_or_else(|| HelixDbError::Query("id expression has no current element".into())),
+36:             Expr::Timestamp => Ok(DbPropertyValue::I64(chrono::Utc::now().timestamp_millis())),
+37:             Expr::DateTimeNow => Ok(DbPropertyValue::DateTime(
+38:                 chrono::Utc::now().timestamp_millis(),
+39:             )),
+40:             Expr::Constant(value) => Ok(super::super::values::ast_to_db_value(value.clone())),
+41:             Expr::Param(name) => {
+42:                 let name = ir::NonEmptyString::new(name.clone()).ok_or_else(|| {
+43:                     HelixDbError::Query("expression parameter name must not be empty".to_string())
+44:                 })?;
+45:                 self.param_value(&name)
+46:             }
+47:             Expr::Add { left, right } => self.numeric_binary_values(
+48:                 Box::pin(self.eval_expr_with_resolver(row, left, resolver)).await?,
+49:                 Box::pin(self.eval_expr_with_resolver(row, right, resolver)).await?,

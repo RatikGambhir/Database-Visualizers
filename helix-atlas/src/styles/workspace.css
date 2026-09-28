@@ -1,0 +1,141 @@
+/* ---- workspace --------------------------------------------------------- */
+
+.workspace {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+
+.query-editor {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--surface-1);
+}
+
+.query-editor > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+}
+
+.query-editor h2 {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-body {
+  display: flex;
+  min-height: 108px;
+}
+
+.gutter {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 6px 8px 12px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  text-align: right;
+  user-select: none;
+  min-width: 34px;
+}
+
+.gutter-error {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.editor-body textarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 108px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  padding: 8px 12px 8px 4px;
+}
+
+.editor-error {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border-top: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.editor-error button {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 1px 6px;
+  flex: none;
+}
+
+.editor-error em {
+  color: var(--ink-secondary);
+  font-style: normal;
+}
+
+.output {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--surface-1);
+}
+
+.tab {
+  background: transparent;
+  border-color: transparent;
+}
+
+.tab.active,
+.tab[data-state="active"] {
+  background: var(--surface-2);
+  border-color: var(--border);
+  font-weight: 600;
+}
+
+.tab-status {
+  margin-left: auto;
+  color: var(--ink-muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-body {
+  position: relative;
+  overflow: auto;
+  padding: 12px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+

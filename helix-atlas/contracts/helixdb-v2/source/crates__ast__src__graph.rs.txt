@@ -1,0 +1,45 @@
+// crates/ast/src/graph.rs:3-24 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+3: /// Type alias for node IDs.
+4: pub type NodeId = u64;
+5: 
+6: /// Type alias for edge IDs.
+7: pub type EdgeId = u64;
+8: /// A reference to nodes.
+9: #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+10: #[serde(rename_all = "snake_case")]
+11: pub enum NodeRef {
+12:     /// All nodes.
+13:     All,
+14:     /// Concrete node IDs.
+15:     Ids(Vec<NodeId>),
+16:     /// Named variable.
+17:     Var(String),
+18:     /// Runtime parameter containing IDs.
+19:     Param(String),
+20: }
+21: 
+22: impl NodeRef {
+23:     /// Reference all nodes.
+24:     pub fn all() -> Self {
+
+// crates/ast/src/graph.rs:72-91 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+72: 
+73: /// A reference to edges.
+74: #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+75: #[serde(rename_all = "snake_case")]
+76: pub enum EdgeRef {
+77:     /// All edges.
+78:     All,
+79:     /// Concrete edge IDs.
+80:     Ids(Vec<EdgeId>),
+81:     /// Named variable.
+82:     Var(String),
+83:     /// Runtime parameter containing IDs.
+84:     Param(String),
+85: }
+86: 
+87: impl EdgeRef {
+88:     /// Reference all edges.
+89:     pub fn all() -> Self {
+90:         Self::All
+91:     }

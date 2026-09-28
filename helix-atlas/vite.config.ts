@@ -31,6 +31,36 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["test/**/*.test.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html", "json-summary"],
+      include: ["src/**/*.{ts,tsx}", "tools/**/*.mjs"],
+      exclude: ["src/main.tsx", "src/components/ui/**", "tools/make-icon.mjs"],
+      thresholds: {
+        statements: 75,
+        branches: 70,
+        functions: 70,
+        lines: 75,
+        "src/app/**": {
+          statements: 90,
+          branches: 80,
+          functions: 85,
+          lines: 90,
+        },
+        "src/client.ts": {
+          statements: 95,
+          branches: 90,
+          functions: 100,
+          lines: 100,
+        },
+        "src/ui/connection/{form,useConnectionForm}.ts": {
+          statements: 100,
+          branches: 85,
+          functions: 100,
+          lines: 100,
+        },
+      },
+    },
+    include: ["test/**/*.test.{ts,tsx}"],
   },
 });

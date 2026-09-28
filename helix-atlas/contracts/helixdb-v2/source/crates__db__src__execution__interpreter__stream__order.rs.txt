@@ -1,0 +1,71 @@
+// crates/db/src/execution/interpreter/stream/order.rs:1-70 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+1: //! Runtime ordering contracts.
+2: 
+3: use std::cmp::Ordering;
+4: 
+5: use super::*;
+6: 
+7: impl<'db> ExecutionContext<'db> {
+8:     pub(in crate::execution::interpreter) async fn order(
+9:         &mut self,
+10:         input: ExecutionValue,
+11:         plan: &ir::OrderPlan,
+12:     ) -> Result<ExecutionValue> {
+13:         let mut rows = self.stream_rows(input, "order")?;
+14:         match plan {
+15:             ir::OrderPlan::ExplicitSort(keys) => {
+16:                 let mut keyed = Vec::with_capacity(rows.len());
+17:                 for row in rows {
+18:                     self.check_execution_deadline()?;
+19:                     let mut resolver = eval::RowValueResolver::new(self);
+20:                     let mut values = Vec::new();
+21:                     for key in keys.as_ref() {
+22:                         self.check_execution_deadline()?;
+23:                         values.push(resolver.row_property(&row, &key.property).await?);
+24:                     }
+25:                     keyed.push((values, row));
+26:                 }
+27:                 keyed.sort_by(|left, right| compare_order_keys(left, right, keys.as_ref()));
+28:                 rows = keyed.into_iter().map(|(_, row)| row).collect();
+29:                 Ok(ExecutionValue::Stream(rows))
+30:             }
+31:             ir::OrderPlan::RangeIndex { .. } => Ok(ExecutionValue::Stream(rows)),
+32:         }
+33:     }
+34: }
+35: 
+36: fn compare_order_keys(
+37:     left: &(Vec<Option<DbPropertyValue>>, ExecutionRow),
+38:     right: &(Vec<Option<DbPropertyValue>>, ExecutionRow),
+39:     keys: &[ir::OrderKey],
+40: ) -> Ordering {
+41:     for ((left, right), key) in left.0.iter().zip(&right.0).zip(keys) {
+42:         let ordering = match (left, right) {
+43:             (Some(left), Some(right)) => left.total_order(right),
+44:             (Some(_), None) => Ordering::Greater,
+45:             (None, Some(_)) => Ordering::Less,
+46:             (None, None) => Ordering::Equal,
+47:         };
+48:         if ordering != Ordering::Equal {
+49:             return match key.order {
+50:                 helix_ast::traversal::Order::Asc => ordering,
+51:                 helix_ast::traversal::Order::Desc => ordering.reverse(),
+52:             };
+53:         }
+54:     }
+55:     left.1.cmp(&right.1)
+56: }
+57: 
+58: #[cfg(test)]
+59: mod tests {
+60:     use helix_ast::traversal::Order;
+61:     use helix_ast::value::PropertyValue;
+62:     use helix_planner::context;
+63:     use helix_planner::ir::AtLeast;
+64: 
+65:     use super::super::super::test_support;
+66:     use super::*;
+67: 
+68:     fn row(id: u64) -> ExecutionRow {
+69:         ExecutionRow::current(ElementRef::Node(id))
+70:     }

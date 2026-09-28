@@ -1,0 +1,5842 @@
+{
+  "captures": [
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "order_by_multiple": {
+                          "input": {
+                            "where": {
+                              "input": {
+                                "nodes": {
+                                  "reference": "all"
+                                }
+                              },
+                              "predicate": {
+                                "eq": {
+                                  "left": {
+                                    "property": "$label"
+                                  },
+                                  "right": {
+                                    "constant": {
+                                      "string": "User"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "orderings": [
+                            [
+                              "name",
+                              "asc"
+                            ]
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "age": 31,
+            "id": "1",
+            "label": "User",
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "age": 28,
+            "id": "2",
+            "label": "User",
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES:User ORDER BY name LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "order_by_multiple": {
+                          "input": {
+                            "where": {
+                              "input": {
+                                "nodes": {
+                                  "reference": "all"
+                                }
+                              },
+                              "predicate": {
+                                "eq": {
+                                  "left": {
+                                    "property": "$label"
+                                  },
+                                  "right": {
+                                    "constant": {
+                                      "string": "User"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "orderings": [
+                            [
+                              "name",
+                              "asc"
+                            ]
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "name",
+          "stored_id",
+          "stored_label",
+          "stored_source",
+          "stored_target"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0",
+            "name": "Alice",
+            "stored_id": "stored-id",
+            "stored_label": "stored-label",
+            "stored_source": "stored-source",
+            "stored_target": "stored-target"
+          },
+          {
+            "id": "1",
+            "name": "Bob",
+            "stored_id": null,
+            "stored_label": null,
+            "stored_source": null,
+            "stored_target": null
+          },
+          {
+            "id": "2",
+            "name": "Carol",
+            "stored_id": null,
+            "stored_label": null,
+            "stored_source": null,
+            "stored_target": null
+          }
+        ]
+      },
+      "source": "SELECT id, name, \"id\" AS stored_id, \"label\" AS stored_label, \"source\" AS stored_source, \"target\" AS stored_target FROM NODES:User ORDER BY name LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "edges": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$label"
+                              },
+                              "right": {
+                                "constant": {
+                                  "string": "FOLLOWS"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels",
+              "__rows_from",
+              "__rows_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_from": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "__rows_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "__rows_labels": [
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS"
+        ],
+        "__rows_to": [
+          1,
+          1,
+          2,
+          0
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "source",
+          "target"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0",
+            "source": "0",
+            "target": "1"
+          },
+          {
+            "id": "1",
+            "source": "0",
+            "target": "1"
+          },
+          {
+            "id": "2",
+            "source": "0",
+            "target": "2"
+          },
+          {
+            "id": "3",
+            "source": "0",
+            "target": "0"
+          }
+        ]
+      },
+      "source": "SELECT id, source, target FROM EDGES:FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_count",
+        "request_type": "read"
+      },
+      "response": {
+        "rows": 3
+      },
+      "result": {
+        "kind": "count",
+        "value": 3
+      },
+      "source": "SELECT COUNT(*) FROM NODES"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_count",
+        "request_type": "read"
+      },
+      "response": {
+        "rows": 4
+      },
+      "result": {
+        "kind": "count",
+        "value": 4
+      },
+      "source": "SELECT COUNT(*) FROM EDGES"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      },
+                      "property": "status"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_group_count",
+        "request_type": "read"
+      },
+      "response": {
+        "rows": [
+          {
+            "count": 1,
+            "status": null
+          },
+          {
+            "count": 2,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "by": "status",
+        "groups": [
+          {
+            "count": 2,
+            "label": "active"
+          },
+          {
+            "count": 1,
+            "label": ""
+          }
+        ],
+        "kind": "groupCount"
+      },
+      "source": "SELECT COUNT(*) FROM NODES GROUP BY status"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 2
+                      },
+                      "input": {
+                        "skip": {
+                          "count": {
+                            "literal": 1
+                          },
+                          "input": {
+                            "order_by_multiple": {
+                              "input": {
+                                "where": {
+                                  "input": {
+                                    "nodes": {
+                                      "reference": "all"
+                                    }
+                                  },
+                                  "predicate": {
+                                    "and": {
+                                      "predicates": [
+                                        {
+                                          "between": {
+                                            "max": {
+                                              "constant": {
+                                                "i64": 31
+                                              }
+                                            },
+                                            "min": {
+                                              "constant": {
+                                                "i64": 28
+                                              }
+                                            },
+                                            "value": {
+                                              "property": "age"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "not": {
+                                            "predicate": {
+                                              "contains": {
+                                                "substring": {
+                                                  "constant": {
+                                                    "string": "z"
+                                                  }
+                                                },
+                                                "value": {
+                                                  "property": "name"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              },
+                              "orderings": [
+                                [
+                                  "age",
+                                  "desc"
+                                ],
+                                [
+                                  "name",
+                                  "desc"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0"
+          },
+          {
+            "id": "2"
+          }
+        ]
+      },
+      "source": "SELECT id FROM NODES WHERE age BETWEEN 28 AND 31 AND name NOT LIKE '%z%' ORDER BY age DESC, name DESC LIMIT 2 SKIP 1"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 500
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "and": {
+                              "predicates": [
+                                {
+                                  "is_in": {
+                                    "value": {
+                                      "property": "age"
+                                    },
+                                    "values": {
+                                      "constant": {
+                                        "array": [
+                                          {
+                                            "i64": 28
+                                          },
+                                          {
+                                            "i64": 31
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "or": {
+                                    "predicates": [
+                                      {
+                                        "has_key": {
+                                          "property": "optional"
+                                        }
+                                      },
+                                      {
+                                        "is_null": {
+                                          "property": "optional"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0"
+          },
+          {
+            "id": "1"
+          },
+          {
+            "id": "2"
+          }
+        ]
+      },
+      "source": "SELECT id FROM NODES WHERE age IN (28,31) AND (HAS(optional) OR optional IS NULL)"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 500
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "is_not_null": {
+                              "property": "optional"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          1
+        ],
+        "__rows_labels": [
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "1"
+          }
+        ]
+      },
+      "source": "SELECT id FROM NODES WHERE optional IS NOT NULL"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 500
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "or": {
+                              "predicates": [
+                                {
+                                  "starts_with": {
+                                    "prefix": {
+                                      "constant": {
+                                        "string": "A"
+                                      }
+                                    },
+                                    "value": {
+                                      "property": "name"
+                                    }
+                                  }
+                                },
+                                {
+                                  "ends_with": {
+                                    "suffix": {
+                                      "constant": {
+                                        "string": "ob"
+                                      }
+                                    },
+                                    "value": {
+                                      "property": "name"
+                                    }
+                                  }
+                                },
+                                {
+                                  "contains": {
+                                    "substring": {
+                                      "constant": {
+                                        "string": "aro"
+                                      }
+                                    },
+                                    "value": {
+                                      "property": "name"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0"
+          },
+          {
+            "id": "1"
+          },
+          {
+            "id": "2"
+          }
+        ]
+      },
+      "source": "SELECT id FROM NODES WHERE name LIKE 'A%' OR name LIKE '%ob' OR name LIKE '%aro%'"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 500
+                      },
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "ids": [
+                              0,
+                              1,
+                              18446744073709551615
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1
+        ],
+        "__rows_labels": [
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0"
+          },
+          {
+            "id": "1"
+          }
+        ]
+      },
+      "source": "SELECT id FROM NODES WHERE id IN (0, 0, 1, 18446744073709551615)"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 500
+                      },
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "ids": [
+                              18446744073709551615
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [],
+        "__rows_labels": [],
+        "rows": []
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": []
+      },
+      "source": "SELECT id FROM NODES WHERE id = 18446744073709551615"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 500
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "edges": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "and": {
+                              "predicates": [
+                                {
+                                  "eq": {
+                                    "left": {
+                                      "property": "$from"
+                                    },
+                                    "right": {
+                                      "constant": {
+                                        "i64": 0
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "between": {
+                                    "max": {
+                                      "constant": {
+                                        "i64": 2
+                                      }
+                                    },
+                                    "min": {
+                                      "constant": {
+                                        "i64": 0
+                                      }
+                                    },
+                                    "value": {
+                                      "property": "$to"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels",
+              "__rows_from",
+              "__rows_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_from": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "__rows_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "__rows_labels": [
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS"
+        ],
+        "__rows_to": [
+          1,
+          1,
+          2,
+          0
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0"
+          },
+          {
+            "id": "1"
+          },
+          {
+            "id": "2"
+          },
+          {
+            "id": "3"
+          }
+        ]
+      },
+      "source": "SELECT id FROM EDGES WHERE source = 0 AND target BETWEEN 0 AND 2"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "out": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "age": 31,
+            "id": "1",
+            "label": "User",
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "age": 28,
+            "id": "2",
+            "label": "User",
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES WHERE id = 0 TRAVERSE OUT FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "in": {
+                              "input": {
+                                "nodes": {
+                                  "reference": {
+                                    "ids": [
+                                      0
+                                    ]
+                                  }
+                                }
+                              },
+                              "label": "FOLLOWS"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0
+        ],
+        "__rows_labels": [
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ]
+      },
+      "source": "SELECT DISTINCT * FROM NODES WHERE id = 0 TRAVERSE IN FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "both": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1,
+          2
+        ],
+        "__rows_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "age": 31,
+            "id": "1",
+            "label": "User",
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "age": 28,
+            "id": "2",
+            "label": "User",
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES WHERE id = 0 TRAVERSE BOTH FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "out_e": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels",
+              "__rows_from",
+              "__rows_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_from": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "__rows_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "__rows_labels": [
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS"
+        ],
+        "__rows_to": [
+          1,
+          1,
+          2,
+          0
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "weight"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "1",
+            "weight": 1
+          },
+          {
+            "id": "1",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "1",
+            "weight": 1
+          },
+          {
+            "id": "2",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "2",
+            "weight": 1
+          },
+          {
+            "id": "3",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "0",
+            "weight": 1
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES WHERE id = 0 TRAVERSE OUT EDGES FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "in_e": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels",
+              "__rows_from",
+              "__rows_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_from": [
+          0
+        ],
+        "__rows_ids": [
+          3
+        ],
+        "__rows_labels": [
+          "FOLLOWS"
+        ],
+        "__rows_to": [
+          0
+        ],
+        "rows": [
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "weight"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "3",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "0",
+            "weight": 1
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES WHERE id = 0 TRAVERSE IN EDGES FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          },
+                          "label": "FOLLOWS"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__rows_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels",
+              "__rows_from",
+              "__rows_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_from": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "__rows_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "__rows_labels": [
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS"
+        ],
+        "__rows_to": [
+          1,
+          1,
+          2,
+          0
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "weight"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "id": "0",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "1",
+            "weight": 1
+          },
+          {
+            "id": "1",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "1",
+            "weight": 1
+          },
+          {
+            "id": "2",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "2",
+            "weight": 1
+          },
+          {
+            "id": "3",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "0",
+            "weight": 1
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES WHERE id = 0 TRAVERSE BOTH EDGES FOLLOWS LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "edges": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0
+        ],
+        "__rows_labels": [
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ]
+      },
+      "source": "SELECT * FROM EDGES WHERE id = 0 TRAVERSE SOURCE LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "edges": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          1
+        ],
+        "__rows_labels": [
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "age",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "1",
+            "label": "User",
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "source": "SELECT * FROM EDGES WHERE id = 0 TRAVERSE TARGET LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "other_n": {
+                          "input": {
+                            "edges": {
+                              "reference": {
+                                "ids": [
+                                  0
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1
+        ],
+        "__rows_labels": [
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "age": 31,
+            "id": "1",
+            "label": "User",
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "source": "SELECT * FROM EDGES WHERE id = 0 TRAVERSE OTHER LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__rows_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "out": {
+                              "input": {
+                                "nodes": {
+                                  "reference": {
+                                    "ids": [
+                                      0
+                                    ]
+                                  }
+                                }
+                              },
+                              "label": "FOLLOWS"
+                            }
+                          },
+                          "predicate": {
+                            "gte": {
+                              "left": {
+                                "property": "age"
+                              },
+                              "right": {
+                                "constant": {
+                                  "i64": 30
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "rows",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__rows_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__rows_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "rows",
+              "__rows_ids",
+              "__rows_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_select",
+        "request_type": "read"
+      },
+      "response": {
+        "__rows_ids": [
+          0,
+          1
+        ],
+        "__rows_labels": [
+          "User",
+          "User"
+        ],
+        "rows": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "columns": [
+          "id",
+          "label",
+          "source",
+          "target",
+          "age",
+          "large",
+          "name",
+          "optional",
+          "score",
+          "status"
+        ],
+        "kind": "rows",
+        "rows": [
+          {
+            "age": 31,
+            "id": "0",
+            "label": "User",
+            "large": "9007199254740993",
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "age": 31,
+            "id": "1",
+            "label": "User",
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "source": "SELECT * FROM NODES WHERE id = 0 TRAVERSE OUT FOLLOWS WHERE age >= 30 LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__graph_nodes",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 3
+                      },
+                      "input": {
+                        "order_by_multiple": {
+                          "input": {
+                            "dedup": {
+                              "input": {
+                                "where": {
+                                  "input": {
+                                    "nodes": {
+                                      "reference": "all"
+                                    }
+                                  },
+                                  "predicate": {
+                                    "eq": {
+                                      "left": {
+                                        "property": "$label"
+                                      },
+                                      "right": {
+                                        "constant": {
+                                          "string": "User"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "orderings": [
+                            [
+                              "name",
+                              "asc"
+                            ]
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__nodes_stream",
+                  "root": {
+                    "inject": {
+                      "variable": "__graph_nodes"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__nodes_stream"
+                        }
+                      },
+                      "properties": [
+                        "name"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__nodes_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__nodes_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__nodes_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__nodes_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 10
+                      },
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "both_e": {
+                              "input": {
+                                "inject": {
+                                  "variable": "__graph_nodes"
+                                }
+                              },
+                              "label": "FOLLOWS"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "__nodes_ids",
+              "__nodes_labels",
+              "edges",
+              "__edges_ids",
+              "__edges_labels",
+              "__edges_from",
+              "__edges_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_graph",
+        "request_type": "read"
+      },
+      "response": {
+        "__edges_from": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "__edges_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "__edges_labels": [
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS"
+        ],
+        "__edges_to": [
+          1,
+          1,
+          2,
+          0
+        ],
+        "__nodes_ids": [
+          0,
+          1,
+          2
+        ],
+        "__nodes_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "edges": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ],
+        "nodes": [
+          {
+            "name": "Alice"
+          },
+          {
+            "name": "Bob"
+          },
+          {
+            "name": "Carol"
+          }
+        ]
+      },
+      "result": {
+        "graph": {
+          "danglingEdges": 0,
+          "edges": [
+            {
+              "id": "0",
+              "label": "FOLLOWS",
+              "source": "0",
+              "target": "1"
+            },
+            {
+              "id": "1",
+              "label": "FOLLOWS",
+              "source": "0",
+              "target": "1"
+            },
+            {
+              "id": "2",
+              "label": "FOLLOWS",
+              "source": "0",
+              "target": "2"
+            },
+            {
+              "id": "3",
+              "label": "FOLLOWS",
+              "source": "0",
+              "target": "0"
+            }
+          ],
+          "nodes": [
+            {
+              "id": "0",
+              "label": "User",
+              "properties": {
+                "name": "Alice"
+              }
+            },
+            {
+              "id": "1",
+              "label": "User",
+              "properties": {
+                "name": "Bob"
+              }
+            },
+            {
+              "id": "2",
+              "label": "User",
+              "properties": {
+                "name": "Carol"
+              }
+            }
+          ],
+          "truncatedEdges": false,
+          "truncatedNodes": true
+        },
+        "kind": "graph"
+      },
+      "source": "QUERY NODES:User VIA FOLLOWS WITH name ORDER BY name LIMIT 3 EDGE LIMIT 10"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__graph_nodes",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 1
+                      },
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "nodes": {
+                              "reference": {
+                                "ids": [
+                                  18446744073709551615
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__nodes_stream",
+                  "root": {
+                    "inject": {
+                      "variable": "__graph_nodes"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__nodes_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__nodes_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__nodes_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__nodes_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__nodes_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 2000
+                      },
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "both_e": {
+                              "input": {
+                                "inject": {
+                                  "variable": "__graph_nodes"
+                                }
+                              },
+                              "label": null
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "__nodes_ids",
+              "__nodes_labels",
+              "edges",
+              "__edges_ids",
+              "__edges_labels",
+              "__edges_from",
+              "__edges_to"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_graph",
+        "request_type": "read"
+      },
+      "response": {
+        "__edges_from": [],
+        "__edges_ids": [],
+        "__edges_labels": [],
+        "__edges_to": [],
+        "__nodes_ids": [],
+        "__nodes_labels": [],
+        "edges": [],
+        "nodes": []
+      },
+      "result": {
+        "graph": {
+          "danglingEdges": 0,
+          "edges": [],
+          "nodes": [],
+          "truncatedEdges": false,
+          "truncatedNodes": false
+        },
+        "kind": "graph"
+      },
+      "source": "QUERY NODES WHERE id = 18446744073709551615 LIMIT 1"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodeLabels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "limit": {
+                          "count": {
+                            "literal": 20
+                          },
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          }
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edgeLabels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "limit": {
+                          "count": {
+                            "literal": 20
+                          },
+                          "input": {
+                            "edges": {
+                              "reference": "all"
+                            }
+                          }
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodeLabels",
+              "edgeLabels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_labels",
+        "request_type": "read"
+      },
+      "response": {
+        "edgeLabels": [
+          {
+            "$label": "FOLLOWS",
+            "count": 4
+          }
+        ],
+        "nodeLabels": [
+          {
+            "$label": "User",
+            "count": 3
+          }
+        ]
+      },
+      "result": {
+        "edges": [
+          {
+            "count": 4,
+            "label": "FOLLOWS"
+          }
+        ],
+        "kind": "labels",
+        "nodes": [
+          {
+            "count": 3,
+            "label": "User"
+          }
+        ]
+      },
+      "source": "SHOW LABELS SAMPLE 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodeLabels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "limit": {
+                          "count": {
+                            "literal": 5000
+                          },
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          }
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodeLabels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_labels",
+        "request_type": "read"
+      },
+      "response": {
+        "nodeLabels": [
+          {
+            "$label": "User",
+            "count": 3
+          }
+        ]
+      },
+      "result": {
+        "edges": null,
+        "kind": "labels",
+        "nodes": [
+          {
+            "count": 3,
+            "label": "User"
+          }
+        ]
+      },
+      "source": "SHOW NODE LABELS"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "edgeLabels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "limit": {
+                          "count": {
+                            "literal": 5000
+                          },
+                          "input": {
+                            "edges": {
+                              "reference": "all"
+                            }
+                          }
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "edgeLabels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_labels",
+        "request_type": "read"
+      },
+      "response": {
+        "edgeLabels": [
+          {
+            "$label": "FOLLOWS",
+            "count": 4
+          }
+        ]
+      },
+      "result": {
+        "edges": [
+          {
+            "count": 4,
+            "label": "FOLLOWS"
+          }
+        ],
+        "kind": "labels",
+        "nodes": null
+      },
+      "source": "SHOW EDGE LABELS"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodeCount",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edgeCount",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "nodeLabels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "limit": {
+                          "count": {
+                            "literal": 5000
+                          },
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          }
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edgeLabels",
+                  "root": {
+                    "group_count": {
+                      "input": {
+                        "limit": {
+                          "count": {
+                            "literal": 5000
+                          },
+                          "input": {
+                            "edges": {
+                              "reference": "all"
+                            }
+                          }
+                        }
+                      },
+                      "property": "$label"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodeCount",
+              "edgeCount",
+              "nodeLabels",
+              "edgeLabels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_stats",
+        "request_type": "read"
+      },
+      "response": {
+        "edgeCount": 4,
+        "edgeLabels": [
+          {
+            "$label": "FOLLOWS",
+            "count": 4
+          }
+        ],
+        "nodeCount": 3,
+        "nodeLabels": [
+          {
+            "$label": "User",
+            "count": 3
+          }
+        ]
+      },
+      "result": {
+        "edgeCount": 4,
+        "edgeLabels": [
+          {
+            "count": 4,
+            "label": "FOLLOWS"
+          }
+        ],
+        "kind": "stats",
+        "nodeCount": 3,
+        "nodeLabels": [
+          {
+            "count": 3,
+            "label": "User"
+          }
+        ]
+      },
+      "source": "SHOW STATS"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__entity",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_stream",
+                  "root": {
+                    "inject": {
+                      "variable": "__entity"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "entity",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "degree",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__neighbours_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 20
+                      },
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "both": {
+                              "input": {
+                                "inject": {
+                                  "variable": "__entity"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "neighbours",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__neighbours_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__neighbours_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__neighbours_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__neighbours_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__neighbours_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "entity",
+              "__entity_ids",
+              "__entity_labels",
+              "degree",
+              "edges",
+              "__edges_ids",
+              "__edges_labels",
+              "__edges_from",
+              "__edges_to",
+              "neighbours",
+              "__neighbours_ids",
+              "__neighbours_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_describe_node",
+        "request_type": "read"
+      },
+      "response": {
+        "__edges_from": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "__edges_ids": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "__edges_labels": [
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS",
+          "FOLLOWS"
+        ],
+        "__edges_to": [
+          1,
+          1,
+          2,
+          0
+        ],
+        "__entity_ids": [
+          0
+        ],
+        "__entity_labels": [
+          "User"
+        ],
+        "__neighbours_ids": [
+          0,
+          1,
+          2
+        ],
+        "__neighbours_labels": [
+          "User",
+          "User",
+          "User"
+        ],
+        "degree": 4,
+        "edges": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 1,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 2,
+            "$label": "FOLLOWS",
+            "weight": 1
+          },
+          {
+            "$id": 3,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ],
+        "entity": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ],
+        "neighbours": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          },
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          },
+          {
+            "$id": 2,
+            "$label": "User",
+            "age": 28,
+            "name": "Carol",
+            "score": 2
+          }
+        ]
+      },
+      "result": {
+        "degree": 4,
+        "edges": [
+          {
+            "id": "0",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "1"
+          },
+          {
+            "id": "1",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "1"
+          },
+          {
+            "id": "2",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "2"
+          },
+          {
+            "id": "3",
+            "label": "FOLLOWS",
+            "source": "0",
+            "target": "0"
+          }
+        ],
+        "endpoints": null,
+        "entity": "nodes",
+        "id": "0",
+        "kind": "describe",
+        "label": "User",
+        "neighbours": [
+          {
+            "id": "0",
+            "label": "User",
+            "properties": {
+              "age": 31,
+              "id": "stored-id",
+              "label": "stored-label",
+              "large": "9007199254740993",
+              "name": "Alice",
+              "optional": null,
+              "score": 2,
+              "source": "stored-source",
+              "status": "active",
+              "target": "stored-target"
+            }
+          },
+          {
+            "id": "1",
+            "label": "User",
+            "properties": {
+              "age": 31,
+              "name": "Bob",
+              "optional": "present",
+              "score": 1,
+              "status": "active"
+            }
+          },
+          {
+            "id": "2",
+            "label": "User",
+            "properties": {
+              "age": 28,
+              "name": "Carol",
+              "score": 2
+            }
+          }
+        ],
+        "properties": {
+          "age": 31,
+          "id": "stored-id",
+          "label": "stored-label",
+          "large": "9007199254740993",
+          "name": "Alice",
+          "optional": null,
+          "score": 2,
+          "source": "stored-source",
+          "status": "active",
+          "target": "stored-target"
+        }
+      },
+      "source": "DESCRIBE NODE 0 LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__entity",
+                  "root": {
+                    "edges": {
+                      "reference": {
+                        "ids": [
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_stream",
+                  "root": {
+                    "inject": {
+                      "variable": "__entity"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "entity",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__sourceNode_stream",
+                  "root": {
+                    "in_n": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "sourceNode",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__sourceNode_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__sourceNode_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__sourceNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__sourceNode_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__sourceNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__targetNode_stream",
+                  "root": {
+                    "out_n": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "targetNode",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__targetNode_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__targetNode_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__targetNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__targetNode_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__targetNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "entity",
+              "__entity_ids",
+              "__entity_labels",
+              "__entity_from",
+              "__entity_to",
+              "sourceNode",
+              "__sourceNode_ids",
+              "__sourceNode_labels",
+              "targetNode",
+              "__targetNode_ids",
+              "__targetNode_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_describe_edge",
+        "request_type": "read"
+      },
+      "response": {
+        "__entity_from": [
+          0
+        ],
+        "__entity_ids": [
+          0
+        ],
+        "__entity_labels": [
+          "FOLLOWS"
+        ],
+        "__entity_to": [
+          1
+        ],
+        "__sourceNode_ids": [
+          0
+        ],
+        "__sourceNode_labels": [
+          "User"
+        ],
+        "__targetNode_ids": [
+          1
+        ],
+        "__targetNode_labels": [
+          "User"
+        ],
+        "entity": [
+          {
+            "$id": 0,
+            "$label": "FOLLOWS",
+            "weight": 1
+          }
+        ],
+        "sourceNode": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "age": 31,
+            "id": "stored-id",
+            "label": "stored-label",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null,
+            "score": 2,
+            "source": "stored-source",
+            "status": "active",
+            "target": "stored-target"
+          }
+        ],
+        "targetNode": [
+          {
+            "$id": 1,
+            "$label": "User",
+            "age": 31,
+            "name": "Bob",
+            "optional": "present",
+            "score": 1,
+            "status": "active"
+          }
+        ]
+      },
+      "result": {
+        "degree": null,
+        "edges": [],
+        "endpoints": {
+          "source": {
+            "id": "0",
+            "label": "User",
+            "properties": {
+              "age": 31,
+              "id": "stored-id",
+              "label": "stored-label",
+              "large": "9007199254740993",
+              "name": "Alice",
+              "optional": null,
+              "score": 2,
+              "source": "stored-source",
+              "status": "active",
+              "target": "stored-target"
+            }
+          },
+          "target": {
+            "id": "1",
+            "label": "User",
+            "properties": {
+              "age": 31,
+              "name": "Bob",
+              "optional": "present",
+              "score": 1,
+              "status": "active"
+            }
+          }
+        },
+        "entity": "edges",
+        "id": "0",
+        "kind": "describe",
+        "label": "FOLLOWS",
+        "neighbours": [],
+        "properties": {
+          "weight": 1
+        }
+      },
+      "source": "DESCRIBE EDGE 0 LIMIT 20"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__entity",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          18446744073709551615
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_stream",
+                  "root": {
+                    "inject": {
+                      "variable": "__entity"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "entity",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "degree",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 200
+                      },
+                      "input": {
+                        "both_e": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__edges_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__edges_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__edges_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__neighbours_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 200
+                      },
+                      "input": {
+                        "dedup": {
+                          "input": {
+                            "both": {
+                              "input": {
+                                "inject": {
+                                  "variable": "__entity"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "neighbours",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__neighbours_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__neighbours_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__neighbours_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__neighbours_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__neighbours_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "entity",
+              "__entity_ids",
+              "__entity_labels",
+              "degree",
+              "edges",
+              "__edges_ids",
+              "__edges_labels",
+              "__edges_from",
+              "__edges_to",
+              "neighbours",
+              "__neighbours_ids",
+              "__neighbours_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_describe_node",
+        "request_type": "read"
+      },
+      "response": {
+        "__edges_from": [],
+        "__edges_ids": [],
+        "__edges_labels": [],
+        "__edges_to": [],
+        "__entity_ids": [],
+        "__entity_labels": [],
+        "__neighbours_ids": [],
+        "__neighbours_labels": [],
+        "degree": 0,
+        "edges": [],
+        "entity": [],
+        "neighbours": []
+      },
+      "result": {
+        "degree": 0,
+        "edges": [],
+        "endpoints": null,
+        "entity": "nodes",
+        "id": null,
+        "kind": "describe",
+        "label": null,
+        "neighbours": [],
+        "properties": {}
+      },
+      "source": "DESCRIBE NODE 18446744073709551615"
+    },
+    {
+      "request": {
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__entity",
+                  "root": {
+                    "edges": {
+                      "reference": {
+                        "ids": [
+                          18446744073709551615
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_stream",
+                  "root": {
+                    "inject": {
+                      "variable": "__entity"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "entity",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__entity_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__entity_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__sourceNode_stream",
+                  "root": {
+                    "in_n": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "sourceNode",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__sourceNode_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__sourceNode_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__sourceNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__sourceNode_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__sourceNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__targetNode_stream",
+                  "root": {
+                    "out_n": {
+                      "input": {
+                        "inject": {
+                          "variable": "__entity"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "targetNode",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__targetNode_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__targetNode_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__targetNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__targetNode_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__targetNode_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "entity",
+              "__entity_ids",
+              "__entity_labels",
+              "__entity_from",
+              "__entity_to",
+              "sourceNode",
+              "__sourceNode_ids",
+              "__sourceNode_labels",
+              "targetNode",
+              "__targetNode_ids",
+              "__targetNode_labels"
+            ]
+          }
+        },
+        "query_name": "helix_visualizer_describe_edge",
+        "request_type": "read"
+      },
+      "response": {
+        "__entity_from": [],
+        "__entity_ids": [],
+        "__entity_labels": [],
+        "__entity_to": [],
+        "__sourceNode_ids": [],
+        "__sourceNode_labels": [],
+        "__targetNode_ids": [],
+        "__targetNode_labels": [],
+        "entity": [],
+        "sourceNode": [],
+        "targetNode": []
+      },
+      "result": {
+        "degree": null,
+        "edges": [],
+        "endpoints": {
+          "source": null,
+          "target": null
+        },
+        "entity": "edges",
+        "id": null,
+        "kind": "describe",
+        "label": null,
+        "neighbours": [],
+        "properties": {}
+      },
+      "source": "DESCRIBE EDGE 18446744073709551615"
+    }
+  ],
+  "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b"
+}

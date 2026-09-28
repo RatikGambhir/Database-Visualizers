@@ -1,0 +1,82 @@
+// crates/db/src/execution/interpreter/stream/projection/rows.rs:49-98 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+49:             self.check_execution_deadline()?;
+50:             let mut resolver = eval::RowValueResolver::new(self);
+51:             let mut object = BTreeMap::new();
+52:             for name in names.as_ref() {
+53:                 self.check_execution_deadline()?;
+54:                 if let Some(value) = resolver.row_property(row, name).await? {
+55:                     object.insert(name.as_ref().to_string(), value);
+56:                 }
+57:             }
+58:             if !object.is_empty() {
+59:                 scalars.push(ExecutionScalar::Object(object));
+60:             }
+61:         }
+62:         Ok(ExecutionValue::Scalars(scalars))
+63:     }
+64: 
+65:     async fn project_value_map(
+66:         &self,
+67:         rows: &[ExecutionRow],
+68:         selection: &ir::PropertySelection,
+69:     ) -> Result<ExecutionValue> {
+70:         let mut scalars = Vec::with_capacity(rows.len());
+71:         for row in rows {
+72:             self.check_execution_deadline()?;
+73:             let object = match selection {
+74:                 ir::PropertySelection::All => {
+75:                     let mut object = helpers::properties_to_object(self.row_properties(row).await?);
+76:                     if let Some(element) = row.current.as_ref() {
+77:                         object.insert(
+78:                             "$id".to_string(),
+79:                             DbPropertyValue::I64(element.id().try_into().unwrap_or(i64::MAX)),
+80:                         );
+81:                     }
+82:                     object
+83:                 }
+84:                 ir::PropertySelection::Selected(names) => {
+85:                     let mut resolver = eval::RowValueResolver::new(self);
+86:                     let mut object = BTreeMap::new();
+87:                     for name in names.as_ref() {
+88:                         self.check_execution_deadline()?;
+89:                         if let Some(value) = resolver.row_property(row, name).await? {
+90:                             object.insert(name.as_ref().to_string(), value);
+91:                         }
+92:                     }
+93:                     object
+94:                 }
+95:             };
+96:             scalars.push(ExecutionScalar::Object(object));
+97:         }
+98:         Ok(ExecutionValue::Scalars(scalars))
+
+// crates/db/src/execution/interpreter/stream/projection/rows.rs:186-214 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+186:         Ok(ExecutionValue::Scalars(scalars))
+187:     }
+188: 
+189:     async fn project_edge_properties(&self, rows: &[ExecutionRow]) -> Result<ExecutionValue> {
+190:         let mut scalars = Vec::new();
+191:         for row in rows {
+192:             self.check_execution_deadline()?;
+193:             let Some(ElementRef::Edge(edge_id)) = row.current.as_ref() else {
+194:                 continue;
+195:             };
+196:             let Some((from, to)) = self.get_edge_endpoints(*edge_id).await? else {
+197:                 continue;
+198:             };
+199:             let mut object = helpers::properties_to_object(self.row_properties(row).await?);
+200:             object.insert(
+201:                 "$id".to_string(),
+202:                 DbPropertyValue::I64((*edge_id).try_into().unwrap_or(i64::MAX)),
+203:             );
+204:             object.insert(
+205:                 "$from".to_string(),
+206:                 DbPropertyValue::I64(from.try_into().unwrap_or(i64::MAX)),
+207:             );
+208:             object.insert(
+209:                 "$to".to_string(),
+210:                 DbPropertyValue::I64(to.try_into().unwrap_or(i64::MAX)),
+211:             );
+212:             scalars.push(ExecutionScalar::Object(object));
+213:         }
+214:         Ok(ExecutionValue::Scalars(scalars))

@@ -1,0 +1,38 @@
+// crates/ast/src/value.rs:13-49 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+13: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+14: #[serde(rename_all = "snake_case")]
+15: pub enum PropertyValue {
+16:     /// Null value.
+17:     Null,
+18:     /// Boolean value.
+19:     Bool(bool),
+20:     /// 64-bit signed integer.
+21:     I64(i64),
+22:     /// UTC datetime stored as epoch milliseconds.
+23:     DateTime(i64),
+24:     /// 64-bit floating point.
+25:     F64(f64),
+26:     /// 32-bit floating point.
+27:     F32(f32),
+28:     /// UTF-8 string.
+29:     String(String),
+30:     /// Raw bytes.
+31:     Bytes(Vec<u8>),
+32:     /// Array of i64 values.
+33:     I64Array(Vec<i64>),
+34:     /// Array of f64 values.
+35:     F64Array(Vec<f64>),
+36:     /// Array of f32 values.
+37:     F32Array(Vec<f32>),
+38:     /// Array of strings.
+39:     StringArray(Vec<String>),
+40:     /// Heterogeneous array.
+41:     Array(Vec<PropertyValue>),
+42:     /// Object/map value.
+43:     Object(BTreeMap<String, PropertyValue>),
+44: }
+45: 
+46: impl PropertyValue {
+47:     /// Create a heterogeneous array value.
+48:     pub fn array<V>(values: impl IntoIterator<Item = V>) -> Self
+49:     where

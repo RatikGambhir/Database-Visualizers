@@ -1,0 +1,206 @@
+{
+  "retrievedOn": "2026-09-28",
+  "openApiUrl": "https://www.helix-db.com/openapi.json",
+  "openApiVersion": "2.0.0",
+  "openApiSha256": "7a273a35af479bc88a2f79aff1be114f3b9c6b33e76add21cb57e2fe86ba6275",
+  "upstreamRepository": "https://github.com/HelixDB/helix-db",
+  "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
+  "upstreamDescription": "v3.3.0-69-g64eaaca3",
+  "sdkRustVersion": "3.0.0",
+  "sources": [
+    {
+      "path": "crates/ast/src/batch.rs",
+      "wholeSourceSha256": "56a76c275560fae57340300f19ba3bcc33e01668c8482b03f2d712cd379e6976",
+      "excerpt": "source/crates__ast__src__batch.rs.txt",
+      "lines": [
+        [
+          5,
+          45
+        ]
+      ]
+    },
+    {
+      "path": "crates/ast/src/traversal.rs",
+      "wholeSourceSha256": "bebd4787c3839ee334ac6098a93a155a8a2c6f10171aabcfac81f391e07cc371",
+      "excerpt": "source/crates__ast__src__traversal.rs.txt",
+      "lines": [
+        [
+          62,
+          72
+        ],
+        [
+          116,
+          138
+        ],
+        [
+          248,
+          448
+        ],
+        [
+          536,
+          551
+        ],
+        [
+          592,
+          606
+        ]
+      ]
+    },
+    {
+      "path": "crates/ast/src/expr.rs",
+      "wholeSourceSha256": "0c429bbb1a554b14a11706e7bbc9c0f3e296be425dbcc1dc196c9eeb19db3e66",
+      "excerpt": "source/crates__ast__src__expr.rs.txt",
+      "lines": [
+        [
+          5,
+          42
+        ],
+        [
+          171,
+          182
+        ],
+        [
+          261,
+          319
+        ]
+      ]
+    },
+    {
+      "path": "crates/ast/src/value.rs",
+      "wholeSourceSha256": "2535148aa484e220a21af18c959e466785aab35903b60608ee4e29ed936844a8",
+      "excerpt": "source/crates__ast__src__value.rs.txt",
+      "lines": [
+        [
+          13,
+          49
+        ]
+      ]
+    },
+    {
+      "path": "crates/ast/src/graph.rs",
+      "wholeSourceSha256": "c39673c61654738459cf6540839a0f3fa84ee175e6881a2bac8e36058046ddba",
+      "excerpt": "source/crates__ast__src__graph.rs.txt",
+      "lines": [
+        [
+          3,
+          24
+        ],
+        [
+          72,
+          91
+        ]
+      ]
+    },
+    {
+      "path": "crates/ast/src/projection.rs",
+      "wholeSourceSha256": "00fb045103bc9299f25017501dc8db29a4f6b6de8179c867949364600dd021e5",
+      "excerpt": "source/crates__ast__src__projection.rs.txt",
+      "lines": [
+        [
+          5,
+          16
+        ],
+        [
+          52,
+          64
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/query_service.rs",
+      "wholeSourceSha256": "a0eb82037978eefa6e006f6c6524b3be8065bf75201dcbeae26d2233b16f116e",
+      "excerpt": "source/crates__db__src__query_service.rs.txt",
+      "lines": [
+        [
+          426,
+          565
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/stream/eval/property.rs",
+      "wholeSourceSha256": "d2144b6ca9cb61a6ddaa1f8350a7ff7f22a53f5b84ec14691a307277c6bcb7b0",
+      "excerpt": "source/crates__db__src__execution__interpreter__stream__eval__property.rs.txt",
+      "lines": [
+        [
+          29,
+          88
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/stream/eval/expr.rs",
+      "wholeSourceSha256": "9f8385c29749fc0476449909790dbe60520605270125d75c3a6001f1a34b3b2a",
+      "excerpt": "source/crates__db__src__execution__interpreter__stream__eval__expr.rs.txt",
+      "lines": [
+        [
+          30,
+          49
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/stream/sets/variables.rs",
+      "wholeSourceSha256": "319a51a1e599709002c62972b7fd35683d2bf545cb1ad86ec58975563c85a9ea",
+      "excerpt": "source/crates__db__src__execution__interpreter__stream__sets__variables.rs.txt",
+      "lines": [
+        [
+          9,
+          53
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/stream/projection/rows.rs",
+      "wholeSourceSha256": "a65c7638a3a67bcdc05a0cb72b154580085cb882d2cc55e99bf22462167457c2",
+      "excerpt": "source/crates__db__src__execution__interpreter__stream__projection__rows.rs.txt",
+      "lines": [
+        [
+          49,
+          98
+        ],
+        [
+          186,
+          214
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/stream/order.rs",
+      "wholeSourceSha256": "2a8e9c48d304e331e3039db37bca374def779b12750666bcc3bc4c1b4a41ef64",
+      "excerpt": "source/crates__db__src__execution__interpreter__stream__order.rs.txt",
+      "lines": [
+        [
+          1,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/stream/aggregate.rs",
+      "wholeSourceSha256": "1f650577e93979727a46a26d6722a3e96e555c3469a30eb4af9258d3d1f28546",
+      "excerpt": "source/crates__db__src__execution__interpreter__stream__aggregate.rs.txt",
+      "lines": [
+        [
+          94,
+          128
+        ]
+      ]
+    },
+    {
+      "path": "crates/db/src/execution/interpreter/access/expand.rs",
+      "wholeSourceSha256": "94f1e824039a2861ec9b1a835fbeaf5909498559dfb57a9ec751826522a0da21",
+      "excerpt": "source/crates__db__src__execution__interpreter__access__expand.rs.txt",
+      "lines": [
+        [
+          15,
+          42
+        ],
+        [
+          52,
+          99
+        ]
+      ]
+    }
+  ]
+}

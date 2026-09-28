@@ -17,8 +17,16 @@ export interface Span {
   column: number;
 }
 
+export type Protocol = "legacyV1" | "v2";
+export type Deployment = "local" | "databaseCloud" | "sharedCloud";
+
 export interface ConnectionView {
+  revision: number;
+  endpoint: string;
   url: string;
+  protocol: Protocol;
+  deployment: Deployment;
+  databaseId: string | null;
   hasApiKey: boolean;
   timeoutMs: number;
   writerOnly: boolean;
@@ -26,6 +34,9 @@ export interface ConnectionView {
 
 export interface ConnectionUpdate {
   url: string;
+  protocol: Protocol;
+  deployment: Deployment;
+  databaseId?: string | null;
   /** Omitted keeps the saved key only for the same endpoint. */
   apiKey?: string;
   timeoutMs: number;
@@ -33,6 +44,11 @@ export interface ConnectionUpdate {
 }
 
 export interface CompiledQuery {
+  protocol: Protocol;
+  executionKind: "read";
+  endpointPath: string;
+  endpoint: string;
+  connectionRevision: number;
   transportJson: string;
   summary: string;
 }
@@ -48,6 +64,7 @@ export interface ProbeResponse {
 }
 
 export interface SchemaResponse {
+  connectionRevision: number;
   schema: Schema;
   durationMs: number;
 }
@@ -58,11 +75,15 @@ interface ErrorPayload {
   detail?: unknown;
   span?: unknown;
   hint?: unknown;
+  status?: unknown;
+  code?: unknown;
 }
 
 /** A structured error produced by the Rust command boundary. */
 export class BackendError extends Error {
   readonly kind: string;
+  readonly status: number | null;
+  readonly code: string | null;
   readonly detail: string | null;
   readonly span: Span | null;
   readonly hint: string | null;
@@ -71,6 +92,8 @@ export class BackendError extends Error {
     message: string,
     options: {
       kind?: string;
+      status?: number | null;
+      code?: string | null;
       detail?: string | null;
       span?: Span | null;
       hint?: string | null;
@@ -79,6 +102,8 @@ export class BackendError extends Error {
     super(message);
     this.name = "BackendError";
     this.kind = options.kind ?? "backend";
+    this.status = options.status ?? null;
+    this.code = options.code ?? null;
     this.detail = options.detail ?? null;
     this.span = options.span ?? null;
     this.hint = options.hint ?? null;
@@ -106,6 +131,8 @@ function asBackendError(error: unknown): BackendError {
     return new BackendError(
       typeof payload.message === "string" ? payload.message : String(error),
       {
+        status: typeof payload.status === "number" ? payload.status : null,
+        code: typeof payload.code === "string" ? payload.code : null,
         kind: typeof payload.kind === "string" ? payload.kind : "backend",
         detail: typeof payload.detail === "string" ? payload.detail : null,
         span: isSpan(payload.span) ? payload.span : null,

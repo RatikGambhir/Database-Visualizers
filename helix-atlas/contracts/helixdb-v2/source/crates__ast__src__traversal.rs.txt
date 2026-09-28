@@ -1,0 +1,275 @@
+// crates/ast/src/traversal.rs:62-72 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+62: #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+63: #[serde(rename_all = "snake_case")]
+64: pub enum Order {
+65:     /// Ascending.
+66:     #[default]
+67:     Asc,
+68:     /// Descending.
+69:     Desc,
+70: }
+71: 
+72: /// Direction used by shortest-path traversal.
+
+// crates/ast/src/traversal.rs:116-138 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+116: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+117: #[serde(rename_all = "snake_case")]
+118: pub enum AstNode {
+119:     /// Implicit branch input for sub-traversals.
+120:     Context,
+121:     /// Start from nodes.
+122:     Nodes { reference: NodeRef },
+123:     /// Start from nodes matching a predicate.
+124:     NodesWhere { predicate: SourcePredicate },
+125:     /// Start from edges.
+126:     Edges { reference: EdgeRef },
+127:     /// Start from edges matching a predicate.
+128:     EdgesWhere { predicate: SourcePredicate },
+129:     /// Vector search on nodes.
+130:     VectorSearchNodes {
+131:         /// Label scope.
+132:         label: String,
+133:         /// Vector property.
+134:         property: String,
+135:         /// Optional tenant value.
+136:         #[serde(default, skip_serializing_if = "Option::is_none")]
+137:         tenant_value: Option<PropertyInput>,
+138:         /// Query vector input.
+
+// crates/ast/src/traversal.rs:248-448 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+248:     },
+249:     /// Node-to-node outgoing traversal.
+250:     Out {
+251:         /// Input stream.
+252:         input: Box<AstNode>,
+253:         /// Optional edge label.
+254:         #[serde(default, skip_serializing_if = "Option::is_none")]
+255:         label: Option<String>,
+256:     },
+257:     /// Node-to-node incoming traversal.
+258:     In {
+259:         /// Input stream.
+260:         input: Box<AstNode>,
+261:         /// Optional edge label.
+262:         #[serde(default, skip_serializing_if = "Option::is_none")]
+263:         label: Option<String>,
+264:     },
+265:     /// Node-to-node both-direction traversal.
+266:     Both {
+267:         /// Input stream.
+268:         input: Box<AstNode>,
+269:         /// Optional edge label.
+270:         #[serde(default, skip_serializing_if = "Option::is_none")]
+271:         label: Option<String>,
+272:     },
+273:     /// Node-to-edge outgoing traversal.
+274:     OutE {
+275:         /// Input stream.
+276:         input: Box<AstNode>,
+277:         /// Optional edge label.
+278:         #[serde(default, skip_serializing_if = "Option::is_none")]
+279:         label: Option<String>,
+280:     },
+281:     /// Node-to-edge incoming traversal.
+282:     InE {
+283:         /// Input stream.
+284:         input: Box<AstNode>,
+285:         /// Optional edge label.
+286:         #[serde(default, skip_serializing_if = "Option::is_none")]
+287:         label: Option<String>,
+288:     },
+289:     /// Node-to-edge both-direction traversal.
+290:     BothE {
+291:         /// Input stream.
+292:         input: Box<AstNode>,
+293:         /// Optional edge label.
+294:         #[serde(default, skip_serializing_if = "Option::is_none")]
+295:         label: Option<String>,
+296:     },
+297:     /// Edge-to-target-node traversal.
+298:     OutN { input: Box<AstNode> },
+299:     /// Edge-to-source-node traversal.
+300:     InN { input: Box<AstNode> },
+301:     /// Edge-to-other-node traversal.
+302:     OtherN { input: Box<AstNode> },
+303:     /// Property equality filter.
+304:     Has {
+305:         /// Input stream.
+306:         input: Box<AstNode>,
+307:         /// Property name.
+308:         property: String,
+309:         /// Literal value.
+310:         value: PropertyValue,
+311:     },
+312:     /// Label filter.
+313:     HasLabel {
+314:         /// Input stream.
+315:         input: Box<AstNode>,
+316:         /// Label.
+317:         label: String,
+318:     },
+319:     /// Property existence filter.
+320:     HasKey {
+321:         /// Input stream.
+322:         input: Box<AstNode>,
+323:         /// Property.
+324:         property: String,
+325:     },
+326:     /// Predicate filter.
+327:     Where {
+328:         /// Input stream.
+329:         input: Box<AstNode>,
+330:         /// Predicate.
+331:         predicate: Predicate,
+332:     },
+333:     /// Deduplicate stream.
+334:     Dedup { input: Box<AstNode> },
+335:     /// Keep elements within a variable.
+336:     Within {
+337:         /// Input stream.
+338:         input: Box<AstNode>,
+339:         /// Variable name.
+340:         variable: String,
+341:     },
+342:     /// Keep elements outside a variable.
+343:     Without {
+344:         /// Input stream.
+345:         input: Box<AstNode>,
+346:         /// Variable name.
+347:         variable: String,
+348:     },
+349:     /// Edge property filter.
+350:     EdgeHas {
+351:         /// Input stream.
+352:         input: Box<AstNode>,
+353:         /// Property.
+354:         property: String,
+355:         /// Value or expression.
+356:         value: PropertyInput,
+357:     },
+358:     /// Edge label filter.
+359:     EdgeHasLabel {
+360:         /// Input stream.
+361:         input: Box<AstNode>,
+362:         /// Label.
+363:         label: String,
+364:     },
+365:     /// Limit.
+366:     Limit {
+367:         /// Input stream.
+368:         input: Box<AstNode>,
+369:         /// Bound.
+370:         count: StreamBound,
+371:     },
+372:     /// Skip.
+373:     Skip {
+374:         /// Input stream.
+375:         input: Box<AstNode>,
+376:         /// Bound.
+377:         count: StreamBound,
+378:     },
+379:     /// Range.
+380:     Range {
+381:         /// Input stream.
+382:         input: Box<AstNode>,
+383:         /// Start bound.
+384:         start: StreamBound,
+385:         /// End bound.
+386:         end: StreamBound,
+387:     },
+388:     /// Store current stream.
+389:     As { input: Box<AstNode>, name: String },
+390:     /// Store current stream.
+391:     Store { input: Box<AstNode>, name: String },
+392:     /// Select named stream.
+393:     Select { input: Box<AstNode>, name: String },
+394:     /// Capture current element as row binding.
+395:     Bind { input: Box<AstNode>, name: String },
+396:     /// Inject variable stream.
+397:     Inject {
+398:         /// Optional input stream. `None` means source inject.
+399:         #[serde(default, skip_serializing_if = "Option::is_none")]
+400:         input: Option<Box<AstNode>>,
+401:         /// Variable name.
+402:         variable: String,
+403:     },
+404:     /// Count terminal.
+405:     Count { input: Box<AstNode> },
+406:     /// Exists terminal.
+407:     Exists { input: Box<AstNode> },
+408:     /// ID terminal.
+409:     Id { input: Box<AstNode> },
+410:     /// Label terminal.
+411:     Label { input: Box<AstNode> },
+412:     /// Values terminal.
+413:     Values {
+414:         /// Input stream.
+415:         input: Box<AstNode>,
+416:         /// Properties.
+417:         properties: Vec<String>,
+418:     },
+419:     /// Value-map terminal.
+420:     ValueMap {
+421:         /// Input stream.
+422:         input: Box<AstNode>,
+423:         /// Optional property filter.
+424:         #[serde(default, skip_serializing_if = "Option::is_none")]
+425:         properties: Option<Vec<String>>,
+426:     },
+427:     /// Project terminal.
+428:     Project {
+429:         /// Input stream.
+430:         input: Box<AstNode>,
+431:         /// Projection list.
+432:         projections: Vec<Projection>,
+433:     },
+434:     /// Row-binding projection terminal.
+435:     ProjectBindings {
+436:         /// Input stream.
+437:         input: Box<AstNode>,
+438:         /// Projection list.
+439:         projections: Vec<BindingProjection>,
+440:         /// Deduplicate projected rows.
+441:         distinct: bool,
+442:     },
+443:     /// Edge properties terminal.
+444:     EdgeProperties { input: Box<AstNode> },
+445:     /// Create index.
+446:     CreateIndex {
+447:         /// Index specification.
+448:         spec: IndexSpec,
+
+// crates/ast/src/traversal.rs:536-551 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+536:     OrderBy {
+537:         /// Input stream.
+538:         input: Box<AstNode>,
+539:         /// Property.
+540:         property: String,
+541:         /// Order.
+542:         order: Order,
+543:     },
+544:     /// Order by multiple properties.
+545:     OrderByMultiple {
+546:         /// Input stream.
+547:         input: Box<AstNode>,
+548:         /// Ordered keys.
+549:         orderings: Vec<(String, Order)>,
+550:     },
+551:     /// Repeat traversal.
+
+// crates/ast/src/traversal.rs:592-606 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+592:     Group {
+593:         /// Input stream.
+594:         input: Box<AstNode>,
+595:         /// Property.
+596:         property: String,
+597:     },
+598:     /// Group-count terminal.
+599:     GroupCount {
+600:         /// Input stream.
+601:         input: Box<AstNode>,
+602:         /// Property.
+603:         property: String,
+604:     },
+605:     /// Aggregate terminal.
+606:     AggregateBy {

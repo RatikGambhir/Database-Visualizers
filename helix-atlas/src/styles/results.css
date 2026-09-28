@@ -1,0 +1,186 @@
+/* ---- results ----------------------------------------------------------- */
+
+.hint-text {
+  color: var(--ink-muted);
+  margin: 4px 0;
+}
+
+.panel-error {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  margin: 0 0 10px;
+}
+
+.panel-error pre {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+  max-height: 180px;
+  overflow: auto;
+}
+
+.table-scroll {
+  overflow: auto;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--hairline);
+  padding: 0;
+  white-space: nowrap;
+}
+
+thead th button {
+  width: 100%;
+  background: transparent;
+  border-color: transparent;
+  border-radius: 0;
+  text-align: left;
+  padding: 6px 10px;
+}
+
+tbody td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--hairline);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+tbody tr:hover td {
+  background: var(--surface-2);
+}
+
+th.numeric,
+td.numeric {
+  text-align: right;
+}
+
+.cell-link {
+  background: transparent;
+  border-color: transparent;
+  padding: 0;
+  color: var(--accent);
+  font-family: var(--mono);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cell-link.muted {
+  color: var(--ink-secondary);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 18px;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  align-self: flex-start;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.stat-caption {
+  color: var(--ink-muted);
+}
+
+.stat-row {
+  display: flex;
+  gap: 12px;
+}
+
+.stats-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.split-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.count-bars h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.count-bars ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.count-bars li {
+  display: grid;
+  grid-template-columns: minmax(70px, 130px) 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-secondary);
+}
+
+.bar-track {
+  height: 10px;
+  background: var(--surface-2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.bar-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-secondary);
+}
+
+.wire-view pre {
+  margin: 8px 0 0;
+  padding: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: auto;
+  font-size: 11.5px;
+  line-height: 1.5;
+}

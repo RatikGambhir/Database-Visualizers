@@ -2,6 +2,7 @@
 
 Status: proposed language design; no mutation functionality implemented.
 Research date: 2026-09-27.
+Read compatibility update: 2026-09-28; v2 reads are implemented, mutations remain proposed.
 
 ## 1. Recommendation
 
@@ -37,17 +38,20 @@ second parser in the frontend:
 
 | Location | Existing behavior | Consequence for mutations |
 | --- | --- | --- |
-| [`src-tauri/src/hql.rs`](../src-tauri/src/hql.rs) | Lexer, single-statement parser, read AST, validator, wire compiler | Extend statement dispatch and add mutation-specific validation |
-| `compile_statement` in that file | Hard-codes `request_type: "read"` and a flat `query.queries` batch | An insert needs a real write compiler, not a keyword substitution |
-| `compile_select` in that file | `SELECT *` emits separate property and identity traversals | Never duplicate a mutation traversal to implement `RETURNING *` |
-| [`src-tauri/src/lib.rs`](../src-tauri/src/lib.rs) | `compile_query`, `run_query`, HTTP execution at `/v1/query` | Preserve the compile/execute separation; select a verified protocol adapter |
+| [`src-tauri/src/hql.rs`](../src-tauri/src/hql.rs) and [`hql/`](../src-tauri/src/hql/) | Small public facade; separate lexer, parser, typed read plan, validation, legacy/v2 lowerers and tests, all below 1000 lines | Extend statement dispatch in focused modules and add mutation-specific validation |
+| [`hql/legacy.rs`](../src-tauri/src/hql/legacy.rs) / [`hql/v2.rs`](../src-tauri/src/hql/v2.rs) | Independent flat v1 and nested v2 read compilation; explicit protocol metadata | Add a fixture-backed v2 write lowerer; legacy connections stay read-only |
+| v2 `Batch::entities` / `inject` projections | Materializes a read selection once; derives exact ID, label, properties and directed endpoints from the same bound stream | Reuse the association contract, but never duplicate creation to implement `RETURNING *` |
+| [`src-tauri/src/lib.rs`](../src-tauri/src/lib.rs) | Source-only compile/run, versioned endpoints, immutable connection snapshots, read-only probes/schema | Preserve compile/execute separation; add explicit write execution/header rules |
 | [`src-tauri/src/results.rs`](../src-tauri/src/results.rs) and [`src/results.ts`](../src/results.ts) | Read result variants and string IDs at IPC | Add mutation receipts and returned entities |
 | [`src-tauri/src/schema.rs`](../src-tauri/src/schema.rs) | Infers labels/properties from bounded samples | Samples are suggestions, not authoritative schema constraints |
-| [`src/client.ts`](../src/client.ts) | Source-only compile/run calls | Add typed parameter bindings and execution-kind metadata |
-| [`tools/mock-helix-server.mjs`](../tools/mock-helix-server.mjs) | Rejects write requests | Extend the mock, but also validate against a real server |
+| [`src/client.ts`](../src/client.ts) | Source-only calls; protocol, resolved endpoint, revision and `executionKind: "read"` metadata | Extend execution kinds and add typed parameter bindings |
+| [`tools/mock-helix-server.mjs`](../tools/mock-helix-server.mjs) | Strict endpoint/envelope-matched v1/v2 reads; rejects writes; captured v2 corpus replay | Extend mutation semantics only after real-server verification |
 
-The README describes entity IDs as `i64`; the compiler also parses numeric
-literals as signed integers or floats. This matters for the protocol decision below.
+Integer tokens now retain their original decimal text. Read validation separates
+signed `i64` property integers from unsigned `u64` entity source IDs, including
+zero. IDs remain decimal strings across IPC. Legacy references retain signed
+bounds. The pinned v2 server's virtual-ID expression limitations below still
+matter for mutation receipts and follow-up reads.
 
 ## 3. Research and design choices
 
@@ -94,23 +98,55 @@ not infer uniqueness from an edge's endpoints and label.
 
 ### Critical compatibility finding
 
-The app emits flat traversal batches to `/v1/query`. Current public HTTP docs
-describe `/v2/query` with nested operation trees and matching `request_type` and
-`query.read`/`query.write` variants. They also distinguish requiring a writer
-from waiting for durable writes. These docs do **not** establish write support
-for this app's existing v1 endpoint.
+The app now supports explicit legacy v1 flat reads and v2 nested operation-tree
+reads across the editor, probes, schema, automatic graph loading, and inspector.
+Old saved settings migrate to legacy v1; new settings default to v2. There is no
+cross-version fallback. The public API distinguishes `query.read`/`query.write`
+and requiring a writer from waiting for durable writes. This establishes no
+write capability on an arbitrary connection or legacy endpoint.
 [Source: HelixDB HTTP API](https://docs.helix-db.com/database/helix-db/query-guides/http-api).
 
 **Decision:** target the documented v2 write contract for new mutation support.
 Keep existing v1 reads working. Before enabling mutations on a connection,
-verify its server version and contract and supply matching v2 read support for
-viewing the inserted graph. A legacy v1 write adapter is a separate deliverable
+verify its server version and write contract and exercise matching v2 follow-up
+reads of created entities. A legacy v1 write adapter is a separate deliverable
 only if the actual target server's source/contract proves it is supported.
 Do not guess a flat v1 write envelope, or replay a failed write against another
 endpoint as a fallback.
 
-Research used official documentation; no live HelixDB mutation or deployed-server
-compatibility test was performed for this plan. The writing-data, data-model,
+The separate [HelixSQL read API compatibility plan](helixsql-read-api-compatibility.md)
+records the implemented v2 adapter, explicit legacy v1 mode, connection migration,
+and verification for all read paths. The contract is pinned to official commit
+`64eaaca3026446fb08d1a5331215decc9fe0725b`, OpenAPI `2.0.0` (checksum and SDK/source
+versions in [the manifest](../contracts/helixdb-v2/manifest.json)). Actual isolated
+server captures cover 41 HTTP contract fixtures and 33 compiled HelixSQL reads;
+[verification](../contracts/helixdb-v2/verification.md) states the exact scope.
+
+Read implementation resolved the following prerequisites:
+
+- One materialized selection plus `inject` preserves row order and duplicate
+  identities. Exact raw `id` terminals avoid virtual-property clamping; edge
+  `in_n` is source and `out_n` is target in v2. Returned IDs stay unsigned and
+  exact through decoding and UI. Future returning projections must use one
+  created binding and validate projection cardinality.
+- The pinned value type has no `u64` constant. Virtual-ID property expressions
+  and projections clamp above `i64::MAX`. `DESCRIBE` and standalone initial
+  `WHERE id =` / `id IN (…)` lower to exact unsigned source references; general
+  high-ID comparisons and virtual-ID ordering/grouping are rejected locally.
+  Do not invent an unsigned predicate encoding or reuse clamped ID projections
+  in receipts. Actual upstream entities above `i64::MAX` still need a specially
+  seeded fixture before claiming full-range creation/readback conformance.
+- Read headers never include durability or cache warming. Require-writer is a
+  requirement, not routing or retry. Shared Cloud database selection is explicit;
+  live Cloud gateway conformance and real upstream legacy parity remain unverified.
+
+The read implementation is usable independently. It does not pass mutation
+atomicity, endpoint-integrity, write-header, or unknown-outcome gates.
+
+Original mutation research used official documentation. The read verification
+used fixture-only writes to seed an isolated native server; those writes do not
+prove mutation rollback, integrity, generated-ID ranges, or deployment behavior.
+The writing-data, data-model,
 parameters, and secondary-index pages were retrieved through their official
 Markdown endpoints when the browser fetch could not open the HTML pages.
 
@@ -314,9 +350,11 @@ are intentionally separate from the shared value grammar.
 Keep integer token text exact until its semantic type is known: ordinary integer
 properties initially use `i64`, while v2 entity IDs require `u64` including zero.
 Reject overflows instead of falling back to floats. All IPC IDs remain strings.
-Before shipping full-range IDs, update read predicates, `DESCRIBE`, decoding,
-schema-generated queries, and graph lookup paths too; a created ID must remain
-usable everywhere in the application.
+Read lookup, `DESCRIBE`, decoding, schema-generated queries and graph lookup paths
+now preserve unsigned source IDs and string identities. Before shipping full-range
+mutation IDs, verify actual high-ID creation/readback and returning projections.
+Follow-up ID predicates must use the supported source-reference lowering, or fail
+with a useful diagnostic where the pinned server cannot express the comparison.
 
 Start property literals with strings, signed integers, finite floats, booleans,
 and null. Arrays, objects, date-time, bytes, and vector literals need separate
@@ -452,8 +490,11 @@ be assumed usable immediately.
 4. Verify writer/durability behavior and error outcomes. Select the connection's
    protocol through read-only discovery or explicit configuration, not test writes
    against a user's database.
-5. Implement required v2 read compatibility and full-range ID support before
-   exposing v2 writes in the UI. Legacy v1-only connections stay read-only.
+5. Reuse the implemented v2 read adapter from the
+   [read API compatibility plan](helixsql-read-api-compatibility.md). Verify
+   created-ID readback (including actual unsigned-range fixtures), returning
+   association, and all operation-specific limits before exposing writes.
+   Legacy v1-only connections stay read-only; a count probe grants no write capability.
 
 Gate: real-server fixtures prove atomic creation and usable returned identities.
 If the server cannot enforce endpoint integrity, add the necessary server-side
@@ -461,7 +502,8 @@ validation/transaction support before enabling edge inserts.
 
 ### Phase 1 — Parser, typed plan, and compile preview
 
-Extend `hql.rs` or split its mutation pieces into focused modules as needed.
+Extend the small `hql.rs` facade and existing `hql/` modules; put mutation AST,
+validation and lowering in focused files. Keep each source file below 1000 lines.
 Add grammar, spans, semantic validation, parameters, local scopes, result shapes,
 and read/write classification. Preserve all existing read parsing behavior.
 
@@ -475,7 +517,7 @@ Implement one-request atomic execution, typed ID transport, returning projection
 and confirmed/unknown outcome reporting. Support literal and parameterized IDs.
 
 Gate: one creation per tuple, no extra writes from `RETURNING *`, no automatic
-retry, correct writer routing, and rollback of a failed multi-row statement/block.
+retry, correct writer requirements/targeting, and rollback of a failed multi-row statement/block.
 
 ### Phase 3 — Editor and graph integration
 

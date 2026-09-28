@@ -1,0 +1,114 @@
+// crates/ast/src/expr.rs:5-42 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+5: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+6: #[serde(rename_all = "snake_case")]
+7: pub enum Expr {
+8:     /// Property reference.
+9:     Property(String),
+10:     /// Current element ID.
+11:     Id,
+12:     /// Current UTC timestamp in milliseconds.
+13:     Timestamp,
+14:     /// Current typed datetime.
+15:     DateTimeNow,
+16:     /// Literal value.
+17:     Constant(PropertyValue),
+18:     /// Runtime parameter reference.
+19:     Param(String),
+20:     /// Addition.
+21:     Add { left: Box<Expr>, right: Box<Expr> },
+22:     /// Subtraction.
+23:     Sub { left: Box<Expr>, right: Box<Expr> },
+24:     /// Multiplication.
+25:     Mul { left: Box<Expr>, right: Box<Expr> },
+26:     /// Division.
+27:     Div { left: Box<Expr>, right: Box<Expr> },
+28:     /// Modulo.
+29:     Mod { left: Box<Expr>, right: Box<Expr> },
+30:     /// Numeric negation.
+31:     Neg { expr: Box<Expr> },
+32:     /// Conditional expression.
+33:     Case {
+34:         /// Ordered predicate/expression branches.
+35:         when_then: Vec<WhenThen>,
+36:         /// Optional fallback expression.
+37:         #[serde(default, skip_serializing_if = "Option::is_none")]
+38:         else_expr: Option<Box<Expr>>,
+39:     },
+40: }
+41: 
+42: /// One conditional expression branch.
+
+// crates/ast/src/expr.rs:171-182 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+171: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+172: #[serde(rename_all = "snake_case")]
+173: pub enum StreamBound {
+174:     /// Literal bound.
+175:     Literal(usize),
+176:     /// Runtime expression bound.
+177:     Expr(Expr),
+178: }
+179: 
+180: impl StreamBound {
+181:     /// Create a literal bound.
+182:     pub fn literal(value: usize) -> Self {
+
+// crates/ast/src/expr.rs:261-319 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+261: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+262: #[serde(rename_all = "snake_case")]
+263: pub enum Predicate {
+264:     /// Equality comparison.
+265:     Eq { left: Expr, right: Expr },
+266:     /// Inequality comparison.
+267:     Neq { left: Expr, right: Expr },
+268:     /// Greater-than comparison.
+269:     Gt { left: Expr, right: Expr },
+270:     /// Greater-than-or-equal comparison.
+271:     Gte { left: Expr, right: Expr },
+272:     /// Less-than comparison.
+273:     Lt { left: Expr, right: Expr },
+274:     /// Less-than-or-equal comparison.
+275:     Lte { left: Expr, right: Expr },
+276:     /// Inclusive range comparison.
+277:     Between { value: Expr, min: Expr, max: Expr },
+278:     /// Property exists.
+279:     HasKey { property: String },
+280:     /// Property is null or missing.
+281:     IsNull { property: String },
+282:     /// Property exists and is not null.
+283:     IsNotNull { property: String },
+284:     /// String starts with prefix.
+285:     StartsWith { value: Expr, prefix: Expr },
+286:     /// String ends with suffix.
+287:     EndsWith { value: Expr, suffix: Expr },
+288:     /// String contains substring.
+289:     Contains { value: Expr, substring: Expr },
+290:     /// Value is in a list.
+291:     IsIn { value: Expr, values: Expr },
+292:     /// Logical AND.
+293:     And { predicates: Vec<Predicate> },
+294:     /// Logical OR.
+295:     Or { predicates: Vec<Predicate> },
+296:     /// Logical NOT.
+297:     Not { predicate: Box<Predicate> },
+298:     /// Explicit expression comparison.
+299:     Compare {
+300:         /// Left expression.
+301:         left: Expr,
+302:         /// Operator.
+303:         op: CompareOp,
+304:         /// Right expression.
+305:         right: Expr,
+306:     },
+307: }
+308: 
+309: /// Source predicates are intentionally the same AST shape as normal predicates.
+310: pub type SourcePredicate = Predicate;
+311: 
+312: impl Predicate {
+313:     /// Create an equality predicate.
+314:     pub fn eq(property: impl Into<String>, value: impl Into<PropertyInput>) -> Self {
+315:         Self::Eq {
+316:             left: Expr::prop(property),
+317:             right: value.into().into_expr(),
+318:         }
+319:     }

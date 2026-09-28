@@ -1,0 +1,141 @@
+// crates/db/src/query_service.rs:426-565 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+426: fn returned_value_to_json(
+427:     value: ReturnedValue,
+428: ) -> std::result::Result<JsonValue, QueryServiceError> {
+429:     match value {
+430:         ReturnedValue::Present(value) => execution_value_to_json(value),
+431:         ReturnedValue::EmptyList => Ok(JsonValue::Array(Vec::new())),
+432:         ReturnedValue::EmptyObject => Ok(JsonValue::Null),
+433:     }
+434: }
+435: 
+436: fn execution_value_to_json(
+437:     value: ExecutionValue,
+438: ) -> std::result::Result<JsonValue, QueryServiceError> {
+439:     match value {
+440:         ExecutionValue::Stream(rows) => rows
+441:             .into_iter()
+442:             .map(execution_row_to_json)
+443:             .collect::<std::result::Result<Vec<_>, QueryServiceError>>()
+444:             .map(JsonValue::Array),
+445:         ExecutionValue::FoldedStream(rows) => rows
+446:             .into_rows()
+447:             .into_iter()
+448:             .map(execution_row_to_json)
+449:             .collect::<std::result::Result<Vec<_>, QueryServiceError>>()
+450:             .map(JsonValue::Array),
+451:         ExecutionValue::Count(count) => Ok(JsonValue::from(count)),
+452:         ExecutionValue::Bool(value) => Ok(JsonValue::Bool(value)),
+453:         ExecutionValue::Scalars(values) => values
+454:             .into_iter()
+455:             .map(execution_scalar_to_json)
+456:             .collect::<std::result::Result<Vec<_>, QueryServiceError>>()
+457:             .map(JsonValue::Array),
+458:         ExecutionValue::IndexDdlReceipt(receipt) => {
+459:             serde_json::to_value(receipt).map_err(QueryServiceError::JsonSerialize)
+460:         }
+461:         ExecutionValue::IndexOperationStatus(status) => {
+462:             serde_json::to_value(status).map_err(QueryServiceError::JsonSerialize)
+463:         }
+464:     }
+465: }
+466: 
+467: fn execution_row_to_json(
+468:     row: crate::execution::interpreter::ExecutionRow,
+469: ) -> std::result::Result<JsonValue, QueryServiceError> {
+470:     match row.current.as_ref() {
+471:         Some(current)
+472:             if row.bindings.is_empty()
+473:                 && row.binding_virtual_properties.is_empty()
+474:                 && !row.path_visible
+475:                 && !row.sack.is_visible() =>
+476:         {
+477:             let id = match current {
+478:                 ElementRef::Node(id) | ElementRef::Edge(id) => *id,
+479:             };
+480:             let mut object = serde_json::Map::from_iter([("$id".to_string(), JsonValue::from(id))]);
+481:             for property in ["$distance", "$score"] {
+482:                 let property = NonEmptyString::new(property)
+483:                     .expect("public virtual property name is non-empty");
+484:                 if let Some(value) = row.virtual_properties.get(&property) {
+485:                     object.insert(property.into_string(), property_value_to_json(value)?);
+486:                 }
+487:             }
+488:             return Ok(JsonValue::Object(object));
+489:         }
+490:         Some(_) | None => {}
+491:     }
+492: 
+493:     let path = row.path_visible.then(|| {
+494:         JsonValue::Array(
+495:             row.path
+496:                 .elements()
+497:                 .iter()
+498:                 .cloned()
+499:                 .map(element_ref_to_json)
+500:                 .collect(),
+501:         )
+502:     });
+503:     let sack = if row.sack.is_visible() {
+504:         Some(
+505:             row.sack
+506:                 .value()
+507:                 .cloned()
+508:                 .map(property_value_to_json)
+509:                 .transpose()?
+510:                 .unwrap_or(JsonValue::Null),
+511:         )
+512:     } else {
+513:         None
+514:     };
+515:     let bindings = row
+516:         .bindings
+517:         .into_iter()
+518:         .map(|(name, value)| (name.into_string(), element_ref_to_json(value)))
+519:         .collect::<serde_json::Map<_, _>>();
+520:     let mut object = serde_json::Map::from_iter([
+521:         (
+522:             "current".to_string(),
+523:             row.current.map_or(JsonValue::Null, element_ref_to_json),
+524:         ),
+525:         ("bindings".to_string(), JsonValue::Object(bindings)),
+526:     ]);
+527:     if let Some(path) = path {
+528:         object.insert("path".to_string(), path);
+529:     }
+530:     if let Some(sack) = sack {
+531:         object.insert("sack".to_string(), sack);
+532:     }
+533:     Ok(JsonValue::Object(object))
+534: }
+535: 
+536: fn execution_scalar_to_json(
+537:     value: ExecutionScalar,
+538: ) -> std::result::Result<JsonValue, QueryServiceError> {
+539:     match value {
+540:         ExecutionScalar::NodeId(id) | ExecutionScalar::EdgeId(id) => Ok(JsonValue::from(id)),
+541:         ExecutionScalar::String(value) => Ok(JsonValue::String(value)),
+542:         ExecutionScalar::Value(value) => property_value_to_json(value),
+543:         ExecutionScalar::Object(values) => values
+544:             .into_iter()
+545:             .map(|(name, value)| Ok((name, property_value_to_json(value)?)))
+546:             .collect::<std::result::Result<serde_json::Map<_, _>, QueryServiceError>>()
+547:             .map(JsonValue::Object),
+548:     }
+549: }
+550: 
+551: fn property_value_to_json(
+552:     value: DbPropertyValue,
+553: ) -> std::result::Result<JsonValue, QueryServiceError> {
+554:     serde_json::to_value(value).map_err(QueryServiceError::JsonSerialize)
+555: }
+556: 
+557: fn element_ref_to_json(value: ElementRef) -> JsonValue {
+558:     let (kind, id) = match value {
+559:         ElementRef::Node(id) => ("node", id),
+560:         ElementRef::Edge(id) => ("edge", id),
+561:     };
+562:     JsonValue::Object(serde_json::Map::from_iter([(
+563:         kind.to_string(),
+564:         JsonValue::from(id),
+565:     )]))

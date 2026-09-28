@@ -1,0 +1,181 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Theme } from "../graph/palette";
+import { QueryEditor } from "../ui/QueryEditor";
+import { ResultsPanel } from "../ui/ResultsPanel";
+import { Sidebar } from "../ui/Sidebar";
+import { InspectorPane } from "./InspectorPane";
+import type { OutputTab } from "./types";
+import type { Workspace } from "./useWorkspace";
+
+type Props = {
+  theme: Theme;
+  workspace: Pick<
+    Workspace,
+    | "schema"
+    | "schemaError"
+    | "schemaLoading"
+    | "history"
+    | "refreshSchema"
+    | "setQuery"
+    | "query"
+    | "onRun"
+    | "run"
+    | "compileState"
+    | "desktop"
+    | "outputTab"
+    | "setOutputTab"
+    | "status"
+    | "inspect"
+    | "wireCompiled"
+    | "executedWire"
+    | "detail"
+    | "detailLoading"
+    | "detailError"
+    | "expandNode"
+  >;
+};
+
+export function QueryWorkspace({ workspace, theme }: Props) {
+  const {
+    schema,
+    schemaError,
+    schemaLoading,
+    history,
+    refreshSchema,
+    setQuery,
+    query,
+    onRun,
+    run,
+    compileState,
+    desktop,
+    outputTab,
+    setOutputTab,
+    status,
+    inspect,
+    wireCompiled,
+    executedWire,
+    detail,
+    detailLoading,
+    detailError,
+    expandNode,
+  } = workspace;
+  return (
+    <div className="app-body query-view">
+      <Sidebar
+        schema={schema}
+        schemaError={schemaError}
+        refreshing={schemaLoading}
+        history={history}
+        onRefreshSchema={refreshSchema}
+        onUseQuery={setQuery}
+      />
+
+      <section className="workspace">
+        <QueryEditor
+          value={query}
+          onChange={setQuery}
+          onRun={onRun}
+          running={run.running}
+          error={compileState.error}
+          available={desktop}
+        />
+
+        <Tabs
+          className="output"
+          value={outputTab}
+          onValueChange={(value) => setOutputTab(value as OutputTab)}
+        >
+          <TabsList className="tabs">
+            <span className="output-label">02 / OUTPUT</span>
+            <TabsTrigger value="results" className="tab">
+              Results
+            </TabsTrigger>
+            <TabsTrigger
+              value="wire"
+              className="tab"
+              disabled={!compileState.compiled}
+            >
+              Wire format
+            </TabsTrigger>
+
+            <span className="tab-status">
+              {run.running && "running…"}
+              {!run.running &&
+                run.durationMs !== null &&
+                `${run.durationMs} ms`}
+              {!run.running && run.compiled && ` · ${run.compiled.summary}`}
+            </span>
+          </TabsList>
+
+          <TabsContent value="results" className="tab-body">
+            {run.error && (
+              <div className="panel-error" role="alert">
+                <strong>{run.error.message}</strong>
+                {run.error.detail && <pre>{run.error.detail}</pre>}
+              </div>
+            )}
+
+            {!run.error &&
+              (run.result ? (
+                <ResultsPanel
+                  result={run.result}
+                  theme={theme}
+                  onInspect={inspect}
+                />
+              ) : (
+                <EmptyQueryState connected={status.kind === "connected"} />
+              ))}
+          </TabsContent>
+
+          <TabsContent value="wire" className="tab-body">
+            {run.error && (
+              <div className="panel-error" role="alert">
+                <strong>{run.error.message}</strong>
+                {run.error.detail && <pre>{run.error.detail}</pre>}
+              </div>
+            )}
+            {wireCompiled && (
+              <div className="wire-view">
+                <p className="hint-text">
+                  {executedWire ? "Executed read at" : "Read preview for"}{" "}
+                  <code>POST {wireCompiled.endpoint}</code> ·{" "}
+                  {wireCompiled.protocol === "legacyV1" ? "legacy v1" : "v2"}.
+                </p>
+                <pre>{wireCompiled.transportJson}</pre>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      <InspectorPane
+        detail={detail}
+        loading={detailLoading}
+        error={detailError}
+        onInspect={inspect}
+        onFocusInGraph={expandNode}
+      />
+    </div>
+  );
+}
+
+function EmptyQueryState({ connected }: { connected: boolean }) {
+  return (
+    <div className="empty-state">
+      <span className="empty-icon" aria-hidden="true">
+        {connected ? "↗" : "◇"}
+      </span>
+      <span className="eyebrow">YOUR WORKSPACE</span>
+      <h2>
+        {connected
+          ? "A question is a starting point."
+          : "Start with a connection."}
+      </h2>
+      <p>
+        {connected
+          ? "Run the query above to reveal your data. Try a starting point from the left rail if you need one."
+          : "Connect to a local or remote HelixDB instance, then explore its shape with a query."}
+      </p>
+    </div>
+  );
+}

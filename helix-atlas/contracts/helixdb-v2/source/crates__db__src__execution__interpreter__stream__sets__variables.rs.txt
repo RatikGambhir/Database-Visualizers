@@ -1,0 +1,46 @@
+// crates/db/src/execution/interpreter/stream/sets/variables.rs:9-53 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+9:         &mut self,
+10:         input: ExecutionValue,
+11:         op: &exec::ExecVariableOp,
+12:     ) -> Result<ExecutionValue> {
+13:         match op {
+14:             exec::ExecVariableOp::SourceInject { variable } => {
+15:                 self.variable_value(variable).cloned()
+16:             }
+17:             exec::ExecVariableOp::Stream(op) => match op {
+18:                 ir::StreamVariableOp::As(name) | ir::StreamVariableOp::Store(name) => {
+19:                     self.variables.insert(name.clone(), input.clone());
+20:                     Ok(input)
+21:                 }
+22:                 ir::StreamVariableOp::Select(name) => self.variable_value(name).cloned(),
+23:                 ir::StreamVariableOp::Bind(name) => Ok(ExecutionValue::Stream(bind_rows(
+24:                     self.stream_rows(input, "bind")?,
+25:                     name,
+26:                 ))),
+27:                 ir::StreamVariableOp::Inject(name) => {
+28:                     let mut rows = self.stream_rows(input, "inject")?;
+29:                     let injected =
+30:                         self.stream_rows(self.variable_value(name)?.clone(), "inject")?;
+31:                     rows.extend(injected);
+32:                     Ok(ExecutionValue::Stream(rows))
+33:                 }
+34:                 ir::StreamVariableOp::Within(name) => {
+35:                     let allowed = self.element_set(self.variable_value(name)?)?;
+36:                     Ok(ExecutionValue::Stream(filter_within_rows(
+37:                         self.stream_rows(input, "within")?,
+38:                         &allowed,
+39:                     )))
+40:                 }
+41:                 ir::StreamVariableOp::Without(name) => {
+42:                     let rejected = self.element_set(self.variable_value(name)?)?;
+43:                     Ok(ExecutionValue::Stream(filter_without_rows(
+44:                         self.stream_rows(input, "without")?,
+45:                         &rejected,
+46:                     )))
+47:                 }
+48:             },
+49:         }
+50:     }
+51: }
+52: 
+53: pub(in crate::execution::interpreter::stream) fn bind_rows(

@@ -77,7 +77,10 @@ pub fn infer_schema_fields(rows: &[Row]) -> Vec<SchemaField> {
     let mut fields: BTreeMap<String, FieldBuilder> = BTreeMap::new();
     for row in rows {
         for (name, value) in row {
-            if matches!(name.as_str(), "id" | "label" | "source" | "target") {
+            if matches!(
+                name.as_str(),
+                "$id" | "$label" | "$from" | "$to" | "$from.$id" | "$to.$id"
+            ) {
                 continue;
             }
             let field = fields.entry(name.clone()).or_default();
@@ -94,11 +97,17 @@ pub fn infer_schema_fields(rows: &[Row]) -> Vec<SchemaField> {
     }
     fields
         .into_iter()
-        .map(|(name, field)| SchemaField {
-            name,
-            types: field.types,
-            values: field.values,
-            present_on: field.present_on,
+        .map(|(name, mut field)| {
+            // Infer from exact Rust JSON numbers, then protect samples at IPC.
+            for value in &mut field.values {
+                crate::results::make_value_safe(value);
+            }
+            SchemaField {
+                name,
+                types: field.types,
+                values: field.values,
+                present_on: field.present_on,
+            }
         })
         .collect()
 }
@@ -162,12 +171,12 @@ mod tests {
     fn infers_fields_and_excludes_entity_identity() {
         let rows = vec![
             Map::from_iter([
-                ("id".into(), json!(1)),
+                ("$id".into(), json!(1)),
                 ("name".into(), json!("Alice")),
                 ("age".into(), json!(30)),
             ]),
             Map::from_iter([
-                ("id".into(), json!(2)),
+                ("$id".into(), json!(2)),
                 ("name".into(), json!("Bob")),
                 ("age".into(), Value::Null),
             ]),
@@ -200,3 +209,40 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod compatibility_tests {
+    use super::*;
+    #[test]
+    fn stored_names_are_distinct_from_entity_metadata() {
+        let row: Row = serde_json::from_str(
+            r#"{"$id":0,"$label":"User","id":"external","label":"stored","source":"crm","target":"import"}"#,
+        ).unwrap();
+        let fields = infer_schema_fields(&[row]);
+        assert_eq!(
+            fields
+                .iter()
+                .map(|field| field.name.as_str())
+                .collect::<Vec<_>>(),
+            ["id", "label", "source", "target"]
+        );
+        assert!(fields.iter().all(|field| field.types == ["string"]));
+    }
+    #[test]
+    fn large_integer_samples_remain_integer_typed_and_exact_in_ipc() {
+        let row: Row = serde_json::from_str(
+            r#"{"external":9007199254740993,"nested":{"unsigned":18446744073709551615}}"#,
+        )
+        .unwrap();
+        let fields = infer_schema_fields(&[row]);
+        assert_eq!(fields[0].types, vec!["integer"]);
+        assert_eq!(fields[0].values[0], serde_json::json!("9007199254740993"));
+        assert_eq!(
+            fields[1].values[0]["unsigned"],
+            serde_json::json!("18446744073709551615")
+        );
+    }
+}
+
+#[cfg(test)]
+mod boundary_tests;

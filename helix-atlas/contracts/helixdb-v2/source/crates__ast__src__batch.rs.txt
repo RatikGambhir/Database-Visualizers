@@ -1,0 +1,42 @@
+// crates/ast/src/batch.rs:5-45 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+5: #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+6: #[serde(rename_all = "snake_case")]
+7: pub enum BatchCondition {
+8:     /// Variable is not empty.
+9:     VarNotEmpty(String),
+10:     /// Variable is empty.
+11:     VarEmpty(String),
+12:     /// Variable has at least this size.
+13:     VarMinSize(String, usize),
+14:     /// Previous query result was not empty.
+15:     PrevNotEmpty,
+16: }
+17: 
+18: /// A named batch query.
+19: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+20: pub struct NamedQuery {
+21:     /// Variable name.
+22:     #[serde(default, skip_serializing_if = "Option::is_none")]
+23:     pub name: Option<String>,
+24:     /// Traversal root.
+25:     pub root: AstNode,
+26:     /// Optional condition.
+27:     #[serde(default, skip_serializing_if = "Option::is_none")]
+28:     pub condition: Option<BatchCondition>,
+29: }
+30: 
+31: /// Batch entry.
+32: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+33: #[serde(rename_all = "snake_case")]
+34: pub enum BatchEntry {
+35:     /// Single query.
+36:     Query(Box<NamedQuery>),
+37:     /// Execute body once per object in a parameter array.
+38:     ForEach {
+39:         /// Top-level parameter.
+40:         param: String,
+41:         /// Body entries.
+42:         body: Vec<BatchEntry>,
+43:     },
+44: }
+45: 

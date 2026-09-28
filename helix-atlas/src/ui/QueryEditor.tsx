@@ -21,12 +21,24 @@ interface Props {
  * Deliberately not a full code editor: the language is small, and a plain
  * textarea keeps selection, undo and IME behaviour native.
  */
-export function QueryEditor({ value, onChange, onRun, running, available, error }: Props) {
+export function QueryEditor({
+  value,
+  onChange,
+  onRun,
+  running,
+  available,
+  error,
+}: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const lineCount = useMemo(() => Math.max(value.split("\n").length, 1), [value]);
+  const lineCount = useMemo(
+    () => Math.max(value.split("\n").length, 1),
+    [value],
+  );
+  const canRun = available && !running && error === null;
 
   useEffect(() => {
-    if (window.matchMedia("(min-width: 761px)").matches) textareaRef.current?.focus();
+    if (window.matchMedia("(min-width: 761px)").matches)
+      textareaRef.current?.focus();
   }, []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -34,7 +46,7 @@ export function QueryEditor({ value, onChange, onRun, running, available, error 
     // across several lines the way SQL usually is.
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
       event.preventDefault();
-      onRun();
+      if (canRun) onRun();
       return;
     }
     if (event.key === "Tab") {
@@ -54,7 +66,10 @@ export function QueryEditor({ value, onChange, onRun, running, available, error 
     const textarea = textareaRef.current;
     if (!textarea || !error?.span) return;
     textarea.focus();
-    textarea.setSelectionRange(error.span.start, Math.max(error.span.end, error.span.start + 1));
+    textarea.setSelectionRange(
+      error.span.start,
+      Math.max(error.span.end, error.span.start + 1),
+    );
   };
 
   return (
@@ -65,9 +80,23 @@ export function QueryEditor({ value, onChange, onRun, running, available, error 
           <h2>Query editor</h2>
         </div>
         <div className="editor-actions">
-          <span className="run-shortcut"><Kbd>{navigator.platform.includes("Mac") ? "⌘" : "Ctrl"}</Kbd><Kbd>↵</Kbd></span>
-          <Button variant="default" className="primary" onClick={onRun} disabled={running || !available} title={available ? "Run the current query" : "Run queries in the Tauri desktop app"}>
-            <span aria-hidden="true">{running ? "·" : "▶"}</span>{running ? "Running…" : "Run query"}
+          <span className="run-shortcut">
+            <Kbd>{navigator.platform.includes("Mac") ? "⌘" : "Ctrl"}</Kbd>
+            <Kbd>↵</Kbd>
+          </span>
+          <Button
+            variant="default"
+            className="primary"
+            onClick={onRun}
+            disabled={!canRun}
+            title={
+              available
+                ? "Run the current query"
+                : "Run queries in the Tauri desktop app"
+            }
+          >
+            <span aria-hidden="true">{running ? "·" : "▶"}</span>
+            {running ? "Running…" : "Run query"}
           </Button>
         </div>
       </header>
@@ -75,7 +104,12 @@ export function QueryEditor({ value, onChange, onRun, running, available, error 
       <div className="editor-body">
         <div className="gutter" aria-hidden="true">
           {Array.from({ length: lineCount }, (_, index) => (
-            <span key={index} className={error?.span?.line === index + 1 ? "gutter-error" : undefined}>
+            <span
+              key={index}
+              className={
+                error?.span?.line === index + 1 ? "gutter-error" : undefined
+              }
+            >
               {index + 1}
             </span>
           ))}
@@ -96,7 +130,9 @@ export function QueryEditor({ value, onChange, onRun, running, available, error 
       {error && (
         <p className="editor-error" role="alert">
           <Button variant="link" onClick={jumpToError}>
-            {error.span ? `line ${error.span.line}:${error.span.column}` : "error"}
+            {error.span
+              ? `line ${error.span.line}:${error.span.column}`
+              : "error"}
           </Button>
           <span>{error.message}</span>
           {error.hint && <em>{error.hint}</em>}

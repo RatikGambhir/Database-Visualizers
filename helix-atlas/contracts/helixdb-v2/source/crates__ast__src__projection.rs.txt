@@ -1,0 +1,28 @@
+// crates/ast/src/projection.rs:5-16 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+5: #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+6: pub struct PropertyProjection {
+7:     /// Source property.
+8:     pub source: String,
+9:     /// Output name.
+10:     pub alias: String,
+11: }
+12: 
+13: impl PropertyProjection {
+14:     /// Project without rename.
+15:     pub fn new(name: impl Into<String>) -> Self {
+16:         let name = name.into();
+
+// crates/ast/src/projection.rs:52-64 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+52: #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+53: #[serde(rename_all = "snake_case")]
+54: pub enum Projection {
+55:     /// Property projection.
+56:     Property(PropertyProjection),
+57:     /// Expression projection.
+58:     Expr(ExprProjection),
+59: }
+60: 
+61: impl Projection {
+62:     /// Project a property.
+63:     pub fn property(source: impl Into<String>, alias: impl Into<String>) -> Self {
+64:         Self::Property(PropertyProjection::renamed(source, alias))

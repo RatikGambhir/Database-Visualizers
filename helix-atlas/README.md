@@ -4,8 +4,9 @@ A Tauri desktop app for exploring a [HelixDB](https://github.com/HelixDB/helix-d
 instance: type SQL-like queries to pull back nodes, edges and their
 relationships, and draw the graph structure as a whole.
 
-See [PORTING_GUIDE.md](PORTING_GUIDE.md) for the complete Explorer-style UI,
-connection, `/v1/query`, and automatic graph-loading change log.
+See [the code organization guide](docs/code-organization.md) for module owners and
+refactoring boundaries. See [PORTING_GUIDE.md](PORTING_GUIDE.md) for the complete Explorer-style UI,
+connection, versioned read APIs, and automatic graph-loading change log.
 
 ![the graph view](docs/graph-view.png)
 
@@ -24,8 +25,8 @@ connection, `/v1/query`, and automatic graph-loading change log.
   with direction, its neighbours and its degree.
 - **Schema sidebar** — node and edge labels discovered from the instance, each
   one a click away from a query.
-- **Wire format tab** — the exact Explorer-compatible JSON sent to
-  `POST /v1/query`, so nothing about the translation is hidden.
+- **Wire format tab** — the compiled read JSON, selected protocol, and actual
+  execution endpoint, so nothing about the translation is hidden.
 - **Shared UI system** — local shadcn-style components backed by Radix
   primitives provide consistent buttons, fields, tabs, tables, checkboxes,
   dialogs and accessible keyboard behaviour.
@@ -37,7 +38,7 @@ batch, and there is no syntax for writes. Use a HelixDB SDK for those.
 
 ## Requirements
 
-- Node.js 20+
+- Node.js 22+ (the mock uses exact JSON integer parsing)
 - Rust 1.77+
 - A running HelixDB instance (`helix start dev` listens on `localhost:6969`),
   or the bundled mock server below.
@@ -69,6 +70,21 @@ when the scheme is omitted. The desktop Rust transport is not subject to browser
 CORS rules. A saved key is reused only while reconnecting to the same effective
 endpoint, so changing the host or gateway path cannot forward an old credential.
 
+Choose **v2** for the pinned operation-tree read API. Existing saved connections
+without a protocol migrate to **legacy v1**; new settings default to v2. The app
+never retries a request against another protocol. Origins and gateway prefixes
+receive the selected `/v1/query` or `/v2/query` path. Complete endpoint URLs must
+match the selected protocol, including when they have a trailing slash.
+
+Deployment scope is explicit: **Local / direct server**, **Database-specific
+Cloud**, or **Shared Cloud gateway**. Shared Cloud v2 sends the entered database
+ID as `X-Helix-Database-Id`; other scopes omit that header. An omitted key is
+retained only for the same endpoint, database ID, and deployment scope. Cloud
+header behavior follows the pinned documentation and has not been tested against
+a live Cloud gateway. **Require writer** requires execution on a writer; it does
+not route or retry. Reads send neither durability nor cache-warming headers.
+A successful connection probe verifies one count read, not all capabilities.
+
 To build a distributable:
 
 ```bash
@@ -78,10 +94,34 @@ npm run app:build
 The repo ships PNG icons only. For `.ico`/`.icns` (Windows and macOS bundles),
 run `npm run tauri icon src-tauri/icons/icon.png` once.
 
+### Local HelixDB in Docker
+
+The included `compose.yaml` starts the official HelixDB `v0.0.6` image, pinned
+by digest, with persistent disk storage:
+
+```bash
+docker compose up -d          # start the local database
+docker compose logs -f       # follow database logs
+docker compose stop          # stop it; keep the container and data
+docker compose down          # remove the container; keep the data volume
+```
+
+Run these commands from `helix-atlas/` with Docker Desktop running. The container
+is `helix-atlas-db`, and its data is stored in the named volume
+`helix-atlas-data`. The port is bound only to localhost. The server starts empty;
+the app's read-only queries do not insert example data.
+
+In the app's Connection dialog, choose **Local**, host `127.0.0.1`, port `6969`,
+protocol **v2**, and deployment **Local / remote server**. Leave the API key blank.
+The resolved read endpoint is `http://127.0.0.1:6969/v2/query`.
+
+Readiness can be checked with `curl http://127.0.0.1:6969/readyz`. Avoid
+`docker compose down -v` unless you intend to delete the persistent database.
+
 ### Without a HelixDB instance
 
-`tools/mock-helix-server.mjs` exercises the Explorer-compatible `/v1/query`
-format over a small in-memory sample graph (users, posts, topics, orgs). It
+`tools/mock-helix-server.mjs` exercises explicit legacy `/v1/query` and pinned
+operation-tree `/v2/query` read formats over a small in-memory sample graph. It
 interprets the subset of traversal steps this app emits — it is a development
 stand-in, **not** a HelixDB implementation.
 
@@ -103,18 +143,22 @@ npm run dev                        # http://localhost:14237
 
 ## HelixSQL
 
+See the [complete syntax guide and query examples](docs/helixsql.md) for clause
+order, filters, traversal directions, aliases, graph queries, and protocol limits.
+
 HelixDB has no SQL dialect of its own; queries are built as a JSON traversal
 AST. HelixSQL is a thin, Rust-implemented language over that AST. The backend
-lexes, parses, validates, and compiles source directly to the flat
-Explorer-compatible format accepted by the current enterprise-dev `/v1/query`
-endpoint.
+lexes, parses, validates, and compiles source using the selected legacy flat
+`/v1/query` or nested operation-tree `/v2/query` adapter. The supported v2 server
+revision and captured evidence are recorded in
+[the contract directory](contracts/helixdb-v2/README.md).
 
 Keywords are case-insensitive; labels and property names are not.
 
 ### SELECT
 
 ```
-SELECT [DISTINCT] ( * | COUNT(*) | <column> [, …] )
+SELECT [DISTINCT] ( * | COUNT(*) | <column> [AS <alias>] [, …] )
 FROM ( NODES | EDGES ) [ :<Label> ]
 [ WHERE <condition> ]
 [ TRAVERSE <direction> [<EdgeLabel>] [WHERE <condition>] ]…
@@ -136,7 +180,8 @@ SELECT id, label, source, target FROM EDGES:Follows LIMIT 50
 `target` are an edge's endpoints. `score` and `distance` are available where
 HelixDB populates them. A reserved field can also be written out in full
 (`$id`, `$label`, `$from.$id`, `$to.$id`). To read a *property* actually named
-`id`, quote it: `SELECT "id" FROM NODES`.
+`id`, quote it: `SELECT id, "id" AS stored_id FROM NODES`. Duplicate output
+names require distinct aliases. Entity IDs are decimal strings in tables and IPC.
 
 `WHERE label = 'User'` and `FROM NODES:User` compile to the same thing — a label
 match on the source step, so HelixDB can use its label index.
@@ -184,7 +229,8 @@ QUERY [ [FROM] NODES[:<Label>] ]
 restricts which edge label is drawn, and `WITH` fetches node properties so the
 canvas can label nodes by name rather than by type.
 
-Edges are always fetched by walking out from the nodes that were selected, so
+Edges are fetched from the selected nodes (incident edges in v2, outgoing edges
+in legacy v1), so
 they belong to the part of the graph on screen. On a graph larger than `LIMIT`
 some of them will still lead to nodes that were not fetched; those cannot be
 drawn, and the view reports how many rather than dropping them silently.
@@ -227,51 +273,75 @@ sample size is stated wherever labels are shown.
 ## How it fits together
 
 ```
-src/              React UI, typed IPC client, and presentation-only helpers
-src/graph/        force layout (Barnes–Hut) + React Flow renderer + colour assignment
-src/ui/           editor, results table, inspector, sidebar, connection bar
-src-tauri/src/hql.rs      lexer → parser → AST → validator → wire compiler
-src-tauri/src/results.rs  Helix response decoder → UI-facing view models
-src-tauri/src/schema.rs   schema query generation and property inference
-src-tauri/src/lib.rs      commands, connection state, HTTP transport, orchestration
-tools/            mock HelixDB server, icon generator
+src/App.tsx              application shell and workspace composition
+src/app/                 connection session, query compilation, theme, workspace views
+src/ui/                  editor, results, inspector, sidebar, schema, connection UI
+src/ui/connection/       connection dialog, draft form, URL helpers, toolbar icons
+src/graph/               force simulation, quadtree, React Flow interaction, palette
+src/graph/flow/          element construction and node/edge renderers
+src/styles.css           ordered entry point for styles/*.css
+src-tauri/src/lib.rs      Tauri startup and command registration
+src-tauri/src/commands/   query/connection IPC and schema discovery
+src-tauri/src/connection.rs, state.rs, transport.rs, error.rs
+                         settings, persistence, HTTP execution, structured errors
+src-tauri/src/hql/        lexer, parser stages, plan, validation, legacy/v2 lowerers
+src-tauri/src/results/    models, adaptation, rows, counts, graphs, descriptions, JSON
+src-tauri/src/schema.rs   pure schema query generation and field inference
+tools/mock/              fixtures, JSON helpers, shared helpers, versioned evaluators
 ```
 
 The webview never parses HQL or talks to HelixDB directly. It hands source text
-to the Rust command `run_query`; Rust compiles it, posts it to `{url}/v1/query`,
+to the Rust command `run_query`; Rust compiles it, posts it to the selected
+version's resolved query endpoint,
 and returns a decoded view model. That keeps the app clear of webview CORS rules, lets an `https`-origin webview reach a
 plain-HTTP local instance, and keeps the API key in the backend's config file
 rather than in webview storage. That file is written to the platform config
 directory as `connection.json`, narrowed to `0600` on Unix; the key is stored in
 plain text, so it is protected by file permissions rather than by a keychain.
 
-Entity ids are `i64`, which JavaScript cannot hold exactly in a `number`. Rust
-parses them exactly, exposes entity ids as strings, and converts any other
-out-of-range integer to a string before IPC, so no value silently rounds in the
-webview.
+v2 entity IDs are `u64`, including zero. Integer token text stays exact until
+validation: property integers use `i64`, entity lookups use `u64`, and legacy IDs
+are limited to `i64::MAX`. Rust exposes IDs as decimal strings and converts
+integer properties outside JavaScript's safe range to strings before IPC,
+including schema samples, while retaining their inferred integer type.
+
+The pinned v2 server clamps virtual-ID expressions above `i64::MAX` and has no
+unsigned predicate constant. Exact `DESCRIBE` and standalone initial `WHERE id =`
+or `id IN (…)` use unsigned source references. General virtual-ID comparisons
+above the signed range, and virtual-ID ordering/grouping, fail locally with a
+hint instead of silently returning the wrong entities. Grouping a property
+named `count` is also rejected in v2 because it collides with the aggregate key.
 
 ## Tests
 
 ```bash
-npm test                    # presentation, graph-layout, and UI helper tests
-npm run typecheck
+npm test                    # unit, DOM workflow, and loopback HTTP tests
+npm run test:coverage       # coverage gates and coverage/index.html
+npm run build              # typecheck and production frontend build
 cargo test --manifest-path src-tauri/Cargo.toml
 ```
 
-Rust tests cover HQL tokenization, parsing, semantic validation, v1 compilation,
-response envelopes, graph normalization, i64 preservation, and schema
-inference. Frontend tests cover the remaining presentation behavior.
+Rust tests cover both compilers, strict decoding, identity association, exact
+numeric boundaries, connection migration, endpoints, headers, structured errors,
+and schema inference, plus persistence failures and real loopback HTTP execution.
+JavaScript tests cover connection dialogs, application workflows, asynchronous
+request races, editor interactions, result tables, inspector links, schema
+browsing, graph layout, and compiler fixtures replayed against the strict mock.
+See the [test coverage guide](docs/testing.md) for the scenario map, coverage
+gates, and remaining gaps. See
+[verification evidence](contracts/helixdb-v2/verification.md) for the real v2
+server corpus, desktop smoke checks, commands, and remaining coverage limits.
 
 ## Known limits
 
 - Read-only. There is no `INSERT`/`UPDATE`/`DELETE` syntax.
 - `VIA` takes a single edge label, not a list.
 - `LIKE` supports `%` only at the start and/or end of the pattern.
-- `SELECT *` runs the selection twice inside one batch — once for the stored
-  properties and once for `$id`/`$label`, since a traversal has only one
-  terminal — and merges the two positionally. If they ever come back with
-  different lengths the properties are shown without ids rather than
-  mislabelled. Name the columns explicitly to avoid the second pass.
+- v2 `SELECT *` materializes the selection once and projects exact identity and
+  properties from that binding, preserving ordering and duplicates. Legacy v1
+  retains separate projections but associates them by verified entity identity;
+  missing identity is an error. Neither adapter guesses association by position
+  across independently evaluated selections.
 - Sorting a results table sorts the rows already fetched; `ORDER BY` in the query
   is what sorts the whole result set.
 - The graph view colours up to 8 labels; beyond that the rarest fold into a

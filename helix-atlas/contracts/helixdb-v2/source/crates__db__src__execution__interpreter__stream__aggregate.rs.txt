@@ -1,0 +1,36 @@
+// crates/db/src/execution/interpreter/stream/aggregate.rs:94-128 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+94:             }
+95:             ir::AggregatePlan::GroupCount(property) => {
+96:                 let mut groups = BTreeMap::<GroupKey, i64>::new();
+97:                 for row in &rows {
+98:                     self.check_execution_deadline()?;
+99:                     if row.current.is_none() {
+100:                         return Err(HelixDbError::Query(
+101:                             "groupCount expected element stream input, got empty row".to_string(),
+102:                         ));
+103:                     }
+104:                     let value = self
+105:                         .row_property(row, property)
+106:                         .await?
+107:                         .unwrap_or(DbPropertyValue::Null);
+108:                     *groups.entry(GroupKey(value)).or_default() += 1;
+109:                 }
+110:                 Ok(ExecutionValue::Scalars(
+111:                     groups
+112:                         .into_iter()
+113:                         .map(|(GroupKey(value), count)| {
+114:                             ExecutionScalar::Object(BTreeMap::from([
+115:                                 (property.as_ref().to_string(), value),
+116:                                 ("count".to_string(), DbPropertyValue::I64(count)),
+117:                             ]))
+118:                         })
+119:                         .collect(),
+120:                 ))
+121:             }
+122:             ir::AggregatePlan::AggregateBy { function, property } => {
+123:                 self.aggregate_by(rows, function.clone(), property).await
+124:             }
+125:         }
+126:     }
+127: 
+128:     async fn aggregate_by(

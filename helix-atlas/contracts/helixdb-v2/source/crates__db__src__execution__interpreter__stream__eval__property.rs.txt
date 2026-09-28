@@ -1,0 +1,61 @@
+// crates/db/src/execution/interpreter/stream/eval/property.rs:29-88 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+29: 
+30:     pub(in crate::execution::interpreter::stream) async fn row_property(
+31:         &mut self,
+32:         row: &ExecutionRow,
+33:         property: &ir::NonEmptyString,
+34:     ) -> Result<Option<DbPropertyValue>> {
+35:         if let Some(ElementRef::Edge(edge_id)) = row.current.as_ref() {
+36:             let property_name = property.as_ref();
+37:             match property_name {
+38:                 "$from" | "$to" => {
+39:                     let Some((from, to)) = self.edge_endpoints(*edge_id).await? else {
+40:                         return Ok(None);
+41:                     };
+42:                     let endpoint = if property_name == "$from" { from } else { to };
+43:                     return Ok(Some(DbPropertyValue::I64(
+44:                         endpoint.try_into().unwrap_or(i64::MAX),
+45:                     )));
+46:                 }
+47:                 _ => {
+48:                     if let Some((endpoint, path)) = edge_endpoint_property(property_name) {
+49:                         let Some((from, to)) = self.edge_endpoints(*edge_id).await? else {
+50:                             return Ok(None);
+51:                         };
+52:                         let endpoint_id = endpoint.node_id(from, to);
+53:                         if path == "$id" {
+54:                             return Ok(Some(DbPropertyValue::I64(
+55:                                 endpoint_id.try_into().unwrap_or(i64::MAX),
+56:                             )));
+57:                         }
+58:                         let properties = self
+59:                             .element_properties(&ElementRef::Node(endpoint_id))
+60:                             .await?;
+61:                         return Ok(property_value(properties, path));
+62:                     }
+63:                 }
+64:             }
+65:         }
+66:         if property.as_ref() == "$id" {
+67:             return Ok(row
+68:                 .current
+69:                 .as_ref()
+70:                 .map(|element| DbPropertyValue::I64(element.id().try_into().unwrap_or(i64::MAX))));
+71:         }
+72:         if let Some(value) = row.virtual_properties.get(property) {
+73:             return Ok(Some(value));
+74:         }
+75:         let Some(element) = row.current.as_ref() else {
+76:             return Ok(None);
+77:         };
+78:         let properties = self.element_properties(element).await?;
+79:         Ok(property_value(properties, property.as_ref()))
+80:     }
+81: 
+82:     async fn element_properties(&mut self, element: &ElementRef) -> Result<&[Property]> {
+83:         if let Entry::Vacant(entry) = self.property_blobs.entry(element.clone()) {
+84:             let blob = self.context.load_property_blob(element).await?;
+85:             entry.insert(blob);
+86:         }
+87:         Ok(self
+88:             .property_blobs

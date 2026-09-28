@@ -1,0 +1,79 @@
+// crates/db/src/execution/interpreter/access/expand.rs:15-42 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+15: impl<'db> ExecutionContext<'db> {
+16:     pub(in crate::execution::interpreter) async fn expand(
+17:         &mut self,
+18:         input: ExecutionValue,
+19:         plan: &ir::ExpandPlan,
+20:     ) -> Result<ExecutionValue> {
+21:         let rows = self.stream_rows(input, "expand")?;
+22:         let label = match plan.output {
+23:             ir::ExpandOutput::Nodes => None,
+24:             ir::ExpandOutput::Edges => self.edge_output_label(&plan.label).await?,
+25:         };
+26:         let mut expanded = Vec::new();
+27:         for row in rows {
+28:             for id in self.expansion_ids(&row, plan, label.as_ref()).await? {
+29:                 self.check_execution_deadline()?;
+30:                 let mut next = row.clone();
+31:                 next.set_current(match plan.output {
+32:                     ir::ExpandOutput::Nodes => ElementRef::Node(id),
+33:                     ir::ExpandOutput::Edges => ElementRef::Edge(id),
+34:                 });
+35:                 expanded.push(next);
+36:             }
+37:         }
+38:         Ok(ExecutionValue::Stream(expanded))
+39:     }
+40: 
+41:     /// Prepares only one parent's ordered identifiers. Edge order requires every
+42:     /// neighbor pair for this parent; rows and subsequent parents remain lazy.
+
+// crates/db/src/execution/interpreter/access/expand.rs:52-99 at 64eaaca3026446fb08d1a5331215decc9fe0725b
+52:             .expansion_parents
+53:             .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+54:         match plan.output {
+55:             ir::ExpandOutput::Nodes => {
+56:                 let ids = match row.current.as_ref() {
+57:                     Some(ElementRef::Node(node_id)) => match &plan.label {
+58:                         ir::ExpandLabelPlan::Any => {
+59:                             self.expand_any_edges(*node_id, plan.direction).await?
+60:                         }
+61:                         ir::ExpandLabelPlan::Label(label) => {
+62:                             self.expand_labeled_edges(*node_id, plan.direction, label)
+63:                                 .await?
+64:                         }
+65:                     },
+66:                     Some(ElementRef::Edge(edge_id)) => {
+67:                         let Some((from, to)) = self.get_edge_endpoints(*edge_id).await? else {
+68:                             return Ok(Vec::new().into_iter());
+69:                         };
+70:                         match plan.direction {
+71:                             ir::ExpandDirection::Out => vec![to],
+72:                             ir::ExpandDirection::In => vec![from],
+73:                             ir::ExpandDirection::Both => {
+74:                                 let previous_node =
+75:                                     row.path.elements().iter().rev().find_map(|element| {
+76:                                         match element {
+77:                                             ElementRef::Node(id) => Some(*id),
+78:                                             ElementRef::Edge(_) => None,
+79:                                         }
+80:                                     });
+81:                                 match previous_node {
+82:                                     Some(previous) if previous == from => vec![to],
+83:                                     Some(previous) if previous == to => vec![from],
+84:                                     _ if from == to => vec![from],
+85:                                     _ => vec![from, to],
+86:                                 }
+87:                             }
+88:                         }
+89:                     }
+90:                     None => return Ok(Vec::new().into_iter()),
+91:                 };
+92:                 Ok(ids.into_iter())
+93:             }
+94:             ir::ExpandOutput::Edges => {
+95:                 let Some(ElementRef::Node(node_id)) = row.current.as_ref() else {
+96:                     return Ok(Vec::new().into_iter());
+97:                 };
+98:                 let ids = match label {
+99:                     None => BTreeSet::new(),

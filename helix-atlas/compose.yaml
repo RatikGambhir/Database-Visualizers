@@ -1,0 +1,22 @@
+name: helix-atlas-local
+
+services:
+  helixdb:
+    image: ghcr.io/helixdb/helixdb:v0.0.6@sha256:94b29942658ebdca0a91bf15edffe921a46da3e26e1223ea333ccce58c6212dd
+    container_name: helix-atlas-db
+    restart: unless-stopped
+    stop_grace_period: 30s
+    ports:
+      - "127.0.0.1:6969:8080"
+    environment:
+      HELIX_HTTP_ADDR: "0.0.0.0:8080"
+      HELIX_GRPC_ADDR: "127.0.0.1:8081"
+      HELIX_DATA_DIR: "/var/lib/helix"
+      DB_PATH: "atlas/"
+      RUST_LOG: "server=info,db=info,slatedb=info"
+    volumes:
+      - helix-data:/var/lib/helix
+
+volumes:
+  helix-data:
+    name: helix-atlas-data

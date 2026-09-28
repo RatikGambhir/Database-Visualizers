@@ -2,9 +2,21 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { legendColour, type Theme } from "../graph/palette";
-import { stringify, type LabelCount, type QueryResult, type Row } from "../results";
+import {
+  stringify,
+  type LabelCount,
+  type QueryResult,
+  type Row,
+} from "../results";
 
 interface Props {
   result: QueryResult;
@@ -17,7 +29,13 @@ interface Props {
 export function ResultsPanel({ result, theme, onInspect }: Props) {
   switch (result.kind) {
     case "rows":
-      return <RowTable columns={result.columns} rows={result.rows} onInspect={onInspect} />;
+      return (
+        <RowTable
+          columns={result.columns}
+          rows={result.rows}
+          onInspect={onInspect}
+        />
+      );
     case "count":
       return (
         <Card className="stat-tile">
@@ -26,12 +44,30 @@ export function ResultsPanel({ result, theme, onInspect }: Props) {
         </Card>
       );
     case "groupCount":
-      return <CountBars title={`by ${result.by}`} groups={result.groups} theme={theme} />;
+      return (
+        <CountBars
+          title={`by ${result.by}`}
+          groups={result.groups}
+          theme={theme}
+        />
+      );
     case "labels":
       return (
         <div className="split-panels">
-          {result.nodes && <CountBars title="Node labels" groups={result.nodes} theme={theme} />}
-          {result.edges && <CountBars title="Edge labels" groups={result.edges} theme={theme} />}
+          {result.nodes && (
+            <CountBars
+              title="Node labels"
+              groups={result.nodes}
+              theme={theme}
+            />
+          )}
+          {result.edges && (
+            <CountBars
+              title="Edge labels"
+              groups={result.edges}
+              theme={theme}
+            />
+          )}
         </div>
       );
     case "stats":
@@ -39,17 +75,29 @@ export function ResultsPanel({ result, theme, onInspect }: Props) {
         <div className="stats-layout">
           <div className="stat-row">
             <Card className="stat-tile">
-              <span className="stat-value">{result.nodeCount.toLocaleString()}</span>
+              <span className="stat-value">
+                {result.nodeCount.toLocaleString()}
+              </span>
               <span className="stat-caption">nodes</span>
             </Card>
             <Card className="stat-tile">
-              <span className="stat-value">{result.edgeCount.toLocaleString()}</span>
+              <span className="stat-value">
+                {result.edgeCount.toLocaleString()}
+              </span>
               <span className="stat-caption">edges</span>
             </Card>
           </div>
           <div className="split-panels">
-            <CountBars title="Node labels" groups={result.nodeLabels} theme={theme} />
-            <CountBars title="Edge labels" groups={result.edgeLabels} theme={theme} />
+            <CountBars
+              title="Node labels"
+              groups={result.nodeLabels}
+              theme={theme}
+            />
+            <CountBars
+              title="Edge labels"
+              groups={result.edgeLabels}
+              theme={theme}
+            />
           </div>
         </div>
       );
@@ -57,7 +105,8 @@ export function ResultsPanel({ result, theme, onInspect }: Props) {
       return (
         <p className="hint-text">
           {result.graph.nodes.length.toLocaleString()} nodes and{" "}
-          {result.graph.edges.length.toLocaleString()} edges are drawn in the Graph tab.
+          {result.graph.edges.length.toLocaleString()} edges are drawn in the
+          Graph tab.
         </p>
       );
     case "describe":
@@ -74,14 +123,36 @@ function RowTable({
   rows: Row[];
   onInspect: (kind: "node" | "edge", id: string) => void;
 }) {
-  const [sort, setSort] = useState<{ column: string; descending: boolean } | null>(null);
+  const [sort, setSort] = useState<{
+    column: string;
+    descending: boolean;
+  } | null>(null);
+  const numericColumns = useMemo(
+    () =>
+      new Set(
+        columns.filter((column) => {
+          const values = rows
+            .map((row) => row[column])
+            .filter((value) => value != null);
+          return (
+            values.length > 0 &&
+            values.every(
+              (value) => typeof value === "number" || typeof value === "bigint",
+            )
+          );
+        }),
+      ),
+    [columns, rows],
+  );
 
   const sorted = useMemo(() => {
     if (!sort) return rows;
     // Client-side sort over the page already fetched. ORDER BY in the query is
     // what sorts the whole result set; this only reorders what is on screen.
     const factor = sort.descending ? -1 : 1;
-    return [...rows].sort((a, b) => factor * compareCells(a[sort.column], b[sort.column]));
+    return [...rows].sort(
+      (a, b) => factor * compareCells(a[sort.column], b[sort.column]),
+    );
   }, [rows, sort]);
 
   if (rows.length === 0) {
@@ -96,7 +167,10 @@ function RowTable({
         <TableHeader>
           <TableRow>
             {columns.map((column) => (
-              <TableHead key={column}>
+              <TableHead
+                key={column}
+                className={numericColumns.has(column) ? "numeric" : undefined}
+              >
                 <Button
                   variant="ghost"
                   onClick={() =>
@@ -108,7 +182,11 @@ function RowTable({
                   }
                 >
                   {column}
-                  {sort?.column === column && <span aria-hidden="true">{sort.descending ? " ↓" : " ↑"}</span>}
+                  {sort?.column === column && (
+                    <span aria-hidden="true">
+                      {sort.descending ? " ↓" : " ↑"}
+                    </span>
+                  )}
                 </Button>
               </TableHead>
             ))}
@@ -121,15 +199,26 @@ function RowTable({
                 const value = row[column];
                 const text = stringify(value);
                 const linkable =
-                  (column === "id" || column === "source" || column === "target") && text.length > 0;
+                  (column === "id" ||
+                    column === "source" ||
+                    column === "target") &&
+                  text.length > 0;
                 return (
-                  <TableCell key={column} className={typeof value === "number" || typeof value === "bigint" ? "numeric" : undefined}>
+                  <TableCell
+                    key={column}
+                    className={
+                      numericColumns.has(column) ? "numeric" : undefined
+                    }
+                  >
                     {linkable ? (
                       <Button
                         variant="link"
                         className="cell-link"
                         onClick={() =>
-                          onInspect(column === "id" && isEdgeTable ? "edge" : "node", text)
+                          onInspect(
+                            column === "id" && isEdgeTable ? "edge" : "node",
+                            text,
+                          )
                         }
                         title="Inspect this entity"
                       >
@@ -150,7 +239,15 @@ function RowTable({
 }
 
 /** A horizontal bar chart — the right form for comparing label magnitudes. */
-function CountBars({ title, groups, theme }: { title: string; groups: LabelCount[]; theme: Theme }) {
+function CountBars({
+  title,
+  groups,
+  theme,
+}: {
+  title: string;
+  groups: LabelCount[];
+  theme: Theme;
+}) {
   if (groups.length === 0) {
     return (
       <div className="count-bars">
@@ -159,7 +256,7 @@ function CountBars({ title, groups, theme }: { title: string; groups: LabelCount
       </div>
     );
   }
-  const max = Math.max(...groups.map((group) => group.count));
+  const max = Math.max(1, ...groups.map((group) => group.count));
   return (
     <div className="count-bars">
       <h3>{title}</h3>
@@ -175,7 +272,14 @@ function CountBars({ title, groups, theme }: { title: string; groups: LabelCount
                 style={{
                   width: `${Math.max((group.count / max) * 100, 1.5)}%`,
                   // Colour is decorative here; the value is always written out.
-                  background: legendColour({ label: group.label, count: group.count, slot: index < 8 ? index : null }, theme),
+                  background: legendColour(
+                    {
+                      label: group.label,
+                      count: group.count,
+                      slot: index < 8 ? index : null,
+                    },
+                    theme,
+                  ),
                 }}
               />
             </span>
@@ -188,11 +292,12 @@ function CountBars({ title, groups, theme }: { title: string; groups: LabelCount
 }
 
 function compareCells(a: unknown, b: unknown): number {
-  if (typeof a === "bigint" || typeof b === "bigint") {
-    const left = typeof a === "bigint" ? a : BigInt(Math.trunc(Number(a) || 0));
-    const right = typeof b === "bigint" ? b : BigInt(Math.trunc(Number(b) || 0));
-    return left < right ? -1 : left > right ? 1 : 0;
+  const numericA = typeof a === "number" || typeof a === "bigint";
+  const numericB = typeof b === "number" || typeof b === "bigint";
+  if (numericA && numericB) {
+    // Relational comparison keeps integers exact and handles mixed bigint and
+    // fractional number values without coercing either to a rounded integer.
+    return a < b ? -1 : a > b ? 1 : 0;
   }
-  if (typeof a === "number" && typeof b === "number") return a - b;
   return stringify(a).localeCompare(stringify(b), undefined, { numeric: true });
 }
