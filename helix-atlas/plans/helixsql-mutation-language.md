@@ -3,6 +3,7 @@
 Status: proposed language design; no mutation functionality implemented.
 Research date: 2026-09-27.
 Read compatibility update: 2026-09-28; v2 reads are implemented, mutations remain proposed.
+Design update: 2026-10-14; binding existing nodes is part of the first mutation release.
 
 ## 1. Recommendation
 
@@ -10,7 +11,10 @@ Extend this app's existing HelixSQL with `INSERT INTO NODES:Label` and
 `INSERT INTO EDGES:Label`. Keep the familiar SQL column-list/`VALUES` structure,
 use explicit `source` and `target` columns for edges, and add `RETURNING` for
 created data. Use an explicit `BEGIN MUTATION … COMMIT` block with local node
-bindings when creating a connected graph in one transaction.
+bindings for both queried existing nodes and newly inserted nodes in one transaction.
+Plan this capability before implementation and build it alongside the initial insert
+compiler, rather than adding a separate lookup workflow afterward. The first end-to-end
+flow is: find one existing node → create one new node → connect them by their bindings.
 
 Interpret “like SQ” as SQL-like syntax consistent with the current HelixSQL
 language. `INSERT` is the entry point for creation; existing `SELECT`, `QUERY`,
@@ -225,14 +229,69 @@ Rules:
 - Reject null, floating-point, string-literal, array, or object endpoints.
 - Parallel edges and self-loops are permitted subject to backend validation.
   Repeating an insert creates another edge; it is not an implicit upsert.
-- No endpoint selectors, automatic node creation, list expansion, or Cartesian
-  products in the first release. Bulk edges use explicit tuples.
+- Existing nodes can be selected by a bound lookup statement inside a mutation
+  block (section C). No inline endpoint selectors, automatic node creation, list
+  expansion, or Cartesian products in the first release. Bulk edges use explicit tuples.
 
 An alternative `INSERT EDGE … FROM … TO … SET …` would read naturally, but it
 duplicates the bulk form. Start with one canonical edge syntax and revisit
 shorthand only after real editor usage shows a need.
 
-### C. Create a connected graph atomically
+### C. Bind existing and new nodes, then connect them atomically
+
+The first release must support this workflow without copying IDs between queries:
+
+```sql
+BEGIN MUTATION;
+  SELECT * FROM NODES:User
+  WHERE name = 'Alice'
+  AS alice;
+
+  INSERT INTO NODES:User AS bob (name, age)
+  VALUES ('Bob', 28)
+  RETURNING id, name;
+
+  INSERT INTO EDGES:Follows (source, target, since)
+  VALUES (@alice, @bob, 2026)
+  RETURNING id, source, target;
+COMMIT;
+```
+
+The trailing `AS alice` binds the lookup's node entity. It is a statement binding,
+not a column alias. Node insertion retains the existing planned placement
+`INSERT INTO NODES:User AS bob (...) VALUES (...)`. Both are referenced with
+`@name`, distinguishing entity references from property identifiers and `:parameters`.
+This is the canonical form of the conversational example; bare `alice`/`bob`
+endpoint values and trailing insert bindings are not alternate spellings.
+All syntax in this section remains proposed, not executable in Atlas today.
+
+Lookup rules for the first release:
+
+- Only `SELECT * FROM NODES[:Label] [WHERE condition] AS name` inside a mutation
+  block creates an existing-node binding. Reuse the supported read predicate
+  syntax and typed parameter validation. Ordinary standalone reads keep their
+  current grammar; their result tables do not create persistent variables.
+- A binding must resolve to exactly one node. Zero matches is a missing-node
+  error; two or more is an ambiguous-node error. Never silently pick the first,
+  create a missing node, or fan out edge creation.
+- Disallow lookup projections, aggregates, `DISTINCT`, traversal, grouping,
+  ordering, `SKIP`, and `LIMIT` initially. In particular, `LIMIT 1` must not hide
+  an ambiguous match. A backend optimization may inspect at most two matches
+  only if its transactional cardinality check still reliably detects ambiguity.
+- The lookup and exact-one check must execute in the same database write
+  transaction as the dependent inserts. Do not perform a separate client-side
+  read followed by a write, or validate cardinality only after commit.
+- Bind the entity once and reuse its identity. A bound lookup can supply either
+  `source` or `target`, just like a newly created node; the same binding can be
+  reused across several explicit edge tuples.
+- Evaluate statements in order. A later lookup must see earlier writes in the
+  block; this read-your-writes behavior is a server contract gate. Existing-node
+  binding means existing at that statement, including earlier creations.
+- Any lookup failure aborts the entire block, including earlier inserts. Missing
+  or concurrently deleted endpoints must not leave a committed partial graph.
+  Keep the existing distinction between confirmed rollback and unknown outcome.
+
+Creating both endpoints remains supported:
 
 ```sql
 BEGIN MUTATION;
@@ -250,20 +309,24 @@ BEGIN MUTATION;
 COMMIT;
 ```
 
-`AS alice` binds the inserted node entity, independently of its `RETURNING`
+`AS alice` on an insert binds the inserted node entity, independently of its `RETURNING`
 projection. `@alice` is a typed node reference, not string substitution and not
 an arbitrary expression. Bindings are available only inside their block, are
 case-sensitive, cannot be reassigned or forward-referenced, and must bind exactly
-one node. Reject `AS` on multi-row inserts and edge inserts in the first release.
+one node. Reject duplicate names across lookups and inserts. Since names are
+case-sensitive, `alice` and `Alice` are distinct bindings.
+Reject `AS` on multi-row inserts and edge inserts in the first release.
 Allow `AS` on a node `DEFAULT VALUES` insert.
 
 Treat the entire block as one editor request and one database write transaction.
 Require semicolons between block statements. Do not implement persistent sessions
 where the user runs `BEGIN` and `COMMIT` in separate clicks. Reject nested blocks,
-standalone `COMMIT`, empty blocks, and multiple unwrapped statements.
+standalone `COMMIT`, empty blocks, lookup-only mutation blocks, and multiple unwrapped
+statements. A mutation block must contain at least one insert.
 
 Every block statement receives an ordered result entry identified by statement
-index. A later edge error must roll back earlier node inserts. Never emulate this
+index. A lookup entry identifies its bound node and does not increment inserted
+counts. A later lookup or edge error must roll back earlier node inserts. Never emulate this
 with separate committed HTTP calls followed by best-effort deletion.
 
 ### D. Bind data separately from source text
@@ -315,14 +378,17 @@ constant in Rust; never substitute its text into the SQL source.
 
 ## 5. Initial grammar
 
-This EBNF describes the proposed insert grammar, not currently accepted syntax.
+This EBNF describes the proposed insert and bound-lookup grammar, not currently accepted syntax.
 Existing read statements keep their grammar. Keywords are shown in uppercase;
 `identifier`, `string`, and numeric tokenization retain current quoting/comment rules.
 
 ```ebnf
 mutation_input = insert, [";"] | mutation_block ;
-mutation_block = "BEGIN", "MUTATION", ";", insert, ";",
-                 { insert, ";" }, "COMMIT", [";"] ;
+mutation_block = "BEGIN", "MUTATION", ";", block_statement, ";",
+                 { block_statement, ";" }, "COMMIT", [";"] ;
+block_statement = bound_lookup | insert ;
+bound_lookup  = "SELECT", "*", "FROM", "NODES", [":", identifier],
+                ["WHERE", condition], "AS", binding_name ;
 
 insert        = node_insert | edge_insert ;
 node_insert   = "INSERT", "INTO", "NODES", ":", identifier,
@@ -345,7 +411,9 @@ return_item   = column_ref, ["AS", identifier] ;
 is an unquoted ASCII name matching `[A-Za-z_][A-Za-z0-9_]*`, with reserved keywords
 excluded. Semantic validation restricts bindings to blocks, node references to
 endpoint positions, and endpoints to unsigned integer IDs. These restrictions
-are intentionally separate from the shared value grammar.
+are intentionally separate from the shared value grammar. `condition` reuses the
+read predicate grammar with typed parameters; a block must contain at least one
+insert. A lookup binding has type single-node, never a list or projected row.
 
 Keep integer token text exact until its semantic type is known: ordinary integer
 properties initially use `i64`, while v2 entity IDs require `u64` including zero.
@@ -369,7 +437,7 @@ lexer / parser → mutation AST with spans
         ↓
 semantic validation + binding resolution + exact numeric validation
         ↓
-ordered mutation plan (create once, bind entities, project results)
+ordered mutation plan (lookup once, assert exactly one, create once, bind, project)
         ↓
 verified protocol adapter → one write request
         ↓
@@ -382,7 +450,9 @@ Recommended AST concepts:
   binding, optional returning projection, and spans.
 - `InsertEdge`: label, typed source/target references per row, properties,
   optional returning projection, and spans.
-- `MutationBlock`: ordered insert statements plus its binding scope.
+- `BoundNodeLookup`: node source, optional label/predicate, binding name, required
+  exact-one cardinality, and spans.
+- `MutationBlock`: ordered lookup/insert statements plus one shared typed binding scope.
 - `NodeReference`: exact node ID, typed parameter, or bound node.
 - `Returning`: explicit columns/aliases or full entities.
 - `ExecutionKind`: read or write, propagated through compilation and execution.
@@ -401,6 +471,7 @@ For v2, the documented envelope is structurally:
 ```text
 request_type: write
 query.write.entries:
+  named node lookup(s) with transactional exact-one assertions, in statement order
   named node creation(s)
   named edge creation(s) referring to node identities
   projections/counts over those named results as required
@@ -411,7 +482,10 @@ query.write.returns:
 This is a conceptual mapping, not a proposed new server API. Generate exact JSON
 from the version-pinned HelixDB contract. Verify entity-reference behavior after
 projection; a returned property map must not replace a node binding needed by
-a later edge.
+a later edge. The conceptual lookup/assertion step above is a required semantic,
+not a claim that the pinned server exposes a suitable primitive. Verify its exact
+encoding and rollback behavior in Phase 0; if unavailable, resolve server support
+before enabling bound lookups. Never substitute a preflight read as a workaround.
 
 `compile_query` remains side-effect-free. Its view model should include execution
 kind, protocol, planned insert counts, parameter requirements, and a wire preview
@@ -442,7 +516,11 @@ Examples:
 | Columns `(name, age)`, tuple `('Alice')` | Expected 2 values, found 1 |
 | Edge has `"source"` but no unquoted `source` | Missing edge source endpoint |
 | Endpoint `42.5` or `NULL` | Expected a node ID or local node binding |
-| `@alice` before its insert | Unknown or forward-referenced binding |
+| `@alice` before its lookup/insert | Unknown or forward-referenced binding |
+| Reusing `AS alice` in the same block | Duplicate binding name |
+| Bound lookup matches zero nodes | No node matched; rollback only reported when confirmed |
+| Bound lookup matches multiple nodes | Expected exactly one node; refine the predicate |
+| Bound lookup uses `LIMIT 1` or a projection | Unsupported bound lookup clause; use an exact node selection |
 | Multi-row node insert with `AS alice` | A binding must identify exactly one node |
 | Missing endpoint node | Endpoint does not exist; transaction rolled back if confirmed |
 | Value outside selected numeric range | Integer out of range; never round |
@@ -458,11 +536,13 @@ selection limit to silently cap writes. Pin limits after the protocol spike.
 ## 8. Scope after insertion
 
 The initial release should include nodes, explicit-pair edges, multi-row inserts,
-parameters, `RETURNING`, and atomic connected-graph blocks. Defer the following:
+parameters, `RETURNING`, bound existing-node lookups, and atomic connected-graph
+blocks. Single-node lookup binding is core scope; collection binding and bulk
+read-driven insertion are not. Defer the following:
 
 | Extension | Direction | Prerequisite |
 | --- | --- | --- |
-| Endpoint lookup by properties | A scalar `NODE(...)` selector using existing filtering concepts | Enforce exactly one match in the same transaction; never take the first silently |
+| Inline endpoint selectors | A scalar `NODE(...)` shorthand for the initial bound lookup | Reuse verified exact-one semantics; avoid a second lookup implementation |
 | `INSERT … SELECT` | Insert rows or explicit source/target pairs from a read result | Defined cardinality, snapshot semantics, and write bounds |
 | Node upsert | SQL-like `ON CONFLICT (key) DO NOTHING / DO UPDATE` | Active unique node index and verified atomic conflict handling |
 | Unique relationship insertion | Separate explicit semantics, not ordinary `INSERT` | Backend-enforced uniqueness or equivalent transactional primitive |
@@ -485,6 +565,8 @@ be assumed usable immediately.
 1. Identify the target HelixDB build/version and supported query endpoints.
 2. Capture versioned request/response fixtures for node insertion, edge insertion,
    named references, projection, typed values, and one deliberately failing batch.
+   Include bound lookups with zero, one, and multiple matches, exact-one assertions,
+   read-your-writes visibility, and reuse of a lookup as either endpoint.
 3. Verify rollback after an earlier successful creation, missing/deleted endpoints,
    generated-ID ranges, null handling, and return behavior.
 4. Verify writer/durability behavior and error outcomes. Select the connection's
@@ -496,16 +578,21 @@ be assumed usable immediately.
    association, and all operation-specific limits before exposing writes.
    Legacy v1-only connections stay read-only; a count probe grants no write capability.
 
-Gate: real-server fixtures prove atomic creation and usable returned identities.
-If the server cannot enforce endpoint integrity, add the necessary server-side
-validation/transaction support before enabling edge inserts.
+Gate: real-server fixtures prove atomic creation, usable returned identities, and
+transactional exact-one lookup enforcement before commit. Verify that a failing
+lookup rolls back earlier inserts. If the server cannot enforce cardinality or
+endpoint integrity, add the necessary server-side validation/transaction support
+before enabling dependent mutations; do not weaken these semantics.
 
 ### Phase 1 — Parser, typed plan, and compile preview
 
 Extend the small `hql.rs` facade and existing `hql/` modules; put mutation AST,
 validation and lowering in focused files. Keep each source file below 1000 lines.
 Add grammar, spans, semantic validation, parameters, local scopes, result shapes,
-and read/write classification. Preserve all existing read parsing behavior.
+and read/write classification. Implement bound lookups and inserts against the
+same typed binding scope from the start, including duplicate/forward-reference
+checks and the boundary between statement bindings and column aliases. Preserve
+all existing standalone read parsing behavior.
 
 Gate: every example above parses; malformed inputs fail with useful spans;
 compile/preview makes no database calls; write JSON matches pinned fixtures.
@@ -514,15 +601,19 @@ compile/preview makes no database calls; write JSON matches pinned fixtures.
 
 Extend `lib.rs`, Rust result decoding, `src/client.ts`, and `src/results.ts`.
 Implement one-request atomic execution, typed ID transport, returning projections,
-and confirmed/unknown outcome reporting. Support literal and parameterized IDs.
+and confirmed/unknown outcome reporting. Support literal and parameterized IDs,
+lookup-bound nodes, and newly inserted bound nodes in either endpoint position.
 
 Gate: one creation per tuple, no extra writes from `RETURNING *`, no automatic
-retry, correct writer requirements/targeting, and rollback of a failed multi-row statement/block.
+retry, correct writer requirements/targeting, and rollback of a failed multi-row
+statement/block. The existing-node → new-node → edge example succeeds; zero or
+multiple lookup matches leave no committed nodes or edges.
 
 ### Phase 3 — Editor and graph integration
 
 Update `QueryEditor`, `ResultsPanel`, and `App` to show “Run mutation” for writes,
-display the receipt plus requested data, and expose node/edge/block examples.
+display the receipt plus requested data, and expose node/edge/block examples,
+including finding an existing node and connecting it to a newly inserted node.
 Add a small typed parameter editor. Prevent duplicate submissions while a request
 is in flight. Only explicit execution writes; preview, connection checks, schema
 loads, and automatic graph refresh remain reads.
@@ -531,7 +622,8 @@ Refresh affected schema/graph data after confirmed success. Preserve user contex
 and existing graph bounds; an inserted edge does not guarantee both endpoint
 nodes are already loaded. Show refresh failures separately from mutation outcomes.
 
-Gate: creating two nodes and their edge is usable end-to-end in the desktop app,
+Gate: both creating two nodes with their edge and connecting an existing lookup
+to a new node are usable end-to-end in the desktop app,
 including large IDs and a failed graph refresh after a successful commit.
 
 ### Phase 4 — Mock, regression suite, and documentation
@@ -552,6 +644,12 @@ the version-pinned real-server mutation suite. Existing read behavior passes.
   block rejection, parameter/label colon disambiguation, and Unicode error spans.
 - Validation: arity, duplicate properties, mandatory labels, reserved columns,
   valid `"id"` properties, missing endpoints, and invalid binding scopes/types.
+- Bound lookups: zero/one/multiple matches; optional labels; compound predicates;
+  typed parameters; forbidden `LIMIT 1`, projections, and other unsupported clauses;
+  duplicate names across insert/lookup statements; case-sensitive scope; bindings
+  unavailable outside the block; rejection of lookup-only mutation blocks.
+- Binding reuse: queried/new nodes work as either endpoint, two queried nodes can
+  be connected, one binding can serve several edges, and no implicit fan-out occurs.
 - Numeric boundaries: zero, negative endpoint rejection, signed property limits,
   IDs above `2^53`, above `i64::MAX`, at `u64::MAX`, and overflow rejection.
 - Write semantics: repeated inserts create distinct entities; parallel edges and
@@ -559,7 +657,9 @@ the version-pinned real-server mutation suite. Existing read behavior passes.
 - Results: aliases remain entity references despite projections; `RETURNING *`
   causes no duplicate writes; metadata/property collisions remain distinguishable.
 - Transactions: an invalid final edge rolls back preceding nodes; row failure
-  rolls back bulk insertion; connection loss is not reported as guaranteed rollback.
+  rolls back bulk insertion; a zero/multiple-match lookup after an insert rolls
+  back that insert; later lookups see earlier writes; cardinality is checked
+  before commit; connection loss is not reported as guaranteed rollback.
 - Concurrency: endpoint deletion races cannot produce dangling edges; no implicit
   uniqueness promises are made for parallel edge inserts.
 - Transport/UI: preview never writes, v1-only connections reject unsupported
@@ -577,6 +677,9 @@ actual server contract rather than user-facing keyword preferences:
 4. Which result/projection operations preserve entity bindings without re-execution?
 5. Which acknowledgment/durability policy should the app expose or default to?
 6. What request/return limits fit the supported local and hosted deployments?
+7. Which server primitives enforce exactly one lookup match within the write
+   transaction and abort all earlier writes on failure? Do later lookups observe
+   earlier inserts, and what isolation protects lookups during concurrent changes?
 
 Resolve these with fixtures and real-server tests before declaring the language
 executable. They do not prevent adopting the proposed SQL-like surface syntax.
