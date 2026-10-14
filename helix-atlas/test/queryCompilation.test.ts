@@ -26,7 +26,7 @@ const tick = () =>
   });
 
 describe("editor compilation", () => {
-  it("debounces typing and sends trimmed current source only", async () => {
+  it("debounces typing and preserves current source offsets", async () => {
     const { result, rerender } = renderHook(
       ({ query }) => useQueryCompilation(true, query, 1),
       { initialProps: { query: "Q" } },
@@ -34,7 +34,7 @@ describe("editor compilation", () => {
     rerender({ query: "QU" });
     rerender({ query: "  QUERY LIMIT 300  " });
     await tick();
-    expect(compile).toHaveBeenCalledExactlyOnceWith("QUERY LIMIT 300");
+    expect(compile).toHaveBeenCalledExactlyOnceWith("  QUERY LIMIT 300  ", undefined);
     expect(result.current.compileState.compiled).toEqual(compiled());
   });
 

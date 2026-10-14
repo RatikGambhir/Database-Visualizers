@@ -9,6 +9,7 @@ mod graph;
 mod identity;
 mod json;
 mod model;
+mod mutation;
 mod rows;
 #[cfg(test)]
 mod tests;
@@ -52,6 +53,10 @@ pub fn decode_rows_for_schema(body: &str, shape: &ResultShape) -> Result<Vec<Row
 }
 pub fn read_result(body: &Value, shape: &ResultShape) -> Result<QueryResult, ResultError> {
     match shape {
+        ResultShape::Mutation { plan } => mutation::read_mutation(body, plan),
+        ResultShape::UnavailableMutation => {
+            Err(ResultError::new("mutation execution is unavailable", body))
+        }
         ResultShape::Rows {
             variable,
             columns,

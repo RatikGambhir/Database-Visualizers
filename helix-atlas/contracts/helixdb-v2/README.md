@@ -1,5 +1,13 @@
 # Pinned HelixDB v2 read contract
 
+> **Re-verified 2026-10-14 on HelixDB `v3.5.1`** (commit
+> `c72e64f0c7e480f3d125f071659d5e3ad7b8da15`), the version `compose.yaml` now runs.
+> All 41 wire captures were re-recorded on an unmodified `v3.5.1` server. 39 are
+> byte-identical. The two malformed-request rejections (`mismatched-envelope`,
+> `flat-v2-rejection`) keep HTTP 400 and `invalid_query_json`, but upstream's new
+> JSON parser words `msg` differently. All 33 HelixSQL captures are byte-identical.
+> Source excerpts below still come from the original pin.
+
 Pinned on 2026-09-28 to official repository commit
 [`64eaaca3026446fb08d1a5331215decc9fe0725b`](https://github.com/HelixDB/helix-db/tree/64eaaca3026446fb08d1a5331215decc9fe0725b).
 The unmodified canonical [OpenAPI document](https://www.helix-db.com/openapi.json)
@@ -127,3 +135,9 @@ and [operation trees](https://docs.helix-db.com/database/helix-db/core-concepts/
 Real-server captured fixtures and exact scope are recorded separately in
 `conformance.json` when a pinned isolated server run succeeds. No v1 upstream
 server fixture or Cloud gateway conformance is implied by the v2 source pin.
+
+## Optional mutation extension
+
+Reads remain compatible with the unmodified pin and with unmodified `v3.5.1`. Mutation execution requires
+[atlas-mutation-v1](mutations.md), including its server patch, capability
+endpoint, transaction guards, and separate real-server evidence.

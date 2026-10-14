@@ -3,6 +3,7 @@ use super::lexer::{tokenize, Token, TokenKind};
 use super::*;
 mod clauses;
 mod expressions;
+mod mutations;
 mod statements;
 #[cfg(test)]
 mod tests;
@@ -85,6 +86,15 @@ impl Parser {
         )
     }
 
+    pub(super) fn parse_input(self) -> Result<super::mutation::Input, HqlError> {
+        if self.is_keyword("INSERT") || self.is_keyword("BEGIN") {
+            self.parse_mutation().map(super::mutation::Input::Mutation)
+        } else {
+            self.parse()
+                .map(|read| super::mutation::Input::Read(Box::new(read)))
+        }
+    }
+
     pub(super) fn parse(mut self) -> Result<Statement, HqlError> {
         if self.at_end() {
             return Err(HqlError::new(
@@ -105,8 +115,8 @@ impl Parser {
         } else {
             return Err(self.error_at(
                 self.peek(0),
-                "expected a statement (SELECT, QUERY, SHOW or DESCRIBE)",
-                Some("HelixSQL is read-only; writes must go through a HelixDB SDK"),
+                "expected a statement (SELECT, QUERY, SHOW, DESCRIBE, INSERT or BEGIN MUTATION)",
+                Some("use BEGIN MUTATION … COMMIT for related inserts; write execution requires a verified adapter"),
             ));
         };
 

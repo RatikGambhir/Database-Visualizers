@@ -28,6 +28,16 @@ interface Props {
 /** Renders whichever shape the query came back as. */
 export function ResultsPanel({ result, theme, onInspect }: Props) {
   switch (result.kind) {
+    case "mutation":
+      return <div className="mutation-receipt">
+        <p role="status"><strong>Mutation committed</strong> · {result.insertedNodes} nodes, {result.insertedEdges} edges inserted · acknowledged</p>
+        {result.statements.map((statement) => <section key={statement.statementIndex}>
+          <h3>Statement {statement.statementIndex + 1} · {statement.kind === "lookup" ? `Bound @${statement.binding}` : `${statement.ids.length} ${statement.kind} inserted`}</h3>
+          {statement.kind === "lookup" && <Button variant="link" onClick={() => onInspect("node", statement.ids[0])}>Node {statement.ids[0]}</Button>}
+          {statement.columns.length > 0 && <RowTable columns={statement.columns} rows={statement.rows} identityColumns={statement.identityColumns} onInspect={onInspect} />}
+          {statement.entities.map((entity) => <details key={entity.id}><summary>{entity.label} · {entity.id}{entity.source !== null && ` · ${entity.source} → ${entity.target}`}</summary><Button variant="link" onClick={() => onInspect(statement.kind === "edges" ? "edge" : "node", entity.id)}>Inspect {entity.id}</Button><pre>{JSON.stringify(entity.properties, null, 2)}</pre></details>)}
+        </section>)}
+      </div>;
     case "rows":
       return (
         <RowTable
@@ -117,10 +127,12 @@ export function ResultsPanel({ result, theme, onInspect }: Props) {
 function RowTable({
   columns,
   rows,
+  identityColumns,
   onInspect,
 }: {
   columns: string[];
   rows: Row[];
+  identityColumns?: Record<string, "node" | "edge">;
   onInspect: (kind: "node" | "edge", id: string) => void;
 }) {
   const [sort, setSort] = useState<{
@@ -198,11 +210,11 @@ function RowTable({
               {columns.map((column) => {
                 const value = row[column];
                 const text = stringify(value);
-                const linkable =
-                  (column === "id" ||
-                    column === "source" ||
-                    column === "target") &&
-                  text.length > 0;
+                const identityKind = identityColumns !== undefined
+                  ? identityColumns[column]
+                  : column === "id" ? (isEdgeTable ? "edge" : "node")
+                    : column === "source" || column === "target" ? "node" : undefined;
+                const linkable = identityKind !== undefined && text.length > 0;
                 return (
                   <TableCell
                     key={column}
@@ -216,7 +228,7 @@ function RowTable({
                         className="cell-link"
                         onClick={() =>
                           onInspect(
-                            column === "id" && isEdgeTable ? "edge" : "node",
+                            identityKind ?? "node",
                             text,
                           )
                         }

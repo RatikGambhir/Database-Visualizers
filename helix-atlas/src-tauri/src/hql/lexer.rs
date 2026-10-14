@@ -269,7 +269,7 @@ pub(super) fn tokenize(source: &str) -> Result<Vec<Token>, HqlError> {
             continue;
         }
 
-        if matches!(byte, b'(' | b')' | b',' | b'*' | b'.' | b':' | b';') {
+        if matches!(byte, b'(' | b')' | b',' | b'*' | b'.' | b':' | b';' | b'@') {
             index += 1;
             let text = (byte as char).to_string();
             tokens.push(Token {

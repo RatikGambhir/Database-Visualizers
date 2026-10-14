@@ -14,9 +14,10 @@ connection, versioned read APIs, and automatic graph-loading change log.
 
 - **Welcome splash** — an Explorer-style startup animation previews a valid,
   read-only HelixSQL graph query before entering the workspace.
-- **HelixSQL** — a small, read-only SQL dialect (`SELECT … FROM NODES … WHERE …
+- **HelixSQL** — a small SQL-like dialect (`SELECT … FROM NODES … WHERE …
   TRAVERSE OUT …`) that compiles to HelixDB's JSON traversal AST. Full grammar
-  below.
+  below. Atomic node/edge inserts require the pinned server extension described
+  in [the mutation guide](docs/mutations.md).
 - **Graph view** — connecting from the Graph workspace automatically loads a
   bounded snapshot; a manual `QUERY` statement can replace it. The force-directed
   canvas supports pan, zoom, drag, neighbourhood focus on hover, and per-label
@@ -25,7 +26,7 @@ connection, versioned read APIs, and automatic graph-loading change log.
   with direction, its neighbours and its degree.
 - **Schema sidebar** — node and edge labels discovered from the instance, each
   one a click away from a query.
-- **Wire format tab** — the compiled read JSON, selected protocol, and actual
+- **Wire format tab** — the compiled read/write JSON, selected protocol, and actual
   execution endpoint, so nothing about the translation is hidden.
 - **Shared UI system** — local shadcn-style components backed by Radix
   primitives provide consistent buttons, fields, tabs, tables, checkboxes,
@@ -33,8 +34,11 @@ connection, versioned read APIs, and automatic graph-loading change log.
 - **Typography** — Inter is bundled for the application interface; the
   HelixSQL query editor and other code/wire-format surfaces remain monospaced.
 
-Queries are read-only by construction: the compiler only ever emits a `read`
-batch, and there is no syntax for writes. Use a HelixDB SDK for those.
+Connection probes, previews, schema discovery, and automatic graph loading remain
+read-only. Explicit `INSERT` and `BEGIN MUTATION` execution supports typed parameters
+and `RETURNING` on the verified **atlas-mutation-v1** server extension. Ordinary
+v2 and legacy v1 servers remain read-only in Atlas. See [mutation setup and
+verification](contracts/helixdb-v2/mutations.md).
 
 ## Requirements
 
@@ -70,7 +74,7 @@ when the scheme is omitted. The desktop Rust transport is not subject to browser
 CORS rules. A saved key is reused only while reconnecting to the same effective
 endpoint, so changing the host or gateway path cannot forward an old credential.
 
-Choose **v2** for the pinned operation-tree read API. Existing saved connections
+Choose **v2** for the pinned operation-tree API. Existing saved connections
 without a protocol migrate to **legacy v1**; new settings default to v2. The app
 never retries a request against another protocol. Origins and gateway prefixes
 receive the selected `/v1/query` or `/v2/query` path. Complete endpoint URLs must
@@ -96,10 +100,15 @@ run `npm run tauri icon src-tauri/icons/icon.png` once.
 
 ### Local HelixDB in Docker
 
-The included `compose.yaml` starts the official HelixDB `v0.0.6` image, pinned
-by digest, with persistent disk storage:
+The included `compose.yaml` builds HelixDB `v3.5.1` with the
+[atlas-mutation-v1 patch](contracts/helixdb-v2/mutations.md), so Atlas can run
+mutations against it, and runs it with persistent disk storage. The image is
+built from [docker/helixdb-atlas](docker/helixdb-atlas/Dockerfile): it fetches the
+pinned upstream commit, verifies the patch checksum, runs the patch's database
+tests, and builds the server. The first build takes several minutes.
 
 ```bash
+docker compose build          # build the patched server image (first time)
 docker compose up -d          # start the local database
 docker compose logs -f       # follow database logs
 docker compose stop          # stop it; keep the container and data
@@ -108,8 +117,9 @@ docker compose down          # remove the container; keep the data volume
 
 Run these commands from `helix-atlas/` with Docker Desktop running. The container
 is `helix-atlas-db`, and its data is stored in the named volume
-`helix-atlas-data`. The port is bound only to localhost. The server starts empty;
-the app's read-only queries do not insert example data.
+`helix-atlas-data-v3`. The port is bound only to localhost. The server starts empty;
+the app's read-only queries do not insert example data. The earlier `v0.0.6`
+setup used the separate `helix-atlas-data` volume, which is left untouched.
 
 In the app's Connection dialog, choose **Local**, host `127.0.0.1`, port `6969`,
 protocol **v2**, and deployment **Local / remote server**. Leave the API key blank.
@@ -314,6 +324,8 @@ named `count` is also rejected in v2 because it collides with the aggregate key.
 
 ## Tests
 
+For a hands-on end-to-end tour, follow the [sample queries and mutations](docs/mutation-walkthrough.md).
+
 ```bash
 npm test                    # unit, DOM workflow, and loopback HTTP tests
 npm run test:coverage       # coverage gates and coverage/index.html
@@ -334,7 +346,9 @@ server corpus, desktop smoke checks, commands, and remaining coverage limits.
 
 ## Known limits
 
-- Read-only. There is no `INSERT`/`UPDATE`/`DELETE` syntax.
+- Mutations require the pinned v2 server extension; legacy v1 remains read-only.
+  `UPDATE`, `DELETE`, `UPSERT`, and `INSERT … SELECT` are not supported.
+  [Mutation syntax, examples, parameters, and limits](docs/mutations.md).
 - `VIA` takes a single edge label, not a list.
 - `LIKE` supports `%` only at the start and/or end of the pattern.
 - v2 `SELECT *` materializes the selection once and projects exact identity and

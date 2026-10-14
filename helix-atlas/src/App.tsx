@@ -77,7 +77,7 @@ export function App() {
       </main>
       <footer className="workspace-status">
         <span><span className={`status-dot status-${status.kind}`} />{desktop ? "HelixDB workspace" : "Browser preview · connect in the desktop app"}</span>
-        <span>HELIXSQL <span className="status-separator">/</span> READ-ONLY EXPLORER</span>
+        <span>HELIXSQL <span className="status-separator">/</span> GRAPH WORKSPACE</span>
       </footer>
     </div>
   );

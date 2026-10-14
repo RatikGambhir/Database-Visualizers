@@ -82,3 +82,15 @@ seeded instance using the setup in
 [verification evidence](../contracts/helixdb-v2/verification.md). The offline
 fixture corpus and local HTTP tests run by default; they cannot replace every
 live-server or native desktop check.
+
+## Mutation verification
+
+`test/mutations.test.ts` replays captured extension responses against the staged
+mock. `test/mutationWorkspace.test.tsx` covers parameters, duplicate submissions,
+legacy gating, and post-commit refresh failures. Rust mutation compiler tests
+cover grammar, binding/type validation and limits; transport tests distinguish
+rollback, unknown outcome, and committed result errors.
+
+The [mutation verification guide](../contracts/helixdb-v2/mutations.md) contains
+the server patch, real HTTP captures, high-ID and concurrency tests, and commands
+for the separate ignored live-server suite.

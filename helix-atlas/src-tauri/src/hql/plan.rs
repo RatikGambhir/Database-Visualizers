@@ -7,6 +7,7 @@ pub(super) enum Literal {
     Float(f64),
     Boolean(bool),
     Null,
+    Parameter { name: String, span: Span },
 }
 
 #[derive(Clone, Debug)]
@@ -49,7 +50,7 @@ pub(super) enum Condition {
     },
     Like {
         column: ColumnRef,
-        pattern: String,
+        pattern: Literal,
         negated: bool,
     },
     IsNull {
@@ -164,6 +165,10 @@ pub(super) enum Statement {
 
 #[derive(Clone, Debug)]
 pub enum ResultShape {
+    UnavailableMutation,
+    Mutation {
+        plan: Box<super::mutation::MutationPreview>,
+    },
     Rows {
         variable: String,
         columns: Option<Vec<String>>,
@@ -240,6 +245,7 @@ pub struct CompiledQuery {
     pub transport_json: String,
     pub summary: String,
     pub shape: ResultShape,
+    pub mutation: Option<super::mutation::MutationPreview>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -252,18 +258,24 @@ pub struct CompiledQueryView {
     pub connection_revision: u64,
     pub transport_json: String,
     pub summary: String,
+    pub mutation: Option<super::mutation::MutationPreview>,
 }
 
 impl From<&CompiledQuery> for CompiledQueryView {
     fn from(value: &CompiledQuery) -> Self {
         Self {
             protocol: value.protocol,
-            execution_kind: "read",
+            execution_kind: if value.mutation.is_some() {
+                "write"
+            } else {
+                "read"
+            },
             endpoint_path: value.protocol.path(),
             endpoint: value.protocol.path().to_owned(),
             connection_revision: 0,
             transport_json: value.transport_json.clone(),
             summary: value.summary.clone(),
+            mutation: value.mutation.clone(),
         }
     }
 }

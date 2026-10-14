@@ -190,3 +190,17 @@ describe("result presentation", () => {
     expect(screen.getByText(/inspector on the right/)).toBeTruthy();
   });
 });
+
+it("uses mutation identity metadata for aliases and ignores physical id properties", () => {
+  const { onInspect } = show({
+    kind:"mutation",outcome:"committed",durability:"acknowledged",insertedNodes:0,insertedEdges:1,
+    statements:[{statementIndex:0,kind:"edges",binding:null,ids:["18446744073709551615"],
+      columns:["created_edge","id","from_node"], identityColumns:{created_edge:"edge",from_node:"node"},
+      rows:[{created_edge:"18446744073709551615",id:"external-id",from_node:"0"}],entities:[]}],
+  });
+  fireEvent.click(screen.getByRole("button",{name:"18446744073709551615"}));
+  expect(onInspect).toHaveBeenLastCalledWith("edge","18446744073709551615");
+  fireEvent.click(screen.getByRole("button",{name:"0"}));
+  expect(onInspect).toHaveBeenLastCalledWith("node","0");
+  expect(screen.queryByRole("button",{name:"external-id"})).toBeNull();
+});

@@ -119,6 +119,8 @@ describe("query execution", () => {
     act(() => {
       first = hook.result.current.onRun();
     });
+    act(() => hook.result.current.setQuery("SELECT COUNT(*) FROM NODES"));
+    await compileDraft();
     await act(async () => {
       await hook.result.current.onRun();
     });

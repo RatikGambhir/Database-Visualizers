@@ -2,7 +2,7 @@
 
 .workspace {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
 }
@@ -139,3 +139,10 @@
   flex-direction: column;
 }
 
+
+.parameter-editor { padding: 12px 20px; border-bottom: 1px solid var(--border); max-height: 240px; overflow: auto; }
+.parameter-editor summary { cursor: pointer; font-size: 12px; }
+.parameter-row { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+.parameter-row input { flex: 1; min-width: 100px; }
+.parameter-row select { background: var(--background); color: inherit; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; }
+.mutation-preview { margin: 0; padding: 10px 20px; border-top: 1px solid var(--border); background: var(--surface-2); color: var(--ink-secondary); font-size: 12px; }

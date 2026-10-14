@@ -1,6 +1,6 @@
 {
-  "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
-  "capturedOn": "2026-09-28",
+  "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
+  "capturedOn": "2026-10-14",
   "deployment": "isolated in-memory native server on loopback; no Cloud gateway or v1 upstream server coverage",
   "highIds": "full u64 source syntax accepted; nonexistent IDs only. No actual high-ID entities seeded. Source pin demonstrates virtual projection clamp.",
   "seedNodeIds": {
@@ -3401,9 +3401,9 @@
       "status": 400,
       "response": {
         "error": "invalid_query_json",
-        "msg": "invalid query JSON: request_type must match the query batch variant"
+        "msg": "invalid query JSON: Serde(\"request_type must match the query batch variant\") at character 0"
       },
-      "responseText": "{\"error\":\"invalid_query_json\",\"msg\":\"invalid query JSON: request_type must match the query batch variant\"}"
+      "responseText": "{\"error\":\"invalid_query_json\",\"msg\":\"invalid query JSON: Serde(\\\"request_type must match the query batch variant\\\") at character 0\"}"
     },
     {
       "name": "flat-v2-rejection",
@@ -3418,9 +3418,9 @@
       "status": 400,
       "response": {
         "error": "invalid_query_json",
-        "msg": "invalid query JSON: unknown variant `queries`, expected `read` or `write` at line 1 column 41\n\n\t\"queries\":[],\"re\n\t........^.......\n"
+        "msg": "invalid query JSON: ExpectedEnum at character 0"
       },
-      "responseText": "{\"error\":\"invalid_query_json\",\"msg\":\"invalid query JSON: unknown variant `queries`, expected `read` or `write` at line 1 column 41\\n\\n\\t\\\"queries\\\":[],\\\"re\\n\\t........^.......\\n\"}"
+      "responseText": "{\"error\":\"invalid_query_json\",\"msg\":\"invalid query JSON: ExpectedEnum at character 0\"}"
     },
     {
       "name": "schema-labels-and-bounded-fields",

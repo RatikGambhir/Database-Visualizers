@@ -235,7 +235,7 @@ fn pinned_v2_server_executes_the_helixsql_read_corpus() {
             std::fs::write(
                 path,
                 serde_json::to_string_pretty(&json!({
-                    "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
+                    "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
                     "captures": captures,
                 }))
                 .unwrap(),

@@ -130,7 +130,7 @@ fn lexer_rejects_unclosed_quotes_comments_and_invalid_numeric_tokens() {
         "SELECT `unterminated",
         "SELECT /* unterminated",
         "SELECT 1e999",
-        "SELECT @",
+        "SELECT #",
     ] {
         let error = tokenize(source).unwrap_err();
         assert!(error.span.is_some(), "{source:?}");

@@ -97,7 +97,7 @@ export function ConnectionBar({
             <span>{describeStatus(status, connection)}</span>
           </div>
 
-          <span className="read-only-label"><LockKeyhole size={12} /> Read only</span>
+          <span className="read-only-label" title="Writes require explicit execution and a verified server extension"><LockKeyhole size={12} /> {connection?.protocol === "legacyV1" ? "Legacy read only" : "Explicit writes only"}</span>
 
           <Button
             variant="ghost"

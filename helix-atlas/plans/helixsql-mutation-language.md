@@ -1,6 +1,9 @@
 # HelixSQL mutation language: research and implementation plan
 
-Status: proposed language design; no mutation functionality implemented.
+Status: implemented 2026-10-14 for v2 with the bundled `atlas-mutation-v1` server
+extension. Unmodified upstream and legacy v1 remain read-only. See
+[usage](../docs/mutations.md) and [server patch, evidence, and reproduction](../contracts/helixdb-v2/mutations.md).
+The sections below retain the design rationale and acceptance requirements.
 Research date: 2026-09-27.
 Read compatibility update: 2026-09-28; v2 reads are implemented, mutations remain proposed.
 Design update: 2026-10-14; binding existing nodes is part of the first mutation release.
@@ -263,7 +266,7 @@ not a column alias. Node insertion retains the existing planned placement
 `@name`, distinguishing entity references from property identifiers and `:parameters`.
 This is the canonical form of the conversational example; bare `alice`/`bob`
 endpoint values and trailing insert bindings are not alternate spellings.
-All syntax in this section remains proposed, not executable in Atlas today.
+This syntax is executable on the verified extension; capability discovery gates writes.
 
 Lookup rules for the first release:
 
@@ -378,7 +381,7 @@ constant in Rust; never substitute its text into the SQL source.
 
 ## 5. Initial grammar
 
-This EBNF describes the proposed insert and bound-lookup grammar, not currently accepted syntax.
+This EBNF describes the implemented insert and bound-lookup grammar.
 Existing read statements keep their grammar. Keywords are shown in uppercase;
 `identifier`, `string`, and numeric tokenization retain current quoting/comment rules.
 

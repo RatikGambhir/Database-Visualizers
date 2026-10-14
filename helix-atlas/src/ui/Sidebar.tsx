@@ -14,6 +14,10 @@ interface Props {
 }
 
 const EXAMPLES: { title: string; query: string }[] = [
+  { title: "Insert nodes", query: "INSERT INTO NODES:User (name, age)\nVALUES ('Alice', 30), ('Bob', 28)\nRETURNING id, name;" },
+  { title: "Insert edges", query: "INSERT INTO EDGES:Follows (source, target, since)\nVALUES (42, 43, 2026)\nRETURNING id, source, target;" },
+  { title: "Create connected nodes", query: "BEGIN MUTATION;\n  INSERT INTO NODES:User AS alice (name) VALUES ('Alice');\n  INSERT INTO NODES:User AS bob (name) VALUES ('Bob');\n  INSERT INTO EDGES:Follows (source, target) VALUES (@alice, @bob) RETURNING *;\nCOMMIT;" },
+  { title: "Find a node and connect", query: "BEGIN MUTATION;\n  SELECT * FROM NODES:User WHERE name = 'Alice' AS alice;\n  INSERT INTO NODES:User AS bob (name) VALUES ('Bob') RETURNING id, name;\n  INSERT INTO EDGES:Follows (source, target) VALUES (@alice, @bob) RETURNING id;\nCOMMIT;" },
   { title: "Whole graph", query: "QUERY LIMIT 300" },
   { title: "Browse nodes", query: "SELECT * FROM NODES LIMIT 50" },
   {

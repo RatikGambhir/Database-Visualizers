@@ -2,6 +2,7 @@ import { ArrowUpRight, Plug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Theme } from "../graph/palette";
+import { ParameterEditor } from "../ui/ParameterEditor";
 import { QueryEditor } from "../ui/QueryEditor";
 import { ResultsPanel } from "../ui/ResultsPanel";
 import { Sidebar } from "../ui/Sidebar";
@@ -20,8 +21,11 @@ type Props = {
     | "refreshSchema"
     | "setQuery"
     | "query"
+    | "parameterRows"
+    | "setParameterRows"
     | "onRun"
     | "run"
+    | "mutationRefreshError"
     | "compileState"
     | "desktop"
     | "outputTab"
@@ -80,8 +84,11 @@ export function QueryWorkspace({ workspace, theme }: Props) {
           onRun={onRun}
           running={run.running}
           error={compileState.error}
-          available={desktop}
+          available={desktop && !!compileState.compiled && compileState.source === query}
+          compiled={compileState.source === query ? compileState.compiled : null}
         />
+
+        <ParameterEditor rows={workspace.parameterRows} onChange={workspace.setParameterRows} />
 
         <Tabs
           className="output"
@@ -111,6 +118,7 @@ export function QueryWorkspace({ workspace, theme }: Props) {
           </TabsList>
 
           <TabsContent value="results" className="tab-body">
+            {workspace.mutationRefreshError && <p role="status" className="panel-error">Mutation committed. {workspace.mutationRefreshError}</p>}
             {run.error && (
               <div className="panel-error" role="alert">
                 <strong>{run.error.message}</strong>
@@ -140,11 +148,12 @@ export function QueryWorkspace({ workspace, theme }: Props) {
             {wireCompiled && (
               <div className="wire-view">
                 <p className="hint-text">
-                  {executedWire ? "Executed read at" : "Read preview for"}{" "}
+                  {wireCompiled.mutation ? (executedWire ? "Executed mutation at" : "Mutation preview for") : executedWire ? "Executed read at" : "Read preview for"}{" "}
                   <code>POST {wireCompiled.endpoint}</code> ·{" "}
                   {wireCompiled.protocol === "legacyV1" ? "legacy v1" : "v2"}.
                 </p>
-                <pre>{wireCompiled.transportJson}</pre>
+                <pre>{wireCompiled.transportJson || JSON.stringify(wireCompiled.mutation, null, 2)}</pre>
+                {wireCompiled.mutation && <details><summary>Ordered mutation plan</summary><pre>{JSON.stringify(wireCompiled.mutation, null, 2)}</pre></details>}
               </div>
             )}
           </TabsContent>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getConnection,
+  BackendError,
   isDesktop,
   loadSchema,
   runQuery,
@@ -8,6 +9,7 @@ import {
   testConnection,
   type ConnectionView,
   type ConnectionUpdate,
+  type Parameters,
 } from "../client";
 import type { GraphSelectionEvent } from "../graph/GraphCanvas";
 import type { GraphData, QueryResult } from "../results";
@@ -22,6 +24,8 @@ import {
 } from "./types";
 import { useQueryCompilation } from "./useQueryCompilation";
 
+import { parameterValues, type ParameterDraft } from "./parameters";
+
 const INITIAL_QUERY = "QUERY LIMIT 300";
 const HISTORY_LIMIT = 12;
 
@@ -29,6 +33,12 @@ const HISTORY_LIMIT = 12;
 export function useWorkspace() {
   const desktop = useMemo(isDesktop, []);
   const [query, setQuery] = useState(INITIAL_QUERY);
+  const [parameterRows, setParameterRows] = useState<ParameterDraft[]>([]);
+  const parameterState = useMemo(() => {
+    try { return { values: parameterRows.length ? parameterValues(parameterRows) : undefined, error: null }; }
+    catch (error) { return { values: undefined, error: error instanceof BackendError ? error : new BackendError(String(error)) }; }
+  }, [parameterRows]);
+  const submitting = useRef(new Set<string>());
   const [view, setView] = useState<AppView>("query");
   const [outputTab, setOutputTab] = useState<OutputTab>("results");
   const [run, setRun] = useState<RunState>(IDLE);
@@ -59,6 +69,8 @@ export function useWorkspace() {
   /** The last graph produced, kept so the canvas survives a non-graph query. */
   const [graph, setGraph] = useState<GraphData | null>(null);
   const [graphLoading, setGraphLoading] = useState(false);
+  const [mutationRefreshError, setMutationRefreshError] = useState<string | null>(null);
+  const graphSource = useRef<{ source: string; parameters?: Parameters }>({ source: INITIAL_QUERY });
   const [graphError, setGraphError] = useState<string | null>(null);
   const graphLoadAttempted = useRef(false);
   const graphLoadId = useRef(0);
@@ -67,20 +79,24 @@ export function useWorkspace() {
     desktop,
     query,
     connection?.revision,
+    parameterState.values,
+    parameterState.error,
   );
 
   // ---- transport helpers --------------------------------------------------
 
   /** Sends source text; Rust owns compilation, transport, and decoding. */
-  const execute = useCallback((source: string) => runQuery(source), []);
+  const execute = useCallback((source: string, parameters?: Parameters) =>
+    parameters ? runQuery(source, parameters) : runQuery(source), []);
 
   // ---- actions ------------------------------------------------------------
 
   const onRun = useCallback(async () => {
-    const source = query.trim();
+    const source = query;
     const compiled =
-      compileState.source === source ? compileState.compiled : null;
-    if (!compiled) return;
+      compileState.source === source && compileState.parameters === parameterState.values && !parameterState.error ? compileState.compiled : null;
+    const submissionKey = JSON.stringify([source, parameterState.values]);
+    if (!compiled || (compiled.mutation && !compiled.mutation.executable) || submitting.current.has(submissionKey)) return;
     if (status.kind !== "connected") {
       setRun({
         running: false,
@@ -98,6 +114,8 @@ export function useWorkspace() {
     // A manual query supersedes any automatic graph snapshot still in flight.
     graphLoadId.current += 1;
     setGraphLoading(false);
+    submitting.current.add(submissionKey);
+    setMutationRefreshError(null);
     const requestId = ++runId.current;
     const generation = connectionGeneration.current;
     setRun({
@@ -108,7 +126,7 @@ export function useWorkspace() {
       error: null,
     });
     try {
-      const execution = await execute(source);
+      const execution = await execute(source, parameterState.values);
       if (
         generation !== connectionGeneration.current ||
         requestId !== runId.current
@@ -125,6 +143,7 @@ export function useWorkspace() {
       setStatus({ kind: "connected", durationMs });
 
       if (result.kind === "graph") {
+        graphSource.current = { source, parameters: parameterState.values };
         setGraph(result.graph);
         setGraphError(null);
         graphLoadAttempted.current = true;
@@ -146,6 +165,28 @@ export function useWorkspace() {
           HISTORY_LIMIT,
         ),
       );
+      if (result.kind === "mutation") {
+        // Commit receipt is already visible. Refresh failures are independent.
+        const schemaRequest = ++schemaLoadId.current;
+        const graphRequest = ++graphLoadId.current;
+        setSchemaLoading(true);
+        const [schemaRefresh, graphRefresh] = await Promise.allSettled([
+          loadSchema(),
+          graph ? execute(graphSource.current.source, graphSource.current.parameters) : Promise.resolve(null),
+        ]);
+        if (schemaRequest === schemaLoadId.current) setSchemaLoading(false);
+        if (generation !== connectionGeneration.current || requestId !== runId.current) return;
+        const failures: string[] = [];
+        if (schemaRefresh.status === "fulfilled") {
+          if (schemaRequest === schemaLoadId.current) { setSchema(schemaRefresh.value.schema); setSchemaError(null); }
+        } else failures.push(`Schema refresh: ${describeFailure(schemaRefresh.reason).message}`);
+        if (graphRefresh.status === "fulfilled") {
+          if (graphRequest === graphLoadId.current && graphRefresh.value?.result.kind === "graph") {
+            setGraph(graphRefresh.value.result.graph); setGraphError(null);
+          }
+        } else failures.push(`Graph refresh: ${describeFailure(graphRefresh.reason).message}`);
+        setMutationRefreshError(failures.length ? failures.join(" · ") : null);
+      }
     } catch (error) {
       if (
         generation !== connectionGeneration.current ||
@@ -163,7 +204,8 @@ export function useWorkspace() {
       if (isConnectionFailure(error))
         setStatus({ kind: "failed", message: failure.message });
     }
-  }, [compileState, execute, query, status.kind]);
+    finally { submitting.current.delete(submissionKey); }
+  }, [compileState, parameterState, query, status.kind, graph, execute]);
 
   /** Loads a safe snapshot for the Graph workspace without changing the editor. */
   const loadCurrentGraph = useCallback(async () => {
@@ -173,7 +215,7 @@ export function useWorkspace() {
     setGraphError(null);
 
     try {
-      const execution = await execute(INITIAL_QUERY);
+      const execution = await execute(graphSource.current.source, graphSource.current.parameters);
       const { result, durationMs, compiled } = execution;
       if (result.kind !== "graph")
         throw new Error("HelixDB returned a non-graph result.");
@@ -276,6 +318,7 @@ export function useWorkspace() {
       schemaLoadId.current += 1;
       graphLoadId.current += 1;
       setRun(IDLE);
+      setMutationRefreshError(null);
       resetCompilation();
       setSchema(null);
       setSchemaLoading(false);
@@ -296,6 +339,7 @@ export function useWorkspace() {
         graphLoadId.current += 1;
         graphLoadAttempted.current = false;
         setGraph(null);
+        graphSource.current = { source: INITIAL_QUERY };
         setGraphError(null);
         setGraphLoading(false);
         setStatus({ kind: "connected", durationMs });
@@ -328,9 +372,11 @@ export function useWorkspace() {
     graphLoadId.current += 1;
     graphLoadAttempted.current = false;
     setGraph(null);
+    graphSource.current = { source: INITIAL_QUERY };
     setGraphError(null);
     setGraphLoading(false);
     setRun(IDLE);
+    setMutationRefreshError(null);
     setView("query");
   }, []);
 
@@ -390,6 +436,8 @@ export function useWorkspace() {
     desktop,
     query,
     setQuery,
+    parameterRows,
+    setParameterRows,
     view,
     setView,
     outputTab,
@@ -410,6 +458,7 @@ export function useWorkspace() {
     graph,
     graphLoading,
     graphError,
+    mutationRefreshError,
     compileState,
     executedWire,
     wireCompiled,

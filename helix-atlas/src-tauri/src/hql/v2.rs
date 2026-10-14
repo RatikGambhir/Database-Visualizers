@@ -3,9 +3,12 @@
 use super::*;
 
 mod batch;
+mod mutations;
 mod predicates;
 mod selection;
 mod statements;
+pub(super) use mutations::compile as compile_mutation;
+pub(crate) use mutations::row_name;
 #[cfg(test)]
 mod tests;
 
@@ -30,5 +33,11 @@ pub(super) fn compile(statement: &Statement) -> Result<CompiledQuery, HqlError> 
             .map_err(|e| HqlError::plain(e.to_string()))?,
         summary,
         shape,
+        mutation: None,
     })
+}
+
+/// Validate and preview an uncapped lookup without inventing a write assertion.
+pub(super) fn mutation_selection(selection: &Selection) -> Result<Value, HqlError> {
+    selection::select(selection, None)
 }

@@ -1,0 +1,1362 @@
+{
+  "contract": "atlas-mutation-v1",
+  "fixtures": [
+    {
+      "request": {
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__s0_r0_stream",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "age",
+                          {
+                            "value": {
+                              "i64": 30
+                            }
+                          }
+                        ],
+                        [
+                          "id",
+                          {
+                            "value": {
+                              "string": "external"
+                            }
+                          }
+                        ],
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Alice"
+                            }
+                          }
+                        ],
+                        [
+                          "optional",
+                          {
+                            "value": "null"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s0_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s0_r0_stream"
+                  },
+                  "name": "__s0_r0_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s0_r0_stream"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "s0_r0",
+              "__s0_r0_ids",
+              "__s0_r0_labels"
+            ]
+          }
+        },
+        "query_name": "helix_atlas_mutation_v1",
+        "request_type": "write"
+      },
+      "result": {
+        "durability": "acknowledged",
+        "insertedEdges": 0,
+        "insertedNodes": 1,
+        "kind": "mutation",
+        "outcome": "committed",
+        "statements": [
+          {
+            "binding": null,
+            "columns": [],
+            "entities": [
+              {
+                "id": "0",
+                "label": "User",
+                "properties": {
+                  "age": 30,
+                  "id": "external",
+                  "name": "Alice",
+                  "optional": null
+                },
+                "source": null,
+                "target": null
+              }
+            ],
+            "identityColumns": {},
+            "ids": [
+              "0"
+            ],
+            "kind": "nodes",
+            "rows": [],
+            "statementIndex": 0
+          }
+        ]
+      },
+      "source": "INSERT INTO NODES:User (name, age, optional, \"id\") VALUES ('Alice', 30, NULL, 'external') RETURNING *;"
+    },
+    {
+      "request": {
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__s0_r0_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 2
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "where": {
+                              "input": {
+                                "nodes": {
+                                  "reference": "all"
+                                }
+                              },
+                              "predicate": {
+                                "eq": {
+                                  "left": {
+                                    "property": "name"
+                                  },
+                                  "right": {
+                                    "constant": {
+                                      "string": "Alice"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$label"
+                              },
+                              "right": {
+                                "constant": {
+                                  "string": "User"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s0_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s0_r0_stream"
+                  },
+                  "name": "__s0_r0_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s0_r0_stream"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s1_r0_stream",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Bob"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s1_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      },
+                      "properties": [
+                        "name"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s1_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s1_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s1_r0_stream"
+                  },
+                  "name": "__s1_r0_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s1_r0_stream"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_stream",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      },
+                      "label": "Follows",
+                      "properties": [
+                        [
+                          "source",
+                          {
+                            "value": {
+                              "string": "crm"
+                            }
+                          }
+                        ]
+                      ],
+                      "to": {
+                        "var": "__s1_r0_stream"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s2_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r0_stream"
+                        }
+                      },
+                      "properties": [
+                        "source"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__s2_r0_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__s2_r0_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "s0_r0",
+              "__s0_r0_ids",
+              "__s0_r0_labels",
+              "s1_r0",
+              "__s1_r0_ids",
+              "__s1_r0_labels",
+              "s2_r0",
+              "__s2_r0_ids",
+              "__s2_r0_labels",
+              "__s2_r0_from",
+              "__s2_r0_to"
+            ]
+          }
+        },
+        "query_name": "helix_atlas_mutation_v1",
+        "request_type": "write"
+      },
+      "result": {
+        "durability": "acknowledged",
+        "insertedEdges": 1,
+        "insertedNodes": 1,
+        "kind": "mutation",
+        "outcome": "committed",
+        "statements": [
+          {
+            "binding": "alice",
+            "columns": [],
+            "entities": [],
+            "identityColumns": {},
+            "ids": [
+              "0"
+            ],
+            "kind": "lookup",
+            "rows": [],
+            "statementIndex": 0
+          },
+          {
+            "binding": "bob",
+            "columns": [
+              "id",
+              "name"
+            ],
+            "entities": [],
+            "identityColumns": {
+              "id": "node"
+            },
+            "ids": [
+              "1"
+            ],
+            "kind": "nodes",
+            "rows": [
+              {
+                "id": "1",
+                "name": "Bob"
+              }
+            ],
+            "statementIndex": 1
+          },
+          {
+            "binding": null,
+            "columns": [
+              "id",
+              "source",
+              "target",
+              "import_source"
+            ],
+            "entities": [],
+            "identityColumns": {
+              "id": "edge",
+              "source": "node",
+              "target": "node"
+            },
+            "ids": [
+              "0"
+            ],
+            "kind": "edges",
+            "rows": [
+              {
+                "id": "0",
+                "import_source": "crm",
+                "source": "0",
+                "target": "1"
+              }
+            ],
+            "statementIndex": 2
+          }
+        ]
+      },
+      "source": "BEGIN MUTATION; SELECT * FROM NODES:User WHERE name = 'Alice' AS alice; INSERT INTO NODES:User AS bob (name) VALUES ('Bob') RETURNING id, name; INSERT INTO EDGES:Follows (source,target,\"source\") VALUES (@alice,@bob,'crm') RETURNING id,source,target,\"source\" AS import_source; COMMIT;"
+    },
+    {
+      "request": {
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__s0_r0_stream",
+                  "root": {
+                    "add_n": {
+                      "label": "Fresh",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s0_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s0_r0_stream"
+                  },
+                  "name": "__s0_r0_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s0_r0_stream"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s1_r0_stream",
+                  "root": {
+                    "limit": {
+                      "count": {
+                        "literal": 2
+                      },
+                      "input": {
+                        "where": {
+                          "input": {
+                            "nodes": {
+                              "reference": "all"
+                            }
+                          },
+                          "predicate": {
+                            "eq": {
+                              "left": {
+                                "property": "$label"
+                              },
+                              "right": {
+                                "constant": {
+                                  "string": "Fresh"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s1_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s1_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s1_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s1_r0_stream"
+                  },
+                  "name": "__s1_r0_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s1_r0_stream"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_stream",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s1_r0_stream"
+                        }
+                      },
+                      "label": "Self",
+                      "properties": [],
+                      "to": {
+                        "var": "__s0_r0_stream"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s2_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r0_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__s2_r0_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r0_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__s2_r0_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r1_stream",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      },
+                      "label": "Self",
+                      "properties": [],
+                      "to": {
+                        "var": "__s1_r0_stream"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s2_r1",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r1_stream"
+                        }
+                      },
+                      "properties": null
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r1_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r1_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r1_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s2_r1_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r1_from",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__s2_r1_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s2_r1_to",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "__s2_r1_stream"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "s0_r0",
+              "__s0_r0_ids",
+              "__s0_r0_labels",
+              "s1_r0",
+              "__s1_r0_ids",
+              "__s1_r0_labels",
+              "s2_r0",
+              "__s2_r0_ids",
+              "__s2_r0_labels",
+              "__s2_r0_from",
+              "__s2_r0_to",
+              "s2_r1",
+              "__s2_r1_ids",
+              "__s2_r1_labels",
+              "__s2_r1_from",
+              "__s2_r1_to"
+            ]
+          }
+        },
+        "query_name": "helix_atlas_mutation_v1",
+        "request_type": "write"
+      },
+      "result": {
+        "durability": "acknowledged",
+        "insertedEdges": 2,
+        "insertedNodes": 1,
+        "kind": "mutation",
+        "outcome": "committed",
+        "statements": [
+          {
+            "binding": "a",
+            "columns": [],
+            "entities": [],
+            "identityColumns": {},
+            "ids": [
+              "2"
+            ],
+            "kind": "nodes",
+            "rows": [],
+            "statementIndex": 0
+          },
+          {
+            "binding": "b",
+            "columns": [],
+            "entities": [],
+            "identityColumns": {},
+            "ids": [
+              "2"
+            ],
+            "kind": "lookup",
+            "rows": [],
+            "statementIndex": 1
+          },
+          {
+            "binding": null,
+            "columns": [],
+            "entities": [
+              {
+                "id": "1",
+                "label": "Self",
+                "properties": {},
+                "source": "2",
+                "target": "2"
+              },
+              {
+                "id": "2",
+                "label": "Self",
+                "properties": {},
+                "source": "2",
+                "target": "2"
+              }
+            ],
+            "identityColumns": {},
+            "ids": [
+              "1",
+              "2"
+            ],
+            "kind": "edges",
+            "rows": [],
+            "statementIndex": 2
+          }
+        ]
+      },
+      "source": "BEGIN MUTATION; INSERT INTO NODES:Fresh AS a DEFAULT VALUES; SELECT * FROM NODES:Fresh AS b; INSERT INTO EDGES:Self (source,target) VALUES (@b,@a),(@a,@b) RETURNING *; COMMIT;"
+    },
+    {
+      "request": {
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "__s0_r0_stream",
+                  "root": {
+                    "add_n": {
+                      "label": "Bulk",
+                      "properties": [
+                        [
+                          "value",
+                          {
+                            "value": {
+                              "i64": 9223372036854775807
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s0_r0",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      },
+                      "properties": [
+                        "value"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r0_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r0_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s0_r0_stream"
+                  },
+                  "name": "__s0_r0_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s0_r0_stream"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r1_stream",
+                  "root": {
+                    "add_n": {
+                      "label": "Bulk",
+                      "properties": [
+                        [
+                          "value",
+                          {
+                            "value": {
+                              "i64": -9223372036854775808
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s0_r1",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r1_stream"
+                        }
+                      },
+                      "properties": [
+                        "value"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r1_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r1_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r1_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r1_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s0_r1_stream"
+                  },
+                  "name": "__s0_r1_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s0_r1_stream"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r2_stream",
+                  "root": {
+                    "add_n": {
+                      "label": "Bulk",
+                      "properties": [
+                        [
+                          "value",
+                          {
+                            "value": {
+                              "i64": 9007199254740993
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "s0_r2",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r2_stream"
+                        }
+                      },
+                      "properties": [
+                        "value"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r2_ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r2_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "__s0_r2_labels",
+                  "root": {
+                    "label": {
+                      "input": {
+                        "inject": {
+                          "variable": "__s0_r2_stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "condition": {
+                    "require_single_node": "__s0_r2_stream"
+                  },
+                  "name": "__s0_r2_stream_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "__s0_r2_stream"
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "s0_r0",
+              "__s0_r0_ids",
+              "__s0_r0_labels",
+              "s0_r1",
+              "__s0_r1_ids",
+              "__s0_r1_labels",
+              "s0_r2",
+              "__s0_r2_ids",
+              "__s0_r2_labels"
+            ]
+          }
+        },
+        "query_name": "helix_atlas_mutation_v1",
+        "request_type": "write"
+      },
+      "result": {
+        "durability": "acknowledged",
+        "insertedEdges": 0,
+        "insertedNodes": 3,
+        "kind": "mutation",
+        "outcome": "committed",
+        "statements": [
+          {
+            "binding": null,
+            "columns": [
+              "id",
+              "value"
+            ],
+            "entities": [],
+            "identityColumns": {
+              "id": "node"
+            },
+            "ids": [
+              "3",
+              "4",
+              "5"
+            ],
+            "kind": "nodes",
+            "rows": [
+              {
+                "id": "3",
+                "value": "9223372036854775807"
+              },
+              {
+                "id": "4",
+                "value": "-9223372036854775808"
+              },
+              {
+                "id": "5",
+                "value": "9007199254740993"
+              }
+            ],
+            "statementIndex": 0
+          }
+        ]
+      },
+      "source": "INSERT INTO NODES:Bulk (value) VALUES (9223372036854775807),(-9223372036854775808),(9007199254740993) RETURNING id,value;"
+    },
+    {
+      "error": {
+        "code": "mutation_rolled_back",
+        "detail": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `__s1_r0_stream` requires exactly one node, found 0\"}",
+        "hint": null,
+        "kind": "mutation",
+        "message": "mutation rolled back: db error: Query error: atlas_single_node: `__s1_r0_stream` requires exactly one node, found 0",
+        "outcome": "rolledBack",
+        "span": null,
+        "statementIndex": 1,
+        "status": null,
+        "tupleIndex": 0
+      },
+      "source": "BEGIN MUTATION; INSERT INTO NODES:Rollback DEFAULT VALUES; SELECT * FROM NODES:Missing AS a; COMMIT;"
+    },
+    {
+      "error": {
+        "code": "mutation_rolled_back",
+        "detail": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `__s1_r0_stream` requires exactly one node, found 2\"}",
+        "hint": null,
+        "kind": "mutation",
+        "message": "mutation rolled back: db error: Query error: atlas_single_node: `__s1_r0_stream` requires exactly one node, found 2",
+        "outcome": "rolledBack",
+        "span": null,
+        "statementIndex": 1,
+        "status": null,
+        "tupleIndex": 0
+      },
+      "source": "BEGIN MUTATION; INSERT INTO NODES:Rollback DEFAULT VALUES; SELECT * FROM NODES:User AS a; COMMIT;"
+    },
+    {
+      "error": {
+        "code": "mutation_rolled_back",
+        "detail": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `__s1_r0_source` requires exactly one node, found 0\"}",
+        "hint": null,
+        "kind": "mutation",
+        "message": "mutation rolled back: db error: Query error: atlas_single_node: `__s1_r0_source` requires exactly one node, found 0",
+        "outcome": "rolledBack",
+        "span": null,
+        "statementIndex": 1,
+        "status": null,
+        "tupleIndex": 0
+      },
+      "source": "BEGIN MUTATION; INSERT INTO NODES:Rollback AS a DEFAULT VALUES; INSERT INTO EDGES:E (source,target) VALUES (18446744073709551615,@a); COMMIT;"
+    },
+    {
+      "error": {
+        "code": "mutation_rolled_back",
+        "detail": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `__s1_r0_target` requires exactly one node, found 0\"}",
+        "hint": null,
+        "kind": "mutation",
+        "message": "mutation rolled back: db error: Query error: atlas_single_node: `__s1_r0_target` requires exactly one node, found 0",
+        "outcome": "rolledBack",
+        "span": null,
+        "statementIndex": 1,
+        "status": null,
+        "tupleIndex": 0
+      },
+      "source": "BEGIN MUTATION; INSERT INTO NODES:Rollback AS a DEFAULT VALUES; INSERT INTO EDGES:E (source,target) VALUES (@a,18446744073709551615); COMMIT;"
+    },
+    {
+      "error": {
+        "code": "mutation_rolled_back",
+        "detail": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `__s0_r1_target` requires exactly one node, found 0\"}",
+        "hint": null,
+        "kind": "mutation",
+        "message": "mutation rolled back: db error: Query error: atlas_single_node: `__s0_r1_target` requires exactly one node, found 0",
+        "outcome": "rolledBack",
+        "span": null,
+        "statementIndex": 0,
+        "status": null,
+        "tupleIndex": 1
+      },
+      "source": "INSERT INTO EDGES:E (source,target) VALUES (0,0),(0,18446744073709551615);"
+    }
+  ]
+}

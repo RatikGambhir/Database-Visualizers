@@ -28,7 +28,19 @@ export interface LabelCount {
   count: number;
 }
 
+export interface MutationStatementResult {
+  statementIndex: number;
+  kind: "lookup" | "nodes" | "edges";
+  binding: string | null;
+  ids: string[];
+  columns: string[];
+  identityColumns: Record<string, "node" | "edge">;
+  rows: Row[];
+  entities: { id: string; label: string | null; source: string | null; target: string | null; properties: Row }[];
+}
+
 export type QueryResult =
+  | { kind: "mutation"; insertedNodes: number; insertedEdges: number; outcome: "committed"; durability: "acknowledged"; statements: MutationStatementResult[] }
   | { kind: "rows"; columns: string[]; rows: Row[] }
   | { kind: "count"; value: number }
   | { kind: "groupCount"; by: string; groups: LabelCount[] }

@@ -1,0 +1,343 @@
+{
+  "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
+  "extension": null,
+  "fixtures": [
+    {
+      "name": "empty",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 0,
+        "nodes": 0
+      },
+      "responseText": "{\"edges\":0,\"nodes\":0}"
+    },
+    {
+      "name": "missing-source-silently-commits-earlier-node",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "created",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "ids": [
+                              999
+                            ]
+                          }
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "created"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "created",
+              "edge"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 200,
+      "response": {
+        "created": [
+          {
+            "$id": 0
+          }
+        ],
+        "edge": []
+      },
+      "responseText": "{\"created\":[{\"$id\":0}],\"edge\":[]}"
+    },
+    {
+      "name": "after-missing-source",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 0,
+        "nodes": 1
+      },
+      "responseText": "{\"edges\":0,\"nodes\":1}"
+    },
+    {
+      "name": "multiple-bindings-fan-out",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "a",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "b",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "many",
+                  "root": {
+                    "nodes": {
+                      "reference": "all"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "many"
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "a"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "a",
+              "b",
+              "many",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 200,
+      "response": {
+        "a": [
+          {
+            "$id": 1
+          }
+        ],
+        "b": [
+          {
+            "$id": 2
+          }
+        ],
+        "edges": [
+          {
+            "$id": 0
+          },
+          {
+            "$id": 1
+          },
+          {
+            "$id": 2
+          }
+        ],
+        "many": [
+          {
+            "$id": 0
+          },
+          {
+            "$id": 1
+          },
+          {
+            "$id": 2
+          }
+        ]
+      },
+      "responseText": "{\"a\":[{\"$id\":1}],\"b\":[{\"$id\":2}],\"edges\":[{\"$id\":0},{\"$id\":1},{\"$id\":2}],\"many\":[{\"$id\":0},{\"$id\":1},{\"$id\":2}]}"
+    },
+    {
+      "name": "after-fanout",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 3,
+        "nodes": 3
+      },
+      "responseText": "{\"edges\":3,\"nodes\":3}"
+    }
+  ]
+}

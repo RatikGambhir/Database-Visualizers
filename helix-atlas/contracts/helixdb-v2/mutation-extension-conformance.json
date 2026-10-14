@@ -1,0 +1,1253 @@
+{
+  "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
+  "extension": "atlas-mutation-v1",
+  "fixtures": [
+    {
+      "name": "empty",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 0,
+        "nodes": 0
+      },
+      "responseText": "{\"edges\":0,\"nodes\":0}"
+    },
+    {
+      "name": "create-null-and-exact-properties",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "alice",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Alice"
+                            }
+                          }
+                        ],
+                        [
+                          "optional",
+                          {
+                            "value": "null"
+                          }
+                        ],
+                        [
+                          "large",
+                          {
+                            "value": {
+                              "i64": 9007199254740993
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "props",
+                  "root": {
+                    "value_map": {
+                      "input": {
+                        "inject": {
+                          "variable": "alice"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "alice",
+              "props"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 200,
+      "response": {
+        "alice": [
+          {
+            "$id": 0
+          }
+        ],
+        "props": [
+          {
+            "$id": 0,
+            "$label": "User",
+            "large": 9007199254740993,
+            "name": "Alice",
+            "optional": null
+          }
+        ]
+      },
+      "responseText": "{\"alice\":[{\"$id\":0}],\"props\":[{\"$id\":0,\"$label\":\"User\",\"large\":9007199254740993,\"name\":\"Alice\",\"optional\":null}]}"
+    },
+    {
+      "name": "lookup-new-node-edge",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "alice",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "alice_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "alice"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "alice"
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "bob",
+                  "root": {
+                    "add_n": {
+                      "label": "User",
+                      "properties": [
+                        [
+                          "name",
+                          {
+                            "value": {
+                              "string": "Bob"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "bob_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "bob"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "bob"
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "alice"
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "bob"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "ids",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "inject": {
+                          "variable": "edge"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "source",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "in_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "edge"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "target",
+                  "root": {
+                    "id": {
+                      "input": {
+                        "out_n": {
+                          "input": {
+                            "inject": {
+                              "variable": "edge"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "alice",
+              "alice_checked",
+              "bob",
+              "bob_checked",
+              "edge",
+              "ids",
+              "source",
+              "target"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 200,
+      "response": {
+        "alice": [
+          {
+            "$id": 0
+          }
+        ],
+        "alice_checked": [
+          {
+            "$id": 0
+          }
+        ],
+        "bob": [
+          {
+            "$id": 1
+          }
+        ],
+        "bob_checked": [
+          {
+            "$id": 1
+          }
+        ],
+        "edge": [
+          {
+            "$id": 0
+          }
+        ],
+        "ids": [
+          0
+        ],
+        "source": [
+          0
+        ],
+        "target": [
+          1
+        ]
+      },
+      "responseText": "{\"alice\":[{\"$id\":0}],\"alice_checked\":[{\"$id\":0}],\"bob\":[{\"$id\":1}],\"bob_checked\":[{\"$id\":1}],\"edge\":[{\"$id\":0}],\"ids\":[0],\"source\":[0],\"target\":[1]}"
+    },
+    {
+      "name": "after-connected-graph",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 1,
+        "nodes": 2
+      },
+      "responseText": "{\"edges\":1,\"nodes\":2}"
+    },
+    {
+      "name": "missing-lookup",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "before",
+                  "root": {
+                    "add_n": {
+                      "label": "Temporary",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "found",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          999
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "found_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "found"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "found"
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "before",
+              "found",
+              "found_checked"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 500,
+      "response": {
+        "error": "invalid_query",
+        "msg": "db error: Query error: atlas_single_node: `found` requires exactly one node, found 0"
+      },
+      "responseText": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `found` requires exactly one node, found 0\"}"
+    },
+    {
+      "name": "rollback-missing-lookup",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 1,
+        "nodes": 2
+      },
+      "responseText": "{\"edges\":1,\"nodes\":2}"
+    },
+    {
+      "name": "ambiguous-lookup",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "before",
+                  "root": {
+                    "add_n": {
+                      "label": "Temporary",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "found",
+                  "root": {
+                    "nodes": {
+                      "reference": "all"
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "found_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "found"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "found"
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "before",
+              "found",
+              "found_checked"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 500,
+      "response": {
+        "error": "invalid_query",
+        "msg": "db error: Query error: atlas_single_node: `found` requires exactly one node, found 3"
+      },
+      "responseText": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `found` requires exactly one node, found 3\"}"
+    },
+    {
+      "name": "rollback-ambiguous-lookup",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 1,
+        "nodes": 2
+      },
+      "responseText": "{\"edges\":1,\"nodes\":2}"
+    },
+    {
+      "name": "missing-source",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "before",
+                  "root": {
+                    "add_n": {
+                      "label": "Temporary",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "endpoint",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          999
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "endpoint_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "endpoint"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "endpoint"
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "endpoint"
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "ids": [
+                          0
+                        ]
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "before",
+              "endpoint",
+              "endpoint_checked",
+              "edge"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 500,
+      "response": {
+        "error": "invalid_query",
+        "msg": "db error: Query error: atlas_single_node: `endpoint` requires exactly one node, found 0"
+      },
+      "responseText": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `endpoint` requires exactly one node, found 0\"}"
+    },
+    {
+      "name": "rollback-source",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 1,
+        "nodes": 2
+      },
+      "responseText": "{\"edges\":1,\"nodes\":2}"
+    },
+    {
+      "name": "missing-target",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "before",
+                  "root": {
+                    "add_n": {
+                      "label": "Temporary",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "endpoint",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          999
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "endpoint_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "endpoint"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "endpoint"
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edge",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "nodes": {
+                          "reference": {
+                            "ids": [
+                              0
+                            ]
+                          }
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "endpoint"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "before",
+              "endpoint",
+              "endpoint_checked",
+              "edge"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 500,
+      "response": {
+        "error": "invalid_query",
+        "msg": "db error: Query error: atlas_single_node: `endpoint` requires exactly one node, found 0"
+      },
+      "responseText": "{\"error\":\"invalid_query\",\"msg\":\"db error: Query error: atlas_single_node: `endpoint` requires exactly one node, found 0\"}"
+    },
+    {
+      "name": "rollback-target",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 1,
+        "nodes": 2
+      },
+      "responseText": "{\"edges\":1,\"nodes\":2}"
+    },
+    {
+      "name": "read-your-writes-and-self-loop",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "new",
+                  "root": {
+                    "add_n": {
+                      "label": "Fresh",
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "found",
+                  "root": {
+                    "where": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      },
+                      "predicate": {
+                        "eq": {
+                          "left": {
+                            "property": "$label"
+                          },
+                          "right": {
+                            "constant": {
+                              "string": "Fresh"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "found_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "found"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "found"
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "self",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "found"
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "found"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "new",
+              "found",
+              "found_checked",
+              "self"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 200,
+      "response": {
+        "found": [
+          {
+            "$id": 6
+          }
+        ],
+        "found_checked": [
+          {
+            "$id": 6
+          }
+        ],
+        "new": [
+          {
+            "$id": 6
+          }
+        ],
+        "self": [
+          {
+            "$id": 1
+          }
+        ]
+      },
+      "responseText": "{\"found\":[{\"$id\":6}],\"found_checked\":[{\"$id\":6}],\"new\":[{\"$id\":6}],\"self\":[{\"$id\":1}]}"
+    },
+    {
+      "name": "after-read-your-writes",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 2,
+        "nodes": 3
+      },
+      "responseText": "{\"edges\":2,\"nodes\":3}"
+    },
+    {
+      "name": "parallel-edges",
+      "request": {
+        "request_type": "write",
+        "query": {
+          "write": {
+            "entries": [
+              {
+                "query": {
+                  "name": "a",
+                  "root": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          0
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "a_checked",
+                  "root": {
+                    "inject": {
+                      "variable": "a"
+                    }
+                  },
+                  "condition": {
+                    "require_single_node": "a"
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "one",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "a"
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "a"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "two",
+                  "root": {
+                    "add_e": {
+                      "input": {
+                        "inject": {
+                          "variable": "a"
+                        }
+                      },
+                      "label": "Follows",
+                      "to": {
+                        "var": "a"
+                      },
+                      "properties": []
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "a",
+              "a_checked",
+              "one",
+              "two"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true",
+        "X-Helix-Await-Durable": "false"
+      },
+      "status": 200,
+      "response": {
+        "a": [
+          {
+            "$id": 0
+          }
+        ],
+        "a_checked": [
+          {
+            "$id": 0
+          }
+        ],
+        "one": [
+          {
+            "$id": 2
+          }
+        ],
+        "two": [
+          {
+            "$id": 3
+          }
+        ]
+      },
+      "responseText": "{\"a\":[{\"$id\":0}],\"a_checked\":[{\"$id\":0}],\"one\":[{\"$id\":2}],\"two\":[{\"$id\":3}]}"
+    },
+    {
+      "name": "after-parallel-edges",
+      "request": {
+        "request_type": "read",
+        "query": {
+          "read": {
+            "entries": [
+              {
+                "query": {
+                  "name": "nodes",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "nodes": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "query": {
+                  "name": "edges",
+                  "root": {
+                    "count": {
+                      "input": {
+                        "edges": {
+                          "reference": "all"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "returns": [
+              "nodes",
+              "edges"
+            ]
+          }
+        }
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Helix-Require-Writer": "true"
+      },
+      "status": 200,
+      "response": {
+        "edges": 4,
+        "nodes": 3
+      },
+      "responseText": "{\"edges\":4,\"nodes\":3}"
+    }
+  ]
+}

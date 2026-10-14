@@ -34,6 +34,7 @@ pub(super) fn compile_statement(statement: &Statement) -> Result<CompiledQuery, 
             .map_err(|error| HqlError::plain(error.to_string()))?,
         summary,
         shape,
+        mutation: None,
     })
 }
 

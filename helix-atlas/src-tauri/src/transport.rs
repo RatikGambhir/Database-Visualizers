@@ -5,6 +5,7 @@ use crate::error::{AppError, Result};
 use crate::hql::{CompiledQuery, CompiledQueryView};
 use crate::results::{decode_compiled_response, QueryResult};
 use std::time::{Duration, Instant};
+mod mutations;
 
 /// Raw response retained only inside the Rust process.
 #[derive(Debug)]
@@ -126,6 +127,9 @@ pub(crate) async fn execute_compiled(
     connection: &Connection,
     compiled: &CompiledQuery,
 ) -> Result<(QueryResult, u64)> {
+    if compiled.mutation.is_some() {
+        return mutations::execute(connection, compiled).await;
+    }
     let response =
         require_success(post_query(http, connection, compiled.transport_json.clone()).await?)?;
     let result = decode_compiled_response(&response.body, compiled)?;
@@ -137,3 +141,6 @@ mod tests;
 
 #[cfg(test)]
 mod http_tests;
+
+#[cfg(test)]
+mod mutation_tests;

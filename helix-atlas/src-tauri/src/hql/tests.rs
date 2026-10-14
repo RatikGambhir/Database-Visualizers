@@ -46,12 +46,11 @@ fn parses_all_statement_families() {
 }
 
 #[test]
-fn rejects_writes_and_invalid_traversals() {
+fn rejects_malformed_inserts_and_invalid_traversals() {
     assert!(compile_source("INSERT INTO NODES VALUES (1)")
         .unwrap_err()
-        .hint
-        .unwrap()
-        .contains("read-only"));
+        .message
+        .contains("mandatory label"));
     assert!(compile_source("SELECT id FROM EDGES TRAVERSE OUT")
         .unwrap_err()
         .message

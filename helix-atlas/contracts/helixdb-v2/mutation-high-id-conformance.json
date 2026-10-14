@@ -1,0 +1,204 @@
+{
+  "readRequest": {
+    "query": {
+      "read": {
+        "entries": [
+          {
+            "query": {
+              "name": "ids",
+              "root": {
+                "id": {
+                  "input": {
+                    "nodes": {
+                      "reference": {
+                        "ids": [
+                          9223372036854775907,
+                          9223372036854775908
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "returns": [
+          "ids"
+        ]
+      }
+    },
+    "request_type": "read"
+  },
+  "readResponse": {
+    "ids": [
+      9223372036854775907,
+      9223372036854775908
+    ]
+  },
+  "request": {
+    "query": {
+      "write": {
+        "entries": [
+          {
+            "query": {
+              "name": "a",
+              "root": {
+                "add_n": {
+                  "label": "High",
+                  "properties": []
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "b",
+              "root": {
+                "add_n": {
+                  "label": "High",
+                  "properties": []
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "condition": {
+                "require_single_node": "a"
+              },
+              "name": "check",
+              "root": {
+                "inject": {
+                  "variable": "a"
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "e",
+              "root": {
+                "add_e": {
+                  "input": {
+                    "inject": {
+                      "variable": "a"
+                    }
+                  },
+                  "label": "HighEdge",
+                  "properties": [],
+                  "to": {
+                    "var": "b"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "aid",
+              "root": {
+                "id": {
+                  "input": {
+                    "inject": {
+                      "variable": "a"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "bid",
+              "root": {
+                "id": {
+                  "input": {
+                    "inject": {
+                      "variable": "b"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "eid",
+              "root": {
+                "id": {
+                  "input": {
+                    "inject": {
+                      "variable": "e"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "source",
+              "root": {
+                "id": {
+                  "input": {
+                    "in_n": {
+                      "input": {
+                        "inject": {
+                          "variable": "e"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "query": {
+              "name": "target",
+              "root": {
+                "id": {
+                  "input": {
+                    "out_n": {
+                      "input": {
+                        "inject": {
+                          "variable": "e"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "returns": [
+          "aid",
+          "bid",
+          "eid",
+          "source",
+          "target"
+        ]
+      }
+    },
+    "request_type": "write"
+  },
+  "response": {
+    "aid": [
+      9223372036854775907
+    ],
+    "bid": [
+      9223372036854775908
+    ],
+    "eid": [
+      9223372036854775917
+    ],
+    "source": [
+      9223372036854775907
+    ],
+    "target": [
+      9223372036854775908
+    ]
+  }
+}

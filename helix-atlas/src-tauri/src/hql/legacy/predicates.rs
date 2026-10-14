@@ -40,18 +40,18 @@ pub(in crate::hql) fn predicate(condition: &Condition) -> Result<Value, HqlError
                     ComparisonOperator::Lt => "Lt",
                     ComparisonOperator::Lte => "Lte",
                 };
-                single_property(name, json!([column.source, literal(value)]))
+                single_property(name, json!([column.source, literal(value)?]))
             }
         }
         Condition::Between { column, low, high } => {
-            json!({ "Between": [column.source, literal(low), literal(high)] })
+            json!({ "Between": [column.source, literal(low)?, literal(high)?] })
         }
         Condition::In {
             column,
             values,
             negated,
         } => {
-            let values = values.iter().map(literal).collect::<Vec<_>>();
+            let values = values.iter().map(literal).collect::<Result<Vec<_>, _>>()?;
             let inner = json!({ "IsIn": [column.source, array_literal(&values)] });
             if *negated {
                 json!({ "Not": inner })
@@ -64,6 +64,13 @@ pub(in crate::hql) fn predicate(condition: &Condition) -> Result<Value, HqlError
             pattern,
             negated,
         } => {
+            let Literal::String(pattern) = pattern else {
+                return Err(HqlError::new(
+                    "LIKE requires a string parameter or literal",
+                    Some(column.span.clone()),
+                    None,
+                ));
+            };
             if pattern.contains('_') {
                 return Err(HqlError::new(
                     "LIKE does not support the single-character wildcard _",
@@ -112,8 +119,8 @@ pub(super) fn validate_condition(condition: Option<&Condition>) -> Result<(), Hq
     Ok(())
 }
 
-fn literal(value: &Literal) -> Value {
-    match value {
+fn literal(value: &Literal) -> Result<Value, HqlError> {
+    Ok(match value {
         Literal::String(value) => json!({ "String": value }),
         Literal::Integer(value) => {
             json!({ "I64": value.parse::<i64>().expect("validated signed literal") })
@@ -121,7 +128,8 @@ fn literal(value: &Literal) -> Value {
         Literal::Float(value) => json!({ "F64": value }),
         Literal::Boolean(value) => json!({ "Bool": value }),
         Literal::Null => json!("Null"),
-    }
+        Literal::Parameter { .. } => return Err(HqlError::plain("unresolved parameter")),
+    })
 }
 
 fn array_literal(values: &[Value]) -> Value {

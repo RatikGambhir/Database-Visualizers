@@ -65,6 +65,7 @@ fn constant(value: &Literal, column: &ColumnRef) -> Result<Value, HqlError> {
             Literal::String(v) => json!({"string":v}),
             Literal::Boolean(v) => json!({"bool":v}),
             Literal::Null => json!("null"),
+            Literal::Parameter { .. } => return Err(HqlError::plain("unresolved parameter")),
         }
     };
     Ok(json!({"constant":tagged}))
@@ -138,6 +139,13 @@ pub(super) fn pred(condition: &Condition) -> Result<Value, HqlError> {
             pattern,
             negated,
         } => {
+            let Literal::String(pattern) = pattern else {
+                return Err(HqlError::new(
+                    "LIKE requires a string parameter or literal",
+                    Some(column.span.clone()),
+                    None,
+                ));
+            };
             // Reuse language validation, not wire serialization.
             predicate(condition)?;
             let start = pattern.starts_with('%');

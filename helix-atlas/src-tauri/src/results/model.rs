@@ -47,6 +47,13 @@ pub struct LabelCount {
     rename_all_fields = "camelCase"
 )]
 pub enum QueryResult {
+    Mutation {
+        inserted_nodes: usize,
+        inserted_edges: usize,
+        statements: Vec<MutationStatementResult>,
+        outcome: &'static str,
+        durability: &'static str,
+    },
     Rows {
         columns: Vec<String>,
         rows: Vec<Row>,
@@ -111,4 +118,27 @@ impl ResultError {
             detail: Some(preview(body)),
         }
     }
+}
+
+#[derive(Clone, Debug, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MutationEntity {
+    pub id: String,
+    pub label: Option<String>,
+    pub source: Option<String>,
+    pub target: Option<String>,
+    pub properties: Row,
+}
+
+#[derive(Clone, Debug, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MutationStatementResult {
+    pub statement_index: usize,
+    pub kind: String,
+    pub binding: Option<String>,
+    pub ids: Vec<String>,
+    pub columns: Vec<String>,
+    pub identity_columns: std::collections::BTreeMap<String, &'static str>,
+    pub rows: Vec<Row>,
+    pub entities: Vec<MutationEntity>,
 }

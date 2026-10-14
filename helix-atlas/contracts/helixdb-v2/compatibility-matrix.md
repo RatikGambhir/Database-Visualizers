@@ -1,5 +1,13 @@
 # Upstream v2 compatibility evidence
 
+> **Re-verified 2026-10-14 on HelixDB `v3.5.1`** (commit
+> `c72e64f0c7e480f3d125f071659d5e3ad7b8da15`), the version `compose.yaml` now runs.
+> All 41 wire captures were re-recorded on an unmodified `v3.5.1` server. 39 are
+> byte-identical. The two malformed-request rejections (`mismatched-envelope`,
+> `flat-v2-rejection`) keep HTTP 400 and `invalid_query_json`, but upstream's new
+> JSON parser words `msg` differently. All 33 HelixSQL captures are byte-identical.
+> Source excerpts below still come from the original pin.
+
 Server source revision: `64eaaca3026446fb08d1a5331215decc9fe0725b`.
 `conformance.json` contains 41 actual HTTP captures from an isolated, seeded,
 in-memory native server built from that unchanged official checkout. The seed

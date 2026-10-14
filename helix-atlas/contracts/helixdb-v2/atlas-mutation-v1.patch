@@ -1,0 +1,255 @@
+diff --git a/crates/ast/src/batch.rs b/crates/ast/src/batch.rs
+index 40edfbe7..274a1445 100644
+--- a/crates/ast/src/batch.rs
++++ b/crates/ast/src/batch.rs
+@@ -7,6 +7,8 @@ use crate::traversal::{ArenaAstNode, AstNode, MutationMode, ReadOnly, Traversal,
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ArenaMirror)]
+ #[serde(rename_all = "snake_case")]
+ pub enum BatchCondition {
++    /// Abort the batch unless the variable is a stream containing exactly one node.
++    RequireSingleNode(String),
+     /// Variable is not empty.
+     VarNotEmpty(String),
+     /// Variable is empty.
+diff --git a/crates/db/src/execution/interpreter/state.rs b/crates/db/src/execution/interpreter/state.rs
+index 476786d5..4bf4d91e 100644
+--- a/crates/db/src/execution/interpreter/state.rs
++++ b/crates/db/src/execution/interpreter/state.rs
+@@ -123,6 +123,20 @@ impl<'db> ExecutionContext<'db> {
+         condition: &ir::BatchVariableConditionPlan,
+     ) -> Result<bool> {
+         match condition {
++            ir::BatchVariableConditionPlan::RequireSingleNode(name) => {
++                match self.variable_value(name)? {
++                    ExecutionValue::Stream(rows)
++                        if rows.len() == 1
++                            && matches!(rows[0].current, Some(ElementRef::Node(_))) =>
++                    {
++                        Ok(true)
++                    }
++                    value => Err(HelixDbError::Query(format!(
++                        "atlas_single_node: `{name}` requires exactly one node, found {}",
++                        value.len()
++                    ))),
++                }
++            }
+             ir::BatchVariableConditionPlan::VarNotEmpty(name) => {
+                 Ok(!self.variable_value(name)?.is_empty())
+             }
+diff --git a/crates/db/src/query_service.rs b/crates/db/src/query_service.rs
+index 60d13345..7d7b6357 100644
+--- a/crates/db/src/query_service.rs
++++ b/crates/db/src/query_service.rs
+@@ -2829,3 +2829,6 @@ mod tests {
+         );
+     }
+ }
++
++#[cfg(test)]
++mod atlas_mutation_tests;
+diff --git a/crates/db/src/query_service/atlas_mutation_tests.rs b/crates/db/src/query_service/atlas_mutation_tests.rs
+new file mode 100644
+index 00000000..3921a317
+--- /dev/null
++++ b/crates/db/src/query_service/atlas_mutation_tests.rs
+@@ -0,0 +1,103 @@
++//! Regression tests for the optional atlas-mutation-v1 extension.
++use super::*;
++use crate::{HelixDbSource, HelixStorage};
++use serde_json::{json, Value};
++
++async fn execute(service: &HelixQueryService, request: Value) -> Value {
++    let request =
++        simd_json::from_reader::<_, QueryRequest>(request.to_string().as_bytes()).unwrap();
++    let response = service.execute_query(request).await.unwrap();
++    serde_json::from_slice(&response.to_json_bytes().unwrap()).unwrap()
++}
++
++#[tokio::test]
++async fn atlas_mutation_high_ids_create_project_and_read_back_exactly() {
++    let db = Arc::new(
++        HelixDB::open(HelixDbSource::InMemory {
++            database: "atlas-high-ids".into(),
++        })
++        .await
++        .unwrap(),
++    );
++    let HelixStorage::Writer(writer) = db.storage() else {
++        panic!("writer")
++    };
++    let first = (i64::MAX as u64) + 100;
++    writer.node_ids().reserve_at_least(first).await.unwrap();
++    writer
++        .edge_ids()
++        .reserve_at_least(first + 10)
++        .await
++        .unwrap();
++    let service = HelixQueryService::new(db);
++    let request = json!({"request_type":"write","query":{"write":{"entries":[
++        {"query":{"name":"a","root":{"add_n":{"label":"High","properties":[]}}}},
++        {"query":{"name":"b","root":{"add_n":{"label":"High","properties":[]}}}},
++        {"query":{"name":"check","condition":{"require_single_node":"a"},"root":{"inject":{"variable":"a"}}}},
++        {"query":{"name":"e","root":{"add_e":{"input":{"inject":{"variable":"a"}},"label":"HighEdge","to":{"var":"b"},"properties":[]}}}},
++        {"query":{"name":"aid","root":{"id":{"input":{"inject":{"variable":"a"}}}}}},
++        {"query":{"name":"bid","root":{"id":{"input":{"inject":{"variable":"b"}}}}}},
++        {"query":{"name":"eid","root":{"id":{"input":{"inject":{"variable":"e"}}}}}},
++        {"query":{"name":"source","root":{"id":{"input":{"in_n":{"input":{"inject":{"variable":"e"}}}}}}}},
++        {"query":{"name":"target","root":{"id":{"input":{"out_n":{"input":{"inject":{"variable":"e"}}}}}}}}
++    ],"returns":["aid","bid","eid","source","target"]}}});
++    let response = execute(&service, request.clone()).await;
++    assert_eq!(response["aid"][0], first);
++    assert_eq!(response["bid"][0], first + 1);
++    assert_eq!(response["eid"][0], first + 10);
++    assert_eq!(response["source"][0], first);
++    assert_eq!(response["target"][0], first + 1);
++    let read = json!({"request_type":"read","query":{"read":{"entries":[{"query":{"name":"ids","root":{"id":{"input":{"nodes":{"reference":{"ids":[first, first+1]}}}}}}}],"returns":["ids"]}}});
++    let read_response = execute(&service, read.clone()).await;
++    assert_eq!(read_response["ids"], json!([first, first + 1]));
++    if let Ok(path) = std::env::var("ATLAS_HIGH_ID_CAPTURE") {
++        std::fs::write(path, serde_json::to_string_pretty(&json!({"request":request,"response":response,"readRequest":read,"readResponse":read_response})).unwrap()).unwrap();
++    }
++}
++
++#[tokio::test]
++async fn atlas_mutation_endpoint_deletion_races_do_not_leave_dangling_edges() {
++    let db = Arc::new(
++        HelixDB::open(HelixDbSource::InMemory {
++            database: "atlas-endpoint-race".into(),
++        })
++        .await
++        .unwrap(),
++    );
++    let service = HelixQueryService::new(db);
++    for round in 0..32 {
++        let seed = execute(
++            &service,
++            json!({"request_type":"write","query":{"write":{"entries":[
++            {"query":{"name":"a","root":{"add_n":{"label":"Race","properties":[]}}}},
++            {"query":{"name":"b","root":{"add_n":{"label":"Race","properties":[]}}}}
++        ],"returns":["a","b"]}}}),
++        )
++        .await;
++        let a = seed["a"][0]["$id"].as_u64().unwrap();
++        let b = seed["b"][0]["$id"].as_u64().unwrap();
++        let insert = json!({"request_type":"write","query":{"write":{"entries":[
++            {"query":{"name":"a","root":{"nodes":{"reference":{"ids":[a]}}}}},
++            {"query":{"name":"check","condition":{"require_single_node":"a"},"root":{"inject":{"variable":"a"}}}},
++            {"query":{"name":"e","root":{"add_e":{"input":{"inject":{"variable":"a"}},"label":"RaceEdge","to":{"ids":[b]},"properties":[]}}}}
++        ],"returns":[]}}});
++        let deleted_endpoint = if round % 2 == 0 { a } else { b };
++        let delete = json!({"request_type":"write","query":{"write":{"entries":[{"query":{"name":"drop","root":{"drop":{"input":{"nodes":{"reference":{"ids":[deleted_endpoint]}}}}}}}],"returns":[]}}});
++        let (insert_result, delete_result) = tokio::join!(
++            service.execute_query(
++                simd_json::from_reader::<_, QueryRequest>(insert.to_string().as_bytes()).unwrap()
++            ),
++            service.execute_query(
++                simd_json::from_reader::<_, QueryRequest>(delete.to_string().as_bytes()).unwrap()
++            ),
++        );
++        assert!(insert_result.is_ok() || delete_result.is_ok());
++        let counts = execute(&service, json!({"request_type":"read","query":{"read":{"entries":[
++            {"query":{"name":"edges","root":{"count":{"input":{"edges":{"reference":"all"}}}}}},
++            {"query":{"name":"sources","root":{"count":{"input":{"in_n":{"input":{"edges":{"reference":"all"}}}}}}}},
++            {"query":{"name":"targets","root":{"count":{"input":{"out_n":{"input":{"edges":{"reference":"all"}}}}}}}}
++        ],"returns":["edges","sources","targets"]}}})).await;
++        assert_eq!(counts["edges"], counts["sources"]);
++        assert_eq!(counts["edges"], counts["targets"]);
++    }
++}
+diff --git a/crates/planner/src/exec/lowering/conditions.rs b/crates/planner/src/exec/lowering/conditions.rs
+index 81a2463c..2881107f 100644
+--- a/crates/planner/src/exec/lowering/conditions.rs
++++ b/crates/planner/src/exec/lowering/conditions.rs
+@@ -28,6 +28,9 @@ pub(in crate::exec) fn followup_exec_condition(
+             ir::BatchConditionPlan::VarEmpty(variable) => {
+                 ExecCondition::Variable(ir::BatchVariableConditionPlan::VarEmpty(variable))
+             }
++            ir::BatchConditionPlan::RequireSingleNode(variable) => {
++                ExecCondition::Variable(ir::BatchVariableConditionPlan::RequireSingleNode(variable))
++            }
+             ir::BatchConditionPlan::VarMinSize(variable, min_size) => ExecCondition::Variable(
+                 ir::BatchVariableConditionPlan::VarMinSize(variable, min_size),
+             ),
+diff --git a/crates/planner/src/ir/batch.rs b/crates/planner/src/ir/batch.rs
+index 404b4bcd..302d03f4 100644
+--- a/crates/planner/src/ir/batch.rs
++++ b/crates/planner/src/ir/batch.rs
+@@ -143,6 +143,8 @@ pub enum RunConditionPlan<C> {
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+ #[serde(rename_all = "snake_case")]
+ pub enum BatchVariableConditionPlan {
++    /// Abort unless the materialized variable contains exactly one node.
++    RequireSingleNode(NonEmptyString),
+     /// Variable is not empty.
+     VarNotEmpty(NonEmptyString),
+     /// Variable is empty.
+@@ -155,6 +157,8 @@ pub enum BatchVariableConditionPlan {
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+ #[serde(rename_all = "snake_case")]
+ pub enum BatchConditionPlan {
++    /// Abort unless the materialized variable contains exactly one node.
++    RequireSingleNode(NonEmptyString),
+     /// Variable is not empty.
+     VarNotEmpty(NonEmptyString),
+     /// Variable is empty.
+@@ -168,6 +172,9 @@ pub enum BatchConditionPlan {
+ impl From<BatchVariableConditionPlan> for BatchConditionPlan {
+     fn from(condition: BatchVariableConditionPlan) -> Self {
+         match condition {
++            BatchVariableConditionPlan::RequireSingleNode(variable) => {
++                Self::RequireSingleNode(variable)
++            }
+             BatchVariableConditionPlan::VarNotEmpty(variable) => Self::VarNotEmpty(variable),
+             BatchVariableConditionPlan::VarEmpty(variable) => Self::VarEmpty(variable),
+             BatchVariableConditionPlan::VarMinSize(variable, size) => {
+diff --git a/crates/planner/src/planning/selected/native/conditions.rs b/crates/planner/src/planning/selected/native/conditions.rs
+index d4b300f4..a4cb7f9d 100644
+--- a/crates/planner/src/planning/selected/native/conditions.rs
++++ b/crates/planner/src/planning/selected/native/conditions.rs
+@@ -15,6 +15,9 @@ pub(super) fn initial(
+     condition: &BatchCondition,
+ ) -> Result<ir::BatchVariableConditionPlan, error::PlannerError> {
+     match condition {
++        BatchCondition::RequireSingleNode(variable) => Ok(
++            ir::BatchVariableConditionPlan::RequireSingleNode(variable_name(variable)?),
++        ),
+         BatchCondition::VarNotEmpty(variable) => Ok(ir::BatchVariableConditionPlan::VarNotEmpty(
+             variable_name(variable)?,
+         )),
+@@ -39,7 +42,8 @@ pub(super) fn followup(
+ ) -> Result<ir::BatchConditionPlan, error::PlannerError> {
+     match condition {
+         BatchCondition::PrevNotEmpty => Ok(ir::BatchConditionPlan::PrevNotEmpty),
+-        BatchCondition::VarNotEmpty(_)
++        BatchCondition::RequireSingleNode(_)
++        | BatchCondition::VarNotEmpty(_)
+         | BatchCondition::VarEmpty(_)
+         | BatchCondition::VarMinSize(_, _) => initial(condition).map(Into::into),
+     }
+diff --git a/crates/server/src/http.rs b/crates/server/src/http.rs
+index 8e5689b7..29a3ae92 100644
+--- a/crates/server/src/http.rs
++++ b/crates/server/src/http.rs
+@@ -46,9 +46,22 @@ pub(crate) fn router(state: ServerState) -> Router {
+         .route("/v2/query", post(execute_query))
+         .route("/v2/cypher", post(execute_cypher))
+         .route("/v2/cypher/explain", post(explain_cypher))
++        .route("/v2/mutation-capabilities", get(mutation_capabilities))
+         .with_state(state)
+ }
+ 
++async fn mutation_capabilities(State(state): State<ServerState>) -> Response {
++    json_response(
++        StatusCode::OK,
++        &serde_json::json!({
++            "contract": "atlas-mutation-v1",
++            "upstream_commit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
++            "mode": state.db_mode().as_str(),
++            "ready": state.index_readiness().is_ready(),
++        }),
++    )
++}
++
+ async fn healthz(State(state): State<ServerState>) -> Response {
+     health_response(StatusCode::OK, state)
+ }

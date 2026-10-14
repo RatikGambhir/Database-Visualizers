@@ -1,0 +1,46 @@
+{
+  "contract": "atlas-mutation-v1",
+  "upstreamRepository": "https://github.com/HelixDB/helix-db",
+  "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
+  "verifiedOn": "2026-10-14",
+  "rustc": "1.97.1",
+  "patchSha256": "03e99e0b8647e66fe3c6fcc951511dcb6b60ee682c1cb6ea8f03bc35cbcd34c2",
+  "files": {
+    "crates/ast/src/batch.rs": {
+      "patchedSha256": "d204401555def0e9c84abc044934a45f98c74826dd09fa6f5f67d648e563cd62"
+    },
+    "crates/db/src/execution/interpreter/state.rs": {
+      "patchedSha256": "15d2d95abfb9699d5afa906837d0875d31361bec9eda178c2f3e16879ba5bcc7"
+    },
+    "crates/db/src/query_service.rs": {
+      "patchedSha256": "a38d04d46435dac5478d61e227784e6842da53d124efd4f1163db8815f81a9a9"
+    },
+    "crates/planner/src/exec/lowering/conditions.rs": {
+      "patchedSha256": "886127a36ae54dd0037c9dd0f4f9a801672df870c450fcf610748f4dbde829e7"
+    },
+    "crates/planner/src/ir/batch.rs": {
+      "patchedSha256": "b36fd45738970f059c171e257b7fa0f0ffea53c047270550b68793c506709734"
+    },
+    "crates/planner/src/planning/selected/native/conditions.rs": {
+      "patchedSha256": "51ec3f33e1933a9a13699239d3a1e3646d356d182612695b340d3d4ca3f7718b"
+    },
+    "crates/server/src/http.rs": {
+      "patchedSha256": "73994df7c6dc5fd4f2c7cbaba42f3d6defebd896d54118f46c16b0acba5cdf07"
+    },
+    "crates/db/src/query_service/atlas_mutation_tests.rs": {
+      "patchedSha256": "07c91a69ea7acfd083a1133fbe14ede548d31e6ba4444956e7f4947029c237c7"
+    }
+  },
+  "captures": {
+    "mutation-base-conformance.json": "224b9a0d046b5d8cea655c46914244637605d880ddb8df1f1036762b7fef758e",
+    "mutation-extension-conformance.json": "7d6ef480aea90818c8a9e3291a409cbec9bf4b3301faaf7be34b02505d368ce4",
+    "mutation-high-id-conformance.json": "62a9a11ce9d56f8576241cbe9bdce0ad6ccbfe198efe1e6b2c76eeb11c752dfa",
+    "helixsql-mutation-conformance.json": "76b7a1a5648b2c297e754336da57aa720f8c9ca84e377c76c0b8236d4549bfda"
+  },
+  "upstreamDescription": "v3.5.1",
+  "previouslyVerified": {
+    "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
+    "verifiedOn": "2026-10-14",
+    "note": "Ported to v3.5.1; all 31 mutation captures (base, extension, HelixSQL, high-ID) are byte-identical to the 64eaaca3 captures."
+  }
+}

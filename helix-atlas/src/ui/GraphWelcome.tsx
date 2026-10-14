@@ -9,7 +9,7 @@ export function GraphWelcome({ onConnect }: { onConnect: () => void }) {
         <h2>Every connection<br /> tells a story.</h2>
         <p>Bring your HelixDB graph into focus. Follow relationships, ask better questions, and see how everything fits together.</p>
         <Button className="primary welcome-connect" onClick={onConnect}>Connect Now <ArrowRight size={16} /></Button>
-        <span className="welcome-connection-note">Local, remote, or cloud · Always read only</span>
+        <span className="welcome-connection-note">Local, remote, or cloud · Automatic reads only</span>
       </div>
       <div className="atlas-map" aria-hidden="true">
         <div className="map-caption"><span>ATLAS / CONNECTED DATA</span><span>FIG. 01</span></div>

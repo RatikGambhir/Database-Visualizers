@@ -13,7 +13,7 @@ function evaluateOperand(operand, item, graph) {
   throw new UnsupportedStep(`operand ${JSON.stringify(operand)}`);
 }
 
-function readConstant(constant) {
+export function readConstant(constant) {
   if (constant === null || constant === "null") return null;
   if (typeof constant !== "object") return constant;
   for (const key of ["string", "bool", "f64", "f32"]) {

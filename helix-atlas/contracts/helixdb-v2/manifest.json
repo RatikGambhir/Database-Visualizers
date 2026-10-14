@@ -4,9 +4,17 @@
   "openApiVersion": "2.0.0",
   "openApiSha256": "7a273a35af479bc88a2f79aff1be114f3b9c6b33e76add21cb57e2fe86ba6275",
   "upstreamRepository": "https://github.com/HelixDB/helix-db",
-  "upstreamCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
-  "upstreamDescription": "v3.3.0-69-g64eaaca3",
+  "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
+  "upstreamDescription": "v3.5.1",
   "sdkRustVersion": "3.0.0",
+  "sourceExcerptsCommit": "64eaaca3026446fb08d1a5331215decc9fe0725b",
+  "reverification": {
+    "on": "2026-10-14",
+    "upstreamCommit": "c72e64f0c7e480f3d125f071659d5e3ad7b8da15",
+    "conformance.json": "41 wire captures re-recorded on unmodified v3.5.1: 39 byte-identical; 2 malformed-request rejections keep status 400 and error code invalid_query_json but reword msg (simd-json parser).",
+    "helixsql-conformance.json": "33 HelixSQL captures byte-identical.",
+    "sourceExcerpts": "Excerpts and checksums below are from sourceExcerptsCommit; 13 of 14 files changed upstream since. Behaviour is verified by the captures, not the excerpts."
+  },
   "sources": [
     {
       "path": "crates/ast/src/batch.rs",

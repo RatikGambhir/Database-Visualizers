@@ -6,6 +6,14 @@ use serde::Serialize;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
+    #[error("{message}")]
+    Mutation {
+        outcome: &'static str,
+        message: String,
+        detail: Option<String>,
+        statement_index: Option<usize>,
+        tuple_index: Option<usize>,
+    },
     #[error("invalid instance URL {url:?}: {reason}")]
     InvalidUrl { url: String, reason: String },
     #[error("could not reach {url}: {reason}")]
@@ -31,12 +39,15 @@ pub enum AppError {
 #[serde(rename_all = "camelCase")]
 struct ErrorPayload<'a> {
     kind: &'static str,
+    outcome: Option<&'static str>,
     status: Option<u16>,
     code: Option<&'a str>,
     message: String,
     detail: Option<&'a str>,
     span: Option<&'a Span>,
     hint: Option<&'a str>,
+    statement_index: Option<usize>,
+    tuple_index: Option<usize>,
 }
 
 // Tauri command errors cross IPC as a stable structured contract so the editor
@@ -47,16 +58,22 @@ impl Serialize for AppError {
         serializer: S,
     ) -> std::result::Result<S::Ok, S::Error> {
         let (kind, detail, span, hint) = match self {
+            Self::Mutation { detail, .. } => ("mutation", detail.as_deref(), None, None),
             Self::InvalidUrl { reason, .. } => ("invalidUrl", Some(reason.as_str()), None, None),
             Self::Unreachable { reason, .. } => ("transport", Some(reason.as_str()), None, None),
             Self::Timeout(_) => ("transport", None, None, None),
             Self::Io(detail) => ("io", Some(detail.as_str()), None, None),
-            Self::Hql(error) => ("hql", None, error.span.as_ref(), error.hint.as_deref()),
+            Self::Hql(error) => ("hql", None, error.span.as_deref(), error.hint.as_deref()),
             Self::Result(error) => ("result", error.detail.as_deref(), None, None),
             Self::HttpStatus { detail, .. } => ("http", detail.as_deref(), None, None),
         };
         ErrorPayload {
             kind,
+            outcome: if let Self::Mutation { outcome, .. } = self {
+                Some(*outcome)
+            } else {
+                None
+            },
             status: if let Self::HttpStatus { status, .. } = self {
                 Some(*status)
             } else {
@@ -64,6 +81,14 @@ impl Serialize for AppError {
             },
             code: if let Self::HttpStatus { code, .. } = self {
                 code.as_deref()
+            } else if let Self::Hql(error) = self {
+                error.code
+            } else if let Self::Mutation { outcome, .. } = self {
+                Some(match *outcome {
+                    "rolledBack" => "mutation_rolled_back",
+                    "committedWithResultError" => "mutation_result_error",
+                    _ => "mutation_outcome_unknown",
+                })
             } else {
                 None
             },
@@ -71,6 +96,18 @@ impl Serialize for AppError {
             detail,
             span,
             hint,
+            statement_index: match self {
+                Self::Hql(error) => error.statement_index,
+                Self::Mutation {
+                    statement_index, ..
+                } => *statement_index,
+                _ => None,
+            },
+            tuple_index: match self {
+                Self::Hql(error) => error.tuple_index,
+                Self::Mutation { tuple_index, .. } => *tuple_index,
+                _ => None,
+            },
         }
         .serialize(serializer)
     }

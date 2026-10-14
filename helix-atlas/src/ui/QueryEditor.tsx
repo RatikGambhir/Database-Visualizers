@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Textarea } from "@/components/ui/textarea";
-import type { BackendError } from "../client";
+import type { BackendError, CompiledQuery } from "../client";
 
 interface Props {
   value: string;
@@ -14,6 +14,7 @@ interface Props {
   available: boolean;
   /** Parse/compile failure for the current text, if any. */
   error: BackendError | null;
+  compiled?: CompiledQuery | null;
 }
 
 /**
@@ -29,13 +30,14 @@ export function QueryEditor({
   running,
   available,
   error,
+  compiled,
 }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineCount = useMemo(
     () => Math.max(value.split("\n").length, 1),
     [value],
   );
-  const canRun = available && !running && error === null;
+  const canRun = available && !running && error === null && (!compiled?.mutation || compiled.mutation.executable);
 
   useEffect(() => {
     if (window.matchMedia("(min-width: 761px)").matches)
@@ -68,8 +70,8 @@ export function QueryEditor({
     if (!textarea || !error?.span) return;
     textarea.focus();
     textarea.setSelectionRange(
-      error.span.start,
-      Math.max(error.span.end, error.span.start + 1),
+      utf16Offset(value, error.span.start),
+      utf16Offset(value, Math.max(error.span.end, error.span.start + 1)),
     );
   };
 
@@ -90,14 +92,14 @@ export function QueryEditor({
             className="primary"
             onClick={onRun}
             disabled={!canRun}
-            title={
+            title={compiled?.mutation?.blockedReason || (
               available
                 ? "Run the current query"
-                : "Run queries in the Tauri desktop app"
+                : error ? "Resolve the error before running" : "Run queries in the Tauri desktop app")
             }
           >
             {running ? <LoaderCircle className="spinning" aria-hidden="true" /> : <Play size={14} aria-hidden="true" />}
-            {running ? "Running…" : "Run query"}
+            {running ? "Running…" : compiled?.executionKind === "write" ? "Run mutation" : "Run query"}
           </Button>
         </div>
       </header>
@@ -128,7 +130,8 @@ export function QueryEditor({
         />
       </div>
 
-      <div className="editor-footnote"><span>HelixSQL</span><span>{lineCount} {lineCount === 1 ? "line" : "lines"} · Read only</span></div>
+      <div className="editor-footnote"><span>HelixSQL</span><span>{lineCount} {lineCount === 1 ? "line" : "lines"} · {compiled?.mutation ? "Mutation" : "Read only"}</span></div>
+      {compiled?.mutation && <p className="mutation-preview" role="status"><span>{compiled.summary}. {compiled.mutation.blockedReason || "Requires the Atlas mutation server extension, checked before submission"}.</span></p>}
       {error && (
         <p className="editor-error" role="alert">
           <Button variant="link" onClick={jumpToError}>
@@ -142,4 +145,17 @@ export function QueryEditor({
       )}
     </section>
   );
+}
+
+/** Rust spans use UTF-8 bytes; textarea selections use UTF-16 code units. */
+function utf16Offset(source: string, byteOffset: number): number {
+  let bytes = 0;
+  let units = 0;
+  for (const character of source) {
+    if (bytes >= byteOffset) break;
+    const cp = character.codePointAt(0)!;
+    bytes += cp < 0x80 ? 1 : cp < 0x800 ? 2 : cp < 0x10000 ? 3 : 4;
+    units += character.length;
+  }
+  return units;
 }

@@ -1,6 +1,7 @@
 # HelixSQL query syntax
 
-HelixSQL is Helix Atlas's read-only query language. Choose the connection's
+HelixSQL is Helix Atlas's query and mutation language. This page covers reads;
+see [mutations](mutations.md) for inserts and atomic blocks. Choose the connection's
 **v2** or **legacy v1** protocol in Connection settings; Rust compiles the same
 source for that protocol. The Wire format tab shows the resolved endpoint and
 compiled request. Run one statement at a time with **Run query** or **Cmd/Ctrl +
@@ -270,3 +271,9 @@ parameters, multiple statements, or mutation blocks. The mutation language is
 tracked separately in [its plan](../plans/helixsql-mutation-language.md).
 See [verification](../contracts/helixdb-v2/verification.md) for the exact tested
 server revision and remaining Cloud/legacy/high-ID conformance gaps.
+
+## Insertions and atomic blocks
+
+See the [mutation syntax guide](mutations.md) for `INSERT`, `BEGIN MUTATION`,
+typed parameters and `RETURNING`, and the [runnable walkthrough](mutation-walkthrough.md)
+for a complete demo graph and rollback tests. Writes require the pinned server extension.

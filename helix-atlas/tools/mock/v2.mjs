@@ -7,11 +7,11 @@ import {
   compareValues,
   validateBatch,
 } from "./shared.mjs";
-import { evaluatePredicate } from "./predicates.mjs";
+import { evaluatePredicate, readConstant } from "./predicates.mjs";
 import { stringifyBig } from "./json.mjs";
 
 /** Runs a traversal AST, returning either a stream of items or a terminal value. */
-function evaluate(node, graph, variables = {}) {
+export function evaluate(node, graph, variables = {}, writable = false) {
   if (!node || typeof node !== "object" || Object.keys(node).length !== 1)
     throw new UnsupportedStep("malformed operation tree");
   const [step] = Object.keys(node);
@@ -26,12 +26,41 @@ function evaluate(node, graph, variables = {}) {
       throw new UnsupportedStep("invalid stream binding");
     return { stream: [...variables[body.variable].stream], atMostOne: false };
   }
+  if (step === "add_n" || step === "add_e") {
+    if (!writable) throw new UnsupportedStep("mutation in read batch");
+    if (!body.label || !Array.isArray(body.properties)) throw new UnsupportedStep("invalid creation");
+    const properties = Object.fromEntries(body.properties.map(([key, input]) => {
+      if (key.startsWith("$")) throw new UnsupportedStep("reserved write property");
+      return [key, readConstant(input.value)];
+    }));
+    if (step === "add_n") {
+      if (body.input) throw new UnsupportedStep("input-driven creation");
+      const entity = { id: graph.allocators.nodes++, label: body.label, properties };
+      graph.nodes.set(entity.id, entity);
+      return { stream: [asNode(entity)] };
+    }
+    const from = evaluate(body.input, graph, variables, writable).stream;
+    const targets = body.to.var ? variables[body.to.var]?.stream?.map((item) => item.entity.id) : body.to.ids?.map(BigInt);
+    if (!from || !targets) throw new UnsupportedStep("invalid endpoint reference");
+    const stream = [];
+    for (const item of from) for (const to of targets) {
+      if (item.kind !== "node" || !graph.nodes.has(item.entity.id) || !graph.nodes.has(to)) throw new UnsupportedStep("missing endpoint");
+      const entity = { id: graph.allocators.edges++, label: body.label, from: item.entity.id, to, properties };
+      graph.edges.set(entity.id, entity); stream.push(asEdge(entity));
+    }
+    return { stream };
+  }
   // Source steps.
   if (step === "nodes" || step === "edges") {
     const table = step === "nodes" ? graph.nodes : graph.edges;
     const wrap = step === "nodes" ? asNode : asEdge;
     const reference = body.reference;
     if (reference === "all") return { stream: [...table.values()].map(wrap) };
+    if (reference && "var" in reference) {
+      const stream = variables[reference.var]?.stream;
+      if (!stream) throw new UnsupportedStep("unknown node binding");
+      return { stream: stream.filter((item) => item.kind === (step === "nodes" ? "node" : "edge")) };
+    }
     if (reference && "ids" in reference) {
       const ids = reference.ids.map((id) =>
         typeof id === "bigint" ? id : BigInt(id),
@@ -55,7 +84,7 @@ function evaluate(node, graph, variables = {}) {
     return { stream };
   }
 
-  const input = evaluate(body.input, graph, variables);
+  const input = evaluate(body.input, graph, variables, writable);
   const outcome = applyStep(step, body, input, graph);
   const expands = [
     "out",
@@ -317,6 +346,7 @@ export function runBatch(request, graph) {
   const variables = {};
   for (const entry of batch.entries) {
     if (!entry.query) throw new UnsupportedStep("for_each entries");
+    if (entry.query.condition) throw new UnsupportedStep("unsupported read condition");
     const outcome = evaluate(entry.query.root, graph, variables);
     variables[entry.query.name] = outcome;
   }

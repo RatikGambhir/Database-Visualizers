@@ -2,7 +2,12 @@ name: helix-atlas-local
 
 services:
   helixdb:
-    image: ghcr.io/helixdb/helixdb:v0.0.6@sha256:94b29942658ebdca0a91bf15edffe921a46da3e26e1223ea333ccce58c6212dd
+    # HelixDB v3.5.1 + atlas-mutation-v1, built locally (see docker/helixdb-atlas).
+    image: helix-atlas/helixdb:v3.5.1-atlas-mutation-v1
+    build:
+      context: ./docker/helixdb-atlas
+      additional_contexts:
+        contracts: ./contracts/helixdb-v2
     container_name: helix-atlas-db
     restart: unless-stopped
     stop_grace_period: 30s
@@ -19,4 +24,5 @@ services:
 
 volumes:
   helix-data:
-    name: helix-atlas-data
+    # The previous v0.0.6 data stays in the separate `helix-atlas-data` volume.
+    name: helix-atlas-data-v3

@@ -5,3 +5,5 @@ export function createMockServer(options?: { seed?: number }): { server: Server;
 export function dispatchRead(path: string, parsed: unknown, graph: MockGraph): unknown;
 export function parseJsonBig(text: string): any;
 export function stringifyBig(value: unknown): string;
+
+export function runWriteBatch(request: any, graph: MockGraph): unknown;

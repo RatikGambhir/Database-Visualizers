@@ -5,9 +5,10 @@ Writes only when --seed-isolated is supplied. Never target a user's database.
 The output contains public synthetic fixture data only.
 """
 import argparse,json,time,urllib.request,urllib.error
+from datetime import date
 from pathlib import Path
 
-COMMIT='64eaaca3026446fb08d1a5331215decc9fe0725b'
+COMMIT='c72e64f0c7e480f3d125f071659d5e3ad7b8da15'
 
 def typed(v):
     if v is None:return 'null'
@@ -73,5 +74,5 @@ def main():
     call('schema-labels-and-bounded-fields',batch([entry('node_labels',wrap('group_count',source(),property='$label')),entry('edge_labels',wrap('group_count',source('edges'),property='$label')),entry('fields',wrap('value_map',wrap('limit',{'nodes_where':{'predicate':pred('eq',left=prop('$label'),right=val('User'))}},count={'literal':2})))]))
     call('describe-node-directed-details',batch([entry('node',{'nodes':{'reference':{'ids':[ids['alice']]}}}),entry('properties',wrap('value_map',inject('node'))),entry('degree',wrap('count',wrap('both_e',inject('node')))),entry('neighbors',wrap('id',wrap('limit',wrap('both',inject('node')),count={'literal':10}))),entry('incident',wrap('id',wrap('limit',wrap('both_e',inject('node')),count={'literal':10})))]))
     call('quoted-property-alias-projections',batch([entry('properties',wrap('project',source(),projections=[{'property':{'source':s,'alias':a}} for s,a in [('id','stored_id'),('label','stored_label'),('source','stored_source'),('target','stored_target'),('$id','id')]]))]))
-    a.output.write_text(json.dumps({'upstreamCommit':COMMIT,'capturedOn':'2026-09-28','deployment':'isolated in-memory native server on loopback; no Cloud gateway or v1 upstream server coverage','highIds':'full u64 source syntax accepted; nonexistent IDs only. No actual high-ID entities seeded. Source pin demonstrates virtual projection clamp.','seedNodeIds':ids,'seedEdgeIds':eids,'fixtures':fixtures},indent=2)+'\n');print(f'Captured {len(fixtures)} fixtures; node IDs {ids}; edge IDs {eids}')
+    a.output.write_text(json.dumps({'upstreamCommit':COMMIT,'capturedOn':date.today().isoformat(),'deployment':'isolated in-memory native server on loopback; no Cloud gateway or v1 upstream server coverage','highIds':'full u64 source syntax accepted; nonexistent IDs only. No actual high-ID entities seeded. Source pin demonstrates virtual projection clamp.','seedNodeIds':ids,'seedEdgeIds':eids,'fixtures':fixtures},indent=2)+'\n');print(f'Captured {len(fixtures)} fixtures; node IDs {ids}; edge IDs {eids}')
 if __name__=='__main__':main()

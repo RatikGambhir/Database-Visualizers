@@ -21,6 +21,8 @@ import { buildGraph } from "./mock/graph.mjs";
 import { parseJsonBig, stringifyBig } from "./mock/json.mjs";
 import { UnsupportedStep } from "./mock/shared.mjs";
 import { runFlatBatch } from "./mock/legacy.mjs";
+import { runWriteBatch } from "./mock/mutations.mjs";
+export { runWriteBatch } from "./mock/mutations.mjs";
 import { runBatch } from "./mock/v2.mjs";
 
 export { parseJsonBig, stringifyBig } from "./mock/json.mjs";
@@ -60,6 +62,11 @@ export function createMockServer({ seed = 42 } = {}) {
       /\/$/,
       "",
     );
+    if (request.method === "GET" && path === "/v2/mutation-capabilities") {
+      response.writeHead(200, { "content-type": "application/json" });
+      response.end(JSON.stringify({ contract: "atlas-mutation-v1", upstream_commit: "c72e64f0c7e480f3d125f071659d5e3ad7b8da15", mode: "writer", ready: true }));
+      return;
+    }
     if (
       request.method !== "POST" ||
       !["/v1/query", "/v2/query"].includes(path)
@@ -81,15 +88,16 @@ export function createMockServer({ seed = 42 } = {}) {
     request.on("end", () => {
       try {
         const parsed = parseJsonBig(body);
-        if (["true", "1"].includes(request.headers["x-helix-await-durable"]))
+        if (parsed.request_type !== "write" && ["true", "1"].includes(request.headers["x-helix-await-durable"]))
           throw new UnsupportedStep("durability wait is invalid on reads");
-        const result = dispatchRead(path, parsed, graph);
+        if (parsed.request_type === "write" && request.headers["x-helix-require-writer"] !== "true") throw new UnsupportedStep("writes require writer execution");
+        const result = path === "/v2/query" && parsed.request_type === "write" ? runWriteBatch(parsed, graph) : dispatchRead(path, parsed, graph);
         response.writeHead(200, { "content-type": "application/json" });
         response.end(stringifyBig(result));
       } catch (error) {
-        response.writeHead(400, { "content-type": "application/json" });
+        response.writeHead(error.rollback ? 500 : 400, { "content-type": "application/json" });
         response.end(
-          JSON.stringify({ error: "invalid_query_json", msg: error.message }),
+          JSON.stringify({ error: error.rollback ? "invalid_query" : "invalid_query_json", msg: error.message }),
         );
       }
     });

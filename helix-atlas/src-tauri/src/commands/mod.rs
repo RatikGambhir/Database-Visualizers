@@ -4,7 +4,9 @@ pub(crate) mod schema;
 
 use crate::connection::{candidate_connection, ConnectionUpdate, ConnectionView};
 use crate::error::Result;
-use crate::hql::{compile_source_for, CompiledQueryView};
+use crate::hql::{
+    compile_source_for, compile_source_with_parameters, CompiledQueryView, Parameters,
+};
 use crate::results::QueryResult;
 use crate::state::AppState;
 use crate::transport::{compiled_view, execute_compiled};
@@ -32,9 +34,11 @@ pub struct ProbeResponse {
 pub(crate) fn compile_query(
     state: State<'_, AppState>,
     source: String,
+    parameters: Option<Parameters>,
 ) -> Result<CompiledQueryView> {
     let conn = state.snapshot();
-    let compiled = compile_source_for(&source, conn.protocol)?;
+    let compiled =
+        compile_source_with_parameters(&source, conn.protocol, &parameters.unwrap_or_default())?;
     compiled_view(&compiled, &conn)
 }
 
@@ -43,9 +47,11 @@ pub(crate) fn compile_query(
 pub(crate) async fn run_query(
     state: State<'_, AppState>,
     source: String,
+    parameters: Option<Parameters>,
 ) -> Result<QueryExecution> {
     let conn = state.snapshot();
-    let compiled = compile_source_for(&source, conn.protocol)?;
+    let compiled =
+        compile_source_with_parameters(&source, conn.protocol, &parameters.unwrap_or_default())?;
     let (result, duration_ms) = execute_compiled(&state.http, &conn, &compiled).await?;
     Ok(QueryExecution {
         result,

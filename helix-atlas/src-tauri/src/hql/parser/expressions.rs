@@ -91,17 +91,17 @@ impl Parser {
         }
         if self.take_keyword("LIKE") {
             let token = self.peek(0).clone();
-            if token.kind != TokenKind::String {
+            if token.kind != TokenKind::String && token.text != ":" {
                 return Err(self.error_at(
                     &token,
                     "expected a quoted pattern after LIKE",
                     Some("for example: LIKE 'ali%'"),
                 ));
             }
-            self.next();
+            let pattern = self.parse_literal()?;
             return Ok(Condition::Like {
                 column,
-                pattern: token.text,
+                pattern,
                 negated,
             });
         }
@@ -149,8 +149,14 @@ impl Parser {
         })
     }
 
-    fn parse_literal(&mut self) -> Result<Literal, HqlError> {
+    pub(super) fn parse_literal(&mut self) -> Result<Literal, HqlError> {
         let token = self.peek(0).clone();
+        if self.take_punct(':') {
+            let name = self.parse_binding_name()?;
+            let mut span = token.span;
+            span.end = self.tokens[self.position - 1].span.end;
+            return Ok(Literal::Parameter { name, span });
+        }
         if token.kind == TokenKind::String {
             self.next();
             return Ok(Literal::String(token.text));
